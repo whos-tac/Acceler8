@@ -93,12 +93,54 @@ extern "C" void remote_onDataRecv(const uint8_t * mac, const uint8_t *incomingDa
                       current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
 #endif
 #endif
-        // Update display
-        char buf[128];
-        snprintf(buf, sizeof(buf), "Speed: %.1f\nBatt: %.1f\nPwr: %.0f", 
-                 current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
-        if (lbl_remote_telemetry) {
-            lv_label_set_text(lbl_remote_telemetry, buf);
+        // 1. Update Speed dial and label
+        if (lbl_speed) {
+            char spd_buf[16];
+            snprintf(spd_buf, sizeof(spd_buf), "%.0f", current_telemetry.speed_kmh);
+            lv_label_set_text(lbl_speed, spd_buf);
+        }
+        if (arc_speed) {
+            lv_arc_set_value(arc_speed, (int)current_telemetry.speed_kmh);
+        }
+
+        // 2. Update Board Battery
+        if (lbl_board_volts) {
+            char v_buf[16];
+            snprintf(v_buf, sizeof(v_buf), "%.1fV", current_telemetry.battery_voltage_v);
+            lv_label_set_text(lbl_board_volts, v_buf);
+        }
+        if (bar_board) {
+            float pct = ((current_telemetry.battery_voltage_v - 32.0f) / 10.0f) * 100.0f;
+            if (pct < 0) pct = 0; if (pct > 100) pct = 100;
+            int bar_h = (int)(pct * 0.5f); // Map 100% to 50px height
+            lv_obj_set_height(bar_board, bar_h);
+            lv_obj_align(bar_board, LV_ALIGN_TOP_LEFT, 24, 160 + (50 - bar_h));
+        }
+
+        // 3. Update Power readout
+        if (lbl_power) {
+            char pwr_buf[32];
+            snprintf(pwr_buf, sizeof(pwr_buf), "POWER: %.0fW", current_telemetry.power_w);
+            lv_label_set_text(lbl_power, pwr_buf);
+            if (current_telemetry.power_w < 0) {
+                lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00FF88), 0); // regen green
+            } else {
+                lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00CCCC), 0); // normal cyan
+            }
+        }
+
+        // 4. Update Header status
+        if (lbl_status) {
+            const char* sig = "[#][#][#][-]";
+            const char* can = current_telemetry.can_alive ? "OK" : "!!";
+            char stat_buf[64];
+            snprintf(stat_buf, sizeof(stat_buf), "SIG: %s | CAN: %s", sig, can);
+            lv_label_set_text(lbl_status, stat_buf);
+            if (current_telemetry.can_alive) {
+                lv_obj_set_style_text_color(lbl_status, lv_color_hex(0x00FF88), 0);
+            } else {
+                lv_obj_set_style_text_color(lbl_status, lv_color_hex(0xFF3300), 0);
+            }
         }
     }
 }
@@ -253,13 +295,31 @@ void RemoteApp::init() {
 void RemoteApp::update() {
     static uint32_t last_send = 0;
     
-    // Read Potentiometer
+    // Read Potentiometer & Remote Battery Volts
 #ifdef ARDUINO
     int pot_val = analogRead(PIN_POT); // 0-4095
+    // LilyGo T-Display S3 battery reading pin (or generic scaling for 3.7V - 4.2V range)
+    float rem_volts = 3.7f + (analogRead(4) / 4095.0f) * 0.5f; 
 #else
     if (slider_pot) sim_pot_val = lv_slider_get_value(slider_pot);
     int pot_val = sim_pot_val;
+    // Simulate remote cell discharging slightly or varying based on throttle simulation
+    float rem_volts = 3.92f - (pot_val / 4095.0f) * 0.12f;
 #endif
+
+    // Update Remote Battery Bar and Volts Text
+    if (lbl_remote_volts) {
+        char rem_buf[16];
+        snprintf(rem_buf, sizeof(rem_buf), "%.2fV", rem_volts);
+        lv_label_set_text(lbl_remote_volts, rem_buf);
+    }
+    if (bar_remote) {
+        float pct = ((rem_volts - 3.7f) / 0.5f) * 100.0f;
+        if (pct < 0) pct = 0; if (pct > 100) pct = 100;
+        int bar_h = (int)(pct * 0.5f); // Map 100% to 50px height
+        lv_obj_set_height(bar_remote, bar_h);
+        lv_obj_align(bar_remote, LV_ALIGN_TOP_RIGHT, -24, 160 + (50 - bar_h));
+    }
     
     // Map to -100 to 100
     // Assume 2048 is neutral. Deadband around neutral.
