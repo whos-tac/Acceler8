@@ -1,0 +1,208 @@
+#include "remote_app.h"
+#ifdef ARDUINO
+#include <Arduino.h>
+#endif
+#include "../espnow_packets.h"
+#include <cstdio>
+#include <lvgl.h>
+
+#ifdef ARDUINO
+#include <WiFi.h>
+#include <esp_now.h>
+#else
+// Mock ESP-NOW
+#include <cstring>
+typedef uint8_t esp_now_send_status_t;
+#define ESP_NOW_SEND_SUCCESS 0
+extern "C" void esp_now_send(const uint8_t *peer_addr, const uint8_t *data, size_t len);
+extern "C" uint32_t millis();
+extern "C" void delay(uint32_t ms);
+#endif
+
+// MAC Addresses
+static uint8_t receiver_mac[] = {0xEC, 0x64, 0xC9, 0xCC, 0xD8, 0x54};
+static uint8_t dash_mac[] = {0x3C, 0x0F, 0x02, 0xC2, 0xD4, 0xCC};
+
+// Telemetry State
+static TelemetryPacket current_telemetry = {0};
+
+// Pin Definitions
+#define PIN_POT 1
+#define PIN_BTN_UP 2
+#define PIN_BTN_DOWN 3
+#define PIN_BTN_LEFT 10
+#define PIN_BTN_RIGHT 11
+#define PIN_BTN_CONFIRM 12
+
+#ifdef ARDUINO
+#include <TFT_eSPI.h>
+extern TFT_eSPI tft;
+
+static lv_disp_draw_buf_t draw_buf;
+static lv_color_t buf[170 * 320 / 10];
+
+static void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {
+    uint32_t w = (area->x2 - area->x1 + 1);
+    uint32_t h = (area->y2 - area->y1 + 1);
+    tft.startWrite();
+    tft.setAddrWindow(area->x1, area->y1, w, h);
+    tft.pushColors((uint16_t *)&color_p->full, w * h, true);
+    tft.endWrite();
+    lv_disp_flush_ready(disp);
+}
+#endif
+
+// LVGL UI elements
+static lv_obj_t * lbl_remote_telemetry;
+#ifndef ARDUINO
+static lv_obj_t * slider_pot;
+static int sim_pot_val = 2048;
+void RemoteApp::set_sim_pot_val(int val) {
+    sim_pot_val = val;
+}
+#endif
+
+static void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+#ifdef DEBUG_ESPNOW
+#ifdef ARDUINO
+    if (status != ESP_NOW_SEND_SUCCESS) {
+        Serial.println("[ESP-NOW] TX Remote -> Receiver FAILED");
+    }
+#else
+    printf("[ESP-NOW] TX Remote -> Receiver status: %d\n", status);
+#endif
+#endif
+}
+
+extern "C" void remote_onDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
+    if (len == sizeof(TelemetryPacket)) {
+        memcpy(&current_telemetry, incomingData, sizeof(TelemetryPacket));
+#ifdef DEBUG_ESPNOW
+#ifdef ARDUINO
+        Serial.printf("[ESP-NOW] RX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Power: %.0fW\n", 
+                      current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+#else
+        printf("[ESP-NOW] RX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Power: %.0fW\n", 
+                      current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+#endif
+#endif
+        // Update display
+        char buf[128];
+        snprintf(buf, sizeof(buf), "Speed: %.1f\nBatt: %.1f\nPwr: %.0f", 
+                 current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+        if (lbl_remote_telemetry) {
+            lv_label_set_text(lbl_remote_telemetry, buf);
+        }
+    }
+}
+
+void RemoteApp::init() {
+#ifdef ARDUINO
+    // Setup Pins
+    pinMode(PIN_POT, INPUT);
+    pinMode(PIN_BTN_UP, INPUT_PULLUP);
+    pinMode(PIN_BTN_DOWN, INPUT_PULLUP);
+    pinMode(PIN_BTN_LEFT, INPUT_PULLUP);
+    pinMode(PIN_BTN_RIGHT, INPUT_PULLUP);
+    pinMode(PIN_BTN_CONFIRM, INPUT_PULLUP);
+
+    // Setup ESP-NOW
+    WiFi.mode(WIFI_STA);
+    if (esp_now_init() != ESP_OK) {
+        Serial.println("Error initializing ESP-NOW");
+        return;
+    }
+
+    esp_now_register_send_cb(onDataSent);
+    esp_now_register_recv_cb(remote_onDataRecv);
+
+    static esp_now_peer_info_t peerInfo;
+    memcpy(peerInfo.peer_addr, receiver_mac, 6);
+    peerInfo.channel = 0;  
+    peerInfo.encrypt = false;
+    if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+        Serial.println("Failed to add Receiver peer");
+        return;
+    }
+#endif
+
+    // Setup UI
+#ifdef ARDUINO
+    tft.init();
+    tft.setRotation(0); // Symmetrical vertical orientation
+    
+    lv_init();
+    lv_disp_draw_buf_init(&draw_buf, buf, NULL, 170 * 320 / 10);
+    
+    static lv_disp_drv_t disp_drv;
+    lv_disp_drv_init(&disp_drv);
+    disp_drv.hor_res = 170;
+    disp_drv.ver_res = 320;
+    disp_drv.flush_cb = my_disp_flush;
+    disp_drv.draw_buf = &draw_buf;
+    lv_disp_drv_register(&disp_drv);
+#endif
+
+    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x000000), 0);
+    lbl_remote_telemetry = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_color(lbl_remote_telemetry, lv_color_hex(0xFFFFFF), 0);
+    lv_label_set_text(lbl_remote_telemetry, "Remote Init...");
+    lv_obj_align(lbl_remote_telemetry, LV_ALIGN_TOP_LEFT, 10, 10);
+
+#ifndef ARDUINO
+    slider_pot = lv_slider_create(lv_scr_act());
+    lv_slider_set_range(slider_pot, 0, 4095);
+    lv_slider_set_value(slider_pot, 2048, LV_ANIM_OFF);
+    lv_obj_set_size(slider_pot, 30, 200);
+    lv_obj_align(slider_pot, LV_ALIGN_CENTER, 0, 20);
+    
+    lv_obj_t* lbl_pot = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_color(lbl_pot, lv_color_hex(0xAAAAAA), 0);
+    lv_label_set_text(lbl_pot, "Throttle");
+    lv_obj_align_to(lbl_pot, slider_pot, LV_ALIGN_OUT_TOP_MID, 0, -10);
+#endif
+
+#ifdef ARDUINO
+    Serial.println("Remote initialized.");
+#endif
+}
+
+void RemoteApp::update() {
+    static uint32_t last_send = 0;
+    
+    // Read Potentiometer
+#ifdef ARDUINO
+    int pot_val = analogRead(PIN_POT); // 0-4095
+#else
+    if (slider_pot) sim_pot_val = lv_slider_get_value(slider_pot);
+    int pot_val = sim_pot_val;
+#endif
+    
+    // Map to -100 to 100
+    // Assume 2048 is neutral. Deadband around neutral.
+    float throttle = 0.0f;
+    if (pot_val > 2148) {
+        throttle = ((pot_val - 2148) / (4095.0f - 2148.0f)) * 100.0f;
+    } else if (pot_val < 1948) {
+        throttle = ((pot_val - 1948) / 1948.0f) * 100.0f; // Negative
+    }
+
+    // Send every 50ms (20Hz)
+    if (millis() - last_send > 50) {
+        last_send = millis();
+        ControlPacket pkt;
+        pkt.throttle_percent = throttle;
+        esp_now_send(receiver_mac, (uint8_t *)&pkt, sizeof(ControlPacket));
+        
+#ifdef DEBUG_ESPNOW
+#ifdef ARDUINO
+        Serial.printf("[ESP-NOW] TX Remote -> Receiver | Throttle: %.1f%%\n", throttle);
+#else
+        // printf("[ESP-NOW] TX Remote -> Receiver | Throttle: %.1f%%\n", throttle);
+#endif
+#endif
+    }
+#ifdef ARDUINO
+    lv_timer_handler();
+#endif
+}
