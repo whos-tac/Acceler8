@@ -53,7 +53,14 @@ static void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t
 #endif
 
 // LVGL UI elements
-static lv_obj_t * lbl_remote_telemetry;
+static lv_obj_t * lbl_status;
+static lv_obj_t * arc_speed;
+static lv_obj_t * lbl_speed;
+static lv_obj_t * bar_board;
+static lv_obj_t * bar_remote;
+static lv_obj_t * lbl_board_volts;
+static lv_obj_t * lbl_remote_volts;
+static lv_obj_t * lbl_power;
 #ifndef ARDUINO
 static lv_obj_t * slider_pot;
 static int sim_pot_val = 2048;
@@ -144,22 +151,98 @@ void RemoteApp::init() {
 #endif
 
     lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x000000), 0);
-    lbl_remote_telemetry = lv_label_create(lv_scr_act());
-    lv_obj_set_style_text_color(lbl_remote_telemetry, lv_color_hex(0xFFFFFF), 0);
-    lv_label_set_text(lbl_remote_telemetry, "Remote Init...");
-    lv_obj_align(lbl_remote_telemetry, LV_ALIGN_TOP_LEFT, 10, 10);
+
+    // 1. Connection Header Line
+    lbl_status = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_color(lbl_status, lv_color_hex(0x00FF88), 0);
+    lv_obj_set_style_text_font(lbl_status, &lv_font_unscii_16, 0);
+    lv_label_set_text(lbl_status, "SIG: [----] | CAN: !!");
+    lv_obj_align(lbl_status, LV_ALIGN_TOP_MID, 0, 8);
+
+    // 2. Circular Speed Dial (Speed gauge)
+    arc_speed = lv_arc_create(lv_scr_act());
+    lv_obj_set_size(arc_speed, 110, 110);
+    lv_arc_set_rotation(arc_speed, 135);
+    lv_arc_set_bg_angles(arc_speed, 0, 270);
+    lv_arc_set_value(arc_speed, 0);
+    lv_obj_align(arc_speed, LV_ALIGN_TOP_MID, 0, 32);
+    lv_obj_set_style_arc_color(arc_speed, lv_color_hex(0x222222), LV_PART_MAIN); // bg
+    lv_obj_set_style_arc_color(arc_speed, lv_color_hex(0xC3B1E1), LV_PART_INDICATOR); // active purple
+    lv_obj_remove_style(arc_speed, NULL, LV_PART_KNOB); // hide knob
+
+    lbl_speed = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_color(lbl_speed, lv_color_hex(0xFFFFFF), 0);
+    lv_obj_set_style_text_font(lbl_speed, &lv_font_montserrat_36, 0); // Bold digits
+    lv_label_set_text(lbl_speed, "0");
+    lv_obj_align(lbl_speed, LV_ALIGN_TOP_MID, 0, 64);
+
+    lv_obj_t* lbl_speed_unit = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_color(lbl_speed_unit, lv_color_hex(0x555555), 0);
+    lv_obj_set_style_text_font(lbl_speed_unit, &lv_font_unscii_16, 0);
+    lv_label_set_text(lbl_speed_unit, "KM/H");
+    lv_obj_align(lbl_speed_unit, LV_ALIGN_TOP_MID, 0, 102);
+
+    // 3. Symmetrical Battery Columns (Board on left, Remote on right)
+    // Board Bar (BRD)
+    bar_board = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(bar_board, 32, 50);
+    lv_obj_align(bar_board, LV_ALIGN_TOP_LEFT, 24, 160);
+    lv_obj_set_style_bg_color(bar_board, lv_color_hex(0x00FF88), 0); // Green
+    lv_obj_set_style_bg_opa(bar_board, LV_OPA_COVER, 0);
+    lv_obj_set_style_border_color(bar_board, lv_color_hex(0x555555), 0);
+    lv_obj_set_style_border_width(bar_board, 1, 0);
+    lv_obj_set_style_radius(bar_board, 0, 0);
+    lv_obj_clear_flag(bar_board, LV_OBJ_FLAG_SCROLLABLE);
+
+    lv_obj_t* lbl_brd_title = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_color(lbl_brd_title, lv_color_hex(0x555555), 0);
+    lv_obj_set_style_text_font(lbl_brd_title, &lv_font_unscii_16, 0);
+    lv_label_set_text(lbl_brd_title, "BOARD");
+    lv_obj_align(lbl_brd_title, LV_ALIGN_TOP_LEFT, 16, 215);
+
+    lbl_board_volts = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_color(lbl_board_volts, lv_color_hex(0x00FF88), 0);
+    lv_obj_set_style_text_font(lbl_board_volts, &lv_font_unscii_16, 0);
+    lv_label_set_text(lbl_board_volts, "0.0V");
+    lv_obj_align(lbl_board_volts, LV_ALIGN_TOP_LEFT, 20, 230);
+
+    // Remote Bar (REM)
+    bar_remote = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(bar_remote, 32, 50);
+    lv_obj_align(bar_remote, LV_ALIGN_TOP_RIGHT, -24, 160);
+    lv_obj_set_style_bg_color(bar_remote, lv_color_hex(0x00CCCC), 0); // Cyan
+    lv_obj_set_style_bg_opa(bar_remote, LV_OPA_COVER, 0);
+    lv_obj_set_style_border_color(bar_remote, lv_color_hex(0x555555), 0);
+    lv_obj_set_style_border_width(bar_remote, 1, 0);
+    lv_obj_set_style_radius(bar_remote, 0, 0);
+    lv_obj_clear_flag(bar_remote, LV_OBJ_FLAG_SCROLLABLE);
+
+    lv_obj_t* lbl_rem_title = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_color(lbl_rem_title, lv_color_hex(0x555555), 0);
+    lv_obj_set_style_text_font(lbl_rem_title, &lv_font_unscii_16, 0);
+    lv_label_set_text(lbl_rem_title, "REMOTE");
+    lv_obj_align(lbl_rem_title, LV_ALIGN_TOP_RIGHT, -12, 215);
+
+    lbl_remote_volts = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_color(lbl_remote_volts, lv_color_hex(0x00CCCC), 0);
+    lv_obj_set_style_text_font(lbl_remote_volts, &lv_font_unscii_16, 0);
+    lv_label_set_text(lbl_remote_volts, "3.70V");
+    lv_obj_align(lbl_remote_volts, LV_ALIGN_TOP_RIGHT, -16, 230);
+
+    // 4. Bottom Footer (Power Value)
+    lbl_power = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00CCCC), 0);
+    lv_obj_set_style_text_font(lbl_power, &lv_font_unscii_16, 0);
+    lv_label_set_text(lbl_power, "POWER: 0W");
+    lv_obj_align(lbl_power, LV_ALIGN_BOTTOM_MID, 0, -8);
 
 #ifndef ARDUINO
+    // Setup vertical slider on left margin for simulation potentiometer
     slider_pot = lv_slider_create(lv_scr_act());
     lv_slider_set_range(slider_pot, 0, 4095);
     lv_slider_set_value(slider_pot, 2048, LV_ANIM_OFF);
-    lv_obj_set_size(slider_pot, 30, 200);
-    lv_obj_align(slider_pot, LV_ALIGN_CENTER, 0, 20);
-    
-    lv_obj_t* lbl_pot = lv_label_create(lv_scr_act());
-    lv_obj_set_style_text_color(lbl_pot, lv_color_hex(0xAAAAAA), 0);
-    lv_label_set_text(lbl_pot, "Throttle");
-    lv_obj_align_to(lbl_pot, slider_pot, LV_ALIGN_OUT_TOP_MID, 0, -10);
+    lv_obj_set_size(slider_pot, 10, 80);
+    lv_obj_align(slider_pot, LV_ALIGN_TOP_MID, 0, 160);
 #endif
 
 #ifdef ARDUINO
