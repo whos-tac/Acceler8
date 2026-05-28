@@ -28,3 +28,23 @@ To ensure the rider immediately notices a critical safety issue without clutteri
 1. Update `VehicleState` and `EscData` structs to include timestamps and fault flags.
 2. Modify `CANDriver` to update timestamps on message receipt and initialize the RTOS watchdog.
 3. Build the `AlertOverlay` LVGL component in `UIController` that subscribes to the global fault state and overlays the active screen.
+
+## Additional Features (Remote vs. Dashboard Split)
+To ensure system boundaries are respected, the remaining `gb_remote` features are split between the Lilygo Remote (input/haptics/sleep) and the Waveshare Dash (display/storage/settings).
+
+### Lilygo Remote (ESP32 + 5 Buttons + Potentiometer)
+1. **Throttle Calibration UI Trigger & Mapping**: Reads the potentiometer. When placed in calibration mode via specific button presses, maps raw ADC limits to 0-100% and stores them in NVS. Sends normalized 0-100% values to the Dash/Receiver.
+2. **Inactivity Sleep Management**: Monitors potentiometer and button activity. If idle for X minutes, puts the remote into deep sleep.
+3. **Haptic/Audible Feedback**: If a vibration motor or buzzer is connected, pulses on connection loss, low remote battery, or critical Dash alerts.
+4. **Remote Battery Monitoring**: Monitors its own battery voltage and sends it to the Dash.
+5. **Button Mapping**:
+   - `Btn 1` (Deadman/Power)
+   - `Btn 2` (Mode up/down)
+   - `Btn 3` (Settings menu trigger)
+   - `Btn 4 & 5` (UI Navigation)
+
+### Waveshare Dash (ESP32-S3 + Display)
+1. **Persistent Odometer**: Tracks distance based on ERPM/Speed and periodically saves it to NVS storage to survive reboots.
+2. **Dual Battery Displays**: Displays the vehicle's main battery (from CAN) alongside the Remote's battery level (received over UART/BLE).
+3. **Automatic Parameter Sync**: Fetches required constants (Motor Poles, Wheel Diameter, Gearing) from the Flipsky ESC via CAN to automatically calculate accurate speed/odometer values.
+4. **Settings & Configuration UI**: A dedicated LVGL menu screen (navigated via the Remote's buttons) to toggle speed units (MPH/KMH), adjust screen brightness, and trigger remote throttle calibration.
