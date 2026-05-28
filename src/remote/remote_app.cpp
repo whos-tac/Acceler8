@@ -36,6 +36,14 @@ static TelemetryPacket current_telemetry = {0};
 #define PIN_POWER_ON 15
 
 #ifdef ARDUINO
+#include <Preferences.h>
+static Preferences preferences;
+static int pot_min = 2048;
+static int pot_max = 2048;
+static uint32_t last_activity_time = 0;
+static int last_pot_val = -1;
+static uint8_t last_btn_state = 0;
+
 #include <TFT_eSPI.h>
 extern TFT_eSPI tft;
 
@@ -159,6 +167,21 @@ void RemoteApp::init() {
     pinMode(PIN_BTN_CONFIRM, INPUT_PULLUP);
 
     // Setup ESP-NOW
+    preferences.begin("remote", false);
+    if (digitalRead(PIN_BTN_CONFIRM) == LOW) {
+        preferences.putInt("pot_min", 2048);
+        preferences.putInt("pot_max", 2048);
+        Serial.println("Calibration Reset!");
+    }
+    pot_min = preferences.getInt("pot_min", 2048);
+    pot_max = preferences.getInt("pot_max", 2048);
+    last_activity_time = millis();
+    last_btn_state = (digitalRead(PIN_BTN_UP) == LOW ? 1 : 0) |
+                     ((digitalRead(PIN_BTN_DOWN) == LOW ? 1 : 0) << 1) |
+                     ((digitalRead(PIN_BTN_LEFT) == LOW ? 1 : 0) << 2) |
+                     ((digitalRead(PIN_BTN_RIGHT) == LOW ? 1 : 0) << 3) |
+                     ((digitalRead(PIN_BTN_CONFIRM) == LOW ? 1 : 0) << 4);
+
     WiFi.mode(WIFI_STA);
     if (esp_now_init() != ESP_OK) {
         Serial.println("Error initializing ESP-NOW");
@@ -345,12 +368,64 @@ void RemoteApp::update() {
     
     // Map to -100 to 100
     // Assume 2048 is neutral. Deadband around neutral.
+#ifdef ARDUINO
+    // Update NVS Limits
+    if (pot_val < pot_min) {
+        pot_min = pot_val;
+        preferences.putInt("pot_min", pot_min);
+    }
+    if (pot_val > pot_max) {
+        pot_max = pot_val;
+        preferences.putInt("pot_max", pot_max);
+    }
+
+    // Check Activity for Deep Sleep
+    uint8_t current_btn_state = 
+        (digitalRead(PIN_BTN_UP) == LOW ? 1 : 0) |
+        ((digitalRead(PIN_BTN_DOWN) == LOW ? 1 : 0) << 1) |
+        ((digitalRead(PIN_BTN_LEFT) == LOW ? 1 : 0) << 2) |
+        ((digitalRead(PIN_BTN_RIGHT) == LOW ? 1 : 0) << 3) |
+        ((digitalRead(PIN_BTN_CONFIRM) == LOW ? 1 : 0) << 4);
+
+    bool activity = false;
+    if (current_btn_state != last_btn_state) {
+        activity = true;
+        last_btn_state = current_btn_state;
+    }
+
+    if (last_pot_val == -1 || abs(pot_val - last_pot_val) > 30) {
+        activity = true;
+        last_pot_val = pot_val;
+    }
+
+    if (activity) {
+        last_activity_time = millis();
+    }
+
+    if (millis() - last_activity_time > 300000) { // 5 minutes
+        Serial.println("Inactivity timeout. Deep sleep.");
+        digitalWrite(PIN_POWER_ON, LOW);
+        esp_deep_sleep_start();
+    }
+    
+    float p_max = (float)pot_max;
+    float p_min = (float)pot_min;
+    if (p_max < 2149.0f) p_max = 2149.0f; 
+    if (p_min > 1947.0f) p_min = 1947.0f; 
+#else
+    float p_max = 4095.0f;
+    float p_min = 0.0f;
+#endif
+
     float throttle = 0.0f;
     if (pot_val > 2148) {
-        throttle = ((pot_val - 2148) / (4095.0f - 2148.0f)) * 100.0f;
+        throttle = ((pot_val - 2148.0f) / (p_max - 2148.0f)) * 100.0f;
     } else if (pot_val < 1948) {
-        throttle = ((pot_val - 1948) / 1948.0f) * 100.0f; // Negative
+        throttle = ((pot_val - 1948.0f) / (1948.0f - p_min)) * 100.0f; // Negative
     }
+    
+    if (throttle > 100.0f) throttle = 100.0f;
+    if (throttle < -100.0f) throttle = -100.0f;
 
     // Send every 50ms (20Hz)
     if (millis() - last_send > 50) {
