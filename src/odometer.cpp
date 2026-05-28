@@ -67,3 +67,10 @@ void Odometer::save_if_needed() {
     }
 #endif
 }
+
+void Odometer::reset() {
+    total_distance = 0.0f;
+    fractional_distance = 0.0f;
+    last_saved_distance = -1.0f;
+    save_if_needed();
+}

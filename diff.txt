@@ -1,0 +1,319 @@
+﻿diff --git a/include/can_driver.h b/include/can_driver.h
+index a2698ba..d42fa15 100644
+--- a/include/can_driver.h
++++ b/include/can_driver.h
+@@ -34,6 +34,7 @@ struct VehicleState {
+     bool  has_received_can;     // True if at least one CAN frame was ever received
+     uint32_t last_can_rx_ms;    // Timestamp of last CAN frame
+     bool remote_disconnected;
++    uint8_t remote_button_state; // From Remote ControlPacket
+ 
+     // --- Underglow Control ---
+     uint8_t led_r;
+diff --git a/include/mechanical_config.h b/include/mechanical_config.h
+index f722a89..faad09c 100644
+--- a/include/mechanical_config.h
++++ b/include/mechanical_config.h
+@@ -7,6 +7,13 @@ extern int motor_pole_pairs;
+ extern float gear_ratio;
+ extern float wheel_diameter_mm;
+ 
++void load_mechanical_config();
++void save_mechanical_config();
++
++#ifdef ARDUINO
++#include <Arduino.h>
++#endif
++
+ #ifndef PI
+ #define PI 3.14159265358979323846
+ #endif
+diff --git a/src/dash_app.cpp b/src/dash_app.cpp
+index 0bbe8eb..9a83ce6 100644
+--- a/src/dash_app.cpp
++++ b/src/dash_app.cpp
+@@ -7,7 +7,10 @@
+ #include "espnow_dash.h"
+ #include "odometer.h"
+ 
++#include "mechanical_config.h"
++
+ void DashApp::init() {
++    load_mechanical_config();
+     DisplayDriver::init();
+     CANDriver::init();
+     UIController::init();
+diff --git a/src/espnow_dash.cpp b/src/espnow_dash.cpp
+index 2b73cac..f5b0d4a 100644
+--- a/src/espnow_dash.cpp
++++ b/src/espnow_dash.cpp
+@@ -68,6 +68,10 @@ extern "C" void dash_onDataRecv(const uint8_t * mac, const uint8_t *incomingData
+         printf("[ESP-NOW] RX Receiver -> Dash | Remote Disconnected: %d\n", pkt.remote_disconnected);
+ #endif
+ #endif
++    } else if (len == sizeof(ControlPacket)) {
++        ControlPacket pkt;
++        memcpy(&pkt, incomingData, sizeof(ControlPacket));
++        g_vehicle_state.remote_button_state = pkt.button_state;
+     }
+ }
+ 
+diff --git a/src/espnow_packets.h b/src/espnow_packets.h
+index 3cf4dfe..8d0e987 100644
+--- a/src/espnow_packets.h
++++ b/src/espnow_packets.h
+@@ -16,9 +16,10 @@ typedef struct {
+     bool remote_disconnected;
+ } TelemetryPacket;
+ 
+-// Packet sent from Remote to Receiver
++// Packet sent from Remote to Receiver and Dash
+ typedef struct {
+     float throttle_percent; // -100.0 (full brake) to 100.0 (full throttle)
++    uint8_t button_state;   // Bitmask: bit 0=UP, 1=DOWN, 2=LEFT, 3=RIGHT, 4=CONFIRM
+ } ControlPacket;
+ 
+ // Packet sent from Receiver to Dash
+diff --git a/src/mechanical_config.cpp b/src/mechanical_config.cpp
+index a857d22..a07446b 100644
+--- a/src/mechanical_config.cpp
++++ b/src/mechanical_config.cpp
+@@ -4,3 +4,25 @@
+ int motor_pole_pairs = 7;
+ float gear_ratio = 4.0f;
+ float wheel_diameter_mm = 200.0f;
++
++#ifdef ARDUINO
++#include <Preferences.h>
++static Preferences mech_prefs;
++#endif
++
++void load_mechanical_config() {
++#ifdef ARDUINO
++    mech_prefs.begin("mech_cfg", false);
++    motor_pole_pairs = mech_prefs.getInt("pole_pairs", 7);
++    gear_ratio = mech_prefs.getFloat("gear_ratio", 4.0f);
++    wheel_diameter_mm = mech_prefs.getFloat("wheel_dia", 200.0f);
++#endif
++}
++
++void save_mechanical_config() {
++#ifdef ARDUINO
++    mech_prefs.putInt("pole_pairs", motor_pole_pairs);
++    mech_prefs.putFloat("gear_ratio", gear_ratio);
++    mech_prefs.putFloat("wheel_dia", wheel_diameter_mm);
++#endif
++}
+diff --git a/src/remote/remote_app.cpp b/src/remote/remote_app.cpp
+index aca5273..22c5a11 100644
+--- a/src/remote/remote_app.cpp
++++ b/src/remote/remote_app.cpp
+@@ -247,6 +247,15 @@ void RemoteApp::init() {
+         Serial.println("Failed to add Receiver peer");
+         return;
+     }
++
++    static esp_now_peer_info_t dashPeerInfo;
++    memcpy(dashPeerInfo.peer_addr, dash_mac, 6);
++    dashPeerInfo.channel = 0;  
++    dashPeerInfo.encrypt = false;
++    if (esp_now_add_peer(&dashPeerInfo) != ESP_OK) {
++        Serial.println("Failed to add Dash peer");
++        return;
++    }
+ #endif
+ 
+     // Setup UI
+@@ -444,7 +453,13 @@ void RemoteApp::update() {
+         last_send = millis();
+         ControlPacket pkt;
+         pkt.throttle_percent = throttle;
++#ifdef ARDUINO
++        pkt.button_state = last_btn_state;
++#else
++        pkt.button_state = 0;
++#endif
+         esp_now_send(receiver_mac, (uint8_t *)&pkt, sizeof(ControlPacket));
++        esp_now_send(dash_mac, (uint8_t *)&pkt, sizeof(ControlPacket));
+         
+ #ifdef DEBUG_ESPNOW
+ #ifdef ARDUINO
+diff --git a/src/ui_controller.cpp b/src/ui_controller.cpp
+index 8836fa2..9dbe752 100644
+--- a/src/ui_controller.cpp
++++ b/src/ui_controller.cpp
+@@ -4,6 +4,7 @@
+ #include "mechanical_config.h"
+ #include <stdio.h>
+ #include <math.h>
++#include "odometer.h"
+ 
+ #ifdef ARDUINO
+ #include <Arduino.h>
+@@ -36,6 +37,51 @@ namespace UIController {
+     lv_obj_t * alert_overlay;
+     lv_obj_t * alert_label;
+ 
++    // Settings Screen UI
++    lv_obj_t* settings_screen;
++    enum SettingMode {
++        SETTING_MODE_MENU,
++        SETTING_MODE_EDIT
++    };
++    SettingMode setting_mode = SETTING_MODE_MENU;
++    int current_setting_idx = 0;
++    lv_obj_t* setting_rows[5];
++    lv_obj_t* setting_vals[4];
++
++    void update_settings_ui() {
++        for(int i=0; i<5; i++) {
++            if (i == current_setting_idx) {
++                if (setting_mode == SETTING_MODE_EDIT) {
++                    lv_obj_set_style_bg_color(setting_rows[i], lv_color_hex(0x550000), 0);
++                    if (i < 4) lv_obj_set_style_text_color(setting_vals[i], lv_color_hex(0xFFFFFF), 0);
++                } else {
++                    lv_obj_set_style_bg_color(setting_rows[i], lv_color_hex(0x333333), 0);
++                    if (i < 4) lv_obj_set_style_text_color(setting_vals[i], lv_color_hex(0x00CCCC), 0);
++                }
++            } else {
++                lv_obj_set_style_bg_color(setting_rows[i], lv_color_hex(0x111111), 0);
++                if (i < 4) lv_obj_set_style_text_color(setting_vals[i], lv_color_hex(0x555555), 0);
++            }
++        }
++
++        char buf[32];
++        snprintf(buf, sizeof(buf), "%d", motor_pole_pairs);
++        lv_label_set_text(setting_vals[0], buf);
++
++        snprintf(buf, sizeof(buf), "%.1f", gear_ratio);
++        lv_label_set_text(setting_vals[1], buf);
++
++        snprintf(buf, sizeof(buf), "%.0f", wheel_diameter_mm);
++        lv_label_set_text(setting_vals[2], buf);
++
++        snprintf(buf, sizeof(buf), "%.1f km", total_distance);
++        if (setting_mode == SETTING_MODE_EDIT && current_setting_idx == 3) {
++            lv_label_set_text(setting_vals[3], "PRESS CONFIRM TO RESET");
++        } else {
++            lv_label_set_text(setting_vals[3], buf);
++        }
++    }
++
+     // ================================================================
+     // Colors
+     // ================================================================
+@@ -295,12 +341,114 @@ namespace UIController {
+         lv_obj_align(alert_label, LV_ALIGN_CENTER, 0, 0);
+         
+         lv_obj_add_flag(alert_overlay, LV_OBJ_FLAG_HIDDEN);
++
++        // ΓöÇΓöÇ SETTINGS SCREEN ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++        settings_screen = lv_obj_create(NULL);
++        lv_obj_set_style_bg_color(settings_screen, lv_color_hex(0x000000), 0);
++
++        lv_obj_t* title = lv_label_create(settings_screen);
++        lv_obj_set_style_text_color(title, color_cyan, 0);
++        lv_obj_set_style_text_font(title, &lv_font_unscii_16, 0);
++        lv_label_set_text(title, "SETTINGS");
++        lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 20);
++
++        const char* labels[] = {
++            "Pole Pairs",
++            "Gear Ratio",
++            "Wheel Dia (mm)",
++            "Odometer",
++            "Save & Exit"
++        };
++
++        for (int i=0; i<5; i++) {
++            setting_rows[i] = lv_obj_create(settings_screen);
++            lv_obj_set_size(setting_rows[i], 400, 60);
++            lv_obj_align(setting_rows[i], LV_ALIGN_TOP_MID, 0, 70 + i*70);
++            lv_obj_set_style_bg_color(setting_rows[i], color_grey, 0);
++            lv_obj_set_style_border_width(setting_rows[i], 0, 0);
++            lv_obj_set_style_radius(setting_rows[i], 10, 0);
++            lv_obj_clear_flag(setting_rows[i], LV_OBJ_FLAG_SCROLLABLE);
++
++            lv_obj_t* lbl = lv_label_create(setting_rows[i]);
++            lv_obj_set_style_text_color(lbl, color_white, 0);
++            lv_obj_set_style_text_font(lbl, &lv_font_unscii_16, 0);
++            lv_label_set_text(lbl, labels[i]);
++            lv_obj_align(lbl, LV_ALIGN_LEFT_MID, 20, 0);
++
++            if (i < 4) {
++                setting_vals[i] = lv_label_create(setting_rows[i]);
++                lv_obj_set_style_text_color(setting_vals[i], color_cyan, 0);
++                lv_obj_set_style_text_font(setting_vals[i], &lv_font_unscii_16, 0);
++                lv_label_set_text(setting_vals[i], "-");
++                lv_obj_align(setting_vals[i], LV_ALIGN_RIGHT_MID, -20, 0);
++            }
++        }
+     }
+ 
+     // ================================================================
+     // UPDATE
+     // ================================================================
+     void update() {
++        static uint8_t last_btn = 0;
++        uint8_t curr_btn = g_vehicle_state.remote_button_state;
++        
++        bool pressed_up = (curr_btn & (1 << 0)) && !(last_btn & (1 << 0));
++        bool pressed_down = (curr_btn & (1 << 1)) && !(last_btn & (1 << 1));
++        bool pressed_left = (curr_btn & (1 << 2)) && !(last_btn & (1 << 2));
++        bool pressed_right = (curr_btn & (1 << 3)) && !(last_btn & (1 << 3));
++        bool pressed_confirm = (curr_btn & (1 << 4)) && !(last_btn & (1 << 4));
++        
++        last_btn = curr_btn;
++
++        if (lv_scr_act() == settings_screen) {
++            if (setting_mode == SETTING_MODE_MENU) {
++                if (pressed_up) current_setting_idx = (current_setting_idx - 1 + 5) % 5;
++                if (pressed_down) current_setting_idx = (current_setting_idx + 1) % 5;
++                if (pressed_confirm || pressed_right) {
++                    if (current_setting_idx == 4) {
++                        save_mechanical_config();
++                        lv_scr_load(main_screen);
++                    } else {
++                        setting_mode = SETTING_MODE_EDIT;
++                    }
++                }
++                if (pressed_left) {
++                    lv_scr_load(main_screen);
++                }
++            } else {
++                if (pressed_confirm || pressed_left) {
++                    setting_mode = SETTING_MODE_MENU;
++                    if (current_setting_idx == 3 && pressed_confirm) { // Odometer reset
++                        total_distance = 0.0f;
++                        Odometer::save_if_needed();
++                    }
++                }
++                if (current_setting_idx == 0) { // Pole pairs
++                    if (pressed_up || pressed_right) motor_pole_pairs++;
++                    if (pressed_down || pressed_left) motor_pole_pairs--;
++                    if (motor_pole_pairs < 1) motor_pole_pairs = 1;
++                } else if (current_setting_idx == 1) { // Gear ratio
++                    if (pressed_up || pressed_right) gear_ratio += 0.1f;
++                    if (pressed_down || pressed_left) gear_ratio -= 0.1f;
++                    if (gear_ratio < 0.1f) gear_ratio = 0.1f;
++                } else if (current_setting_idx == 2) { // Wheel dia
++                    if (pressed_up || pressed_right) wheel_diameter_mm += 1.0f;
++                    if (pressed_down || pressed_left) wheel_diameter_mm -= 1.0f;
++                    if (wheel_diameter_mm < 10.0f) wheel_diameter_mm = 10.0f;
++                }
++            }
++            update_settings_ui();
++            return;
++        }
++
++        if (pressed_confirm && !debug_mode_active) {
++            lv_scr_load(settings_screen);
++            current_setting_idx = 0;
++            setting_mode = SETTING_MODE_MENU;
++            update_settings_ui();
++            return;
++        }
++
+         int32_t erpm = g_vehicle_state.erpm;
+         float v      = g_vehicle_state.battery_voltage_v;
+         int32_t tach = g_vehicle_state.tachometer;

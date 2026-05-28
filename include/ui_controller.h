@@ -14,4 +14,5 @@ namespace UIController {
      * @brief Updates the labels and UI elements with new values from the global VehicleState.
      */
     void update();
+    void show_main_screen();
 }
