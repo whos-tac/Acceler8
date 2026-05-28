@@ -9,6 +9,7 @@
 #ifdef ARDUINO
 #include <WiFi.h>
 #include <esp_now.h>
+#include <esp_sleep.h>
 #else
 // Mock ESP-NOW
 #include <cstring>
@@ -49,6 +50,53 @@ extern TFT_eSPI tft;
 
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t buf[170 * 320 / 10];
+
+#ifdef ARDUINO
+static void update_adc_calibration(int pot_val) {
+    if (pot_val > 100 && pot_val < 4000) {
+        if (pot_val < pot_min) {
+            pot_min = pot_val;
+            preferences.putInt("pot_min", pot_min);
+        }
+        if (pot_val > pot_max) {
+            pot_max = pot_val;
+            preferences.putInt("pot_max", pot_max);
+        }
+    }
+}
+
+static void check_inactivity_sleep(int pot_val) {
+    uint8_t current_btn_state = 0;
+    const uint8_t pins[] = {PIN_BTN_UP, PIN_BTN_DOWN, PIN_BTN_LEFT, PIN_BTN_RIGHT, PIN_BTN_CONFIRM};
+    for (int i = 0; i < 5; i++) {
+        if (digitalRead(pins[i]) == LOW) {
+            current_btn_state |= (1 << i);
+        }
+    }
+
+    bool activity = false;
+    if (current_btn_state != last_btn_state) {
+        activity = true;
+        last_btn_state = current_btn_state;
+    }
+
+    if (last_pot_val == -1 || abs(pot_val - last_pot_val) > 30) {
+        activity = true;
+        last_pot_val = pot_val;
+    }
+
+    if (activity) {
+        last_activity_time = millis();
+    }
+
+    if (millis() - last_activity_time > 300000) { // 5 minutes
+        Serial.println("Inactivity timeout. Deep sleep.");
+        digitalWrite(PIN_POWER_ON, LOW);
+        esp_sleep_enable_ext0_wakeup((gpio_num_t)PIN_BTN_CONFIRM, 0);
+        esp_deep_sleep_start();
+    }
+}
+#endif
 
 static void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {
     uint32_t w = (area->x2 - area->x1 + 1);
@@ -168,14 +216,19 @@ void RemoteApp::init() {
 
     // Setup ESP-NOW
     preferences.begin("remote", false);
+    if (digitalRead(PIN_BTN_CONFIRM) == LOW) {
+        preferences.putInt("pot_min", 2048);
+        preferences.putInt("pot_max", 2048);
+        Serial.println("Calibration Reset!");
+    }
     pot_min = preferences.getInt("pot_min", 2048);
     pot_max = preferences.getInt("pot_max", 2048);
     last_activity_time = millis();
-    last_btn_state = (digitalRead(PIN_BTN_UP) == LOW ? 1 : 0) |
-                     ((digitalRead(PIN_BTN_DOWN) == LOW ? 1 : 0) << 1) |
-                     ((digitalRead(PIN_BTN_LEFT) == LOW ? 1 : 0) << 2) |
-                     ((digitalRead(PIN_BTN_RIGHT) == LOW ? 1 : 0) << 3) |
-                     ((digitalRead(PIN_BTN_CONFIRM) == LOW ? 1 : 0) << 4);
+    last_btn_state = 0;
+    const uint8_t pins[] = {PIN_BTN_UP, PIN_BTN_DOWN, PIN_BTN_LEFT, PIN_BTN_RIGHT, PIN_BTN_CONFIRM};
+    for (int i = 0; i < 5; i++) {
+        if (digitalRead(pins[i]) == LOW) last_btn_state |= (1 << i);
+    }
 
     WiFi.mode(WIFI_STA);
     if (esp_now_init() != ESP_OK) {
@@ -364,44 +417,8 @@ void RemoteApp::update() {
     // Map to -100 to 100
     // Assume 2048 is neutral. Deadband around neutral.
 #ifdef ARDUINO
-    // Update NVS Limits
-    if (pot_val < pot_min) {
-        pot_min = pot_val;
-        preferences.putInt("pot_min", pot_min);
-    }
-    if (pot_val > pot_max) {
-        pot_max = pot_val;
-        preferences.putInt("pot_max", pot_max);
-    }
-
-    // Check Activity for Deep Sleep
-    uint8_t current_btn_state = 
-        (digitalRead(PIN_BTN_UP) == LOW ? 1 : 0) |
-        ((digitalRead(PIN_BTN_DOWN) == LOW ? 1 : 0) << 1) |
-        ((digitalRead(PIN_BTN_LEFT) == LOW ? 1 : 0) << 2) |
-        ((digitalRead(PIN_BTN_RIGHT) == LOW ? 1 : 0) << 3) |
-        ((digitalRead(PIN_BTN_CONFIRM) == LOW ? 1 : 0) << 4);
-
-    bool activity = false;
-    if (current_btn_state != last_btn_state) {
-        activity = true;
-        last_btn_state = current_btn_state;
-    }
-
-    if (last_pot_val == -1 || abs(pot_val - last_pot_val) > 30) {
-        activity = true;
-        last_pot_val = pot_val;
-    }
-
-    if (activity) {
-        last_activity_time = millis();
-    }
-
-    if (millis() - last_activity_time > 300000) { // 5 minutes
-        Serial.println("Inactivity timeout. Deep sleep.");
-        digitalWrite(PIN_POWER_ON, LOW);
-        esp_deep_sleep_start();
-    }
+    update_adc_calibration(pot_val);
+    check_inactivity_sleep(pot_val);
     
     float p_max = (float)pot_max;
     float p_min = (float)pot_min;
