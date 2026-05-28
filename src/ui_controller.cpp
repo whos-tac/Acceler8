@@ -1,126 +1,351 @@
 #include "ui_controller.h"
 #include <lvgl.h>
 #include "can_driver.h"
+#include "mechanical_config.h"
+#include <stdio.h>
+#include <math.h>
+
+LV_FONT_DECLARE(lv_font_block_300);
+LV_FONT_DECLARE(lv_font_block_72);
+LV_FONT_DECLARE(lv_font_block_56);
+LV_FONT_DECLARE(lv_font_block_24);
 
 namespace UIController {
 
-    lv_obj_t * arc_erpm;
-    lv_obj_t * label_erpm;
-    lv_obj_t * label_battery;
-    lv_obj_t * bar_battery;
-    lv_obj_t * label_current;
-    lv_obj_t * label_temp;
+    // ================================================================
+    // GLOBALS
+    // ================================================================
+    lv_obj_t * label_speed_val;
+    lv_obj_t * label_pwr_val;
+    lv_obj_t * label_temp_esc_val;
+    lv_obj_t * label_trip_val;
+    lv_obj_t * label_range_val;
+    lv_obj_t * label_whkm_val;
 
-    void init() {
-        // --- Futuristic Purple and Dark Grey-Blue Theme ---
-        lv_color_t color_bg = lv_color_hex(0x05050A); // Deep black background
-        lv_color_t color_purple = lv_color_hex(0xA020F0); // Neon purple
-        lv_color_t color_darkblue = lv_color_hex(0x1a2332); // Dark grey-blue panels
-        lv_color_t color_white = lv_color_hex(0xFFFFFF); // Text
+    lv_obj_t * batt_bars[10];
+    lv_color_t bar_colors[10];
+    lv_obj_t * label_footer;
+    lv_obj_t * label_can_status;
 
-        // Background
-        lv_obj_set_style_bg_color(lv_scr_act(), color_bg, 0);
-        
-        // --- CENTER GAUGE (ERPM) ---
-        arc_erpm = lv_arc_create(lv_scr_act());
-        lv_obj_set_size(arc_erpm, 320, 320);
-        lv_arc_set_rotation(arc_erpm, 135);
-        lv_arc_set_bg_angles(arc_erpm, 0, 270);
-        lv_arc_set_range(arc_erpm, 0, 50000);
-        lv_obj_center(arc_erpm);
-        
-        // Glassmorphism/Neon Arc Styling
-        lv_obj_set_style_arc_color(arc_erpm, color_darkblue, LV_PART_MAIN);
-        lv_obj_set_style_arc_color(arc_erpm, color_purple, LV_PART_INDICATOR);
-        lv_obj_set_style_arc_width(arc_erpm, 16, LV_PART_MAIN);
-        lv_obj_set_style_arc_width(arc_erpm, 16, LV_PART_INDICATOR);
-        lv_obj_set_style_opa(arc_erpm, 0, LV_PART_KNOB); // Hide invisible thumb knob
+    // ================================================================
+    // Colors
+    // ================================================================
+    lv_color_t color_purple  = lv_color_hex(0xC3B1E1);
+    lv_color_t color_white   = lv_color_hex(0xFFFFFF);
+    lv_color_t color_grey    = lv_color_hex(0x222222);
+    lv_color_t color_accent  = lv_color_hex(0xFF3300);
+    lv_color_t color_green   = lv_color_hex(0x00FF88);
+    lv_color_t color_cyan    = lv_color_hex(0x00CCCC);
+    lv_color_t color_dim     = lv_color_hex(0x555555);
 
-        label_erpm = lv_label_create(lv_scr_act());
-        lv_obj_set_style_text_color(label_erpm, color_white, 0);
-        lv_obj_align(label_erpm, LV_ALIGN_CENTER, 0, 0);
-        lv_label_set_text(label_erpm, "0\nERPM");
-        lv_obj_set_style_text_align(label_erpm, LV_TEXT_ALIGN_CENTER, 0);
+    // ================================================================
+    // Layout geometry (480x480)
+    //
+    // ┌────────────────────────┬──────────────┐
+    // │                        │  TRIP        │
+    // │         SPEED          │  RANGE       │
+    // │         (HUGE)         │  Wh/km       │
+    // │                        │  ESC Temp    │
+    // ├────────────────────────┤              │
+    // │   WATT                 │              │
+    // ├──────────────────────────────────────┤
+    // │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  BATTERY STRIP   │
+    // ├──────────────────────────────────────┤
+    // │ DASH v2.0                    CAN OK  │
+    // └────────────────────────────────────-─┘
+    // ================================================================
 
-        // --- TOP (Battery Panel) ---
-        lv_obj_t* panel_batt = lv_obj_create(lv_scr_act());
-        lv_obj_set_size(panel_batt, 240, 60);
-        lv_obj_align(panel_batt, LV_ALIGN_TOP_MID, 0, 20);
-        lv_obj_set_style_bg_color(panel_batt, color_darkblue, 0);
-        lv_obj_set_style_border_width(panel_batt, 0, 0);
-        lv_obj_set_style_radius(panel_batt, 16, 0); // Rounded glass panels
+    static const int MARGIN       = 8;
+    static const int SCREEN_W     = 480;
+    static const int SCREEN_H     = 480;
+    static const int FOOTER_H     = 20;
+    static const int FOOTER_Y     = SCREEN_H - FOOTER_H;           // 460
 
-        label_battery = lv_label_create(panel_batt);
-        lv_obj_set_style_text_color(label_battery, color_white, 0);
-        lv_obj_align(label_battery, LV_ALIGN_LEFT_MID, 10, 0);
-        lv_label_set_text(label_battery, "42.0V");
+    // Battery bar — sits above footer
+    static const int BAR_H        = 44;
+    static const int BAR_GAP_BTM  = 4;
+    static const int BAR_Y        = FOOTER_Y - BAR_GAP_BTM - BAR_H; // 412
+    static const int BAR_COUNT    = 10;
+    static const int BAR_SEG_GAP  = 6;
+    static const int BAR_W        = (SCREEN_W - 2*MARGIN - (BAR_COUNT-1)*BAR_SEG_GAP) / BAR_COUNT;
 
-        bar_battery = lv_bar_create(panel_batt);
-        lv_obj_set_size(bar_battery, 120, 16);
-        lv_obj_align(bar_battery, LV_ALIGN_RIGHT_MID, -10, 0);
-        lv_obj_set_style_bg_color(bar_battery, lv_color_hex(0x000000), LV_PART_MAIN);
-        lv_obj_set_style_bg_color(bar_battery, color_purple, LV_PART_INDICATOR);
-        lv_bar_set_range(bar_battery, 0, 100);
+    // Usable content area: y=[MARGIN … BAR_Y-MARGIN]
+    static const int CONTENT_TOP  = MARGIN;                        // 8
+    static const int CONTENT_BOT  = BAR_Y - MARGIN;               // 404
+    static const int CONTENT_H    = CONTENT_BOT - CONTENT_TOP;    // 396
 
-        // --- BOTTOM LEFT (Current Draw) ---
-        lv_obj_t* panel_current = lv_obj_create(lv_scr_act());
-        lv_obj_set_size(panel_current, 140, 60);
-        lv_obj_align(panel_current, LV_ALIGN_BOTTOM_LEFT, 20, -20);
-        lv_obj_set_style_bg_color(panel_current, color_darkblue, 0);
-        lv_obj_set_style_border_width(panel_current, 0, 0);
-        lv_obj_set_style_radius(panel_current, 16, 0);
+    // Right column: 4 equally-tall stat boxes filling full content height
+    static const int STAT_W       = 160;
+    static const int STAT_X       = SCREEN_W - MARGIN - STAT_W;   // 312
+    static const int STAT_GAP     = 8;
+    static const int STAT_BOX_H   = (CONTENT_H - 3 * STAT_GAP) / 4; // ~87
 
-        label_current = lv_label_create(panel_current);
-        lv_obj_set_style_text_color(label_current, color_white, 0);
-        lv_obj_center(label_current);
-        lv_label_set_text(label_current, "0.0 A");
+    // Left column: Speed on top, WATT box at the bottom
+    static const int LEFT_W       = STAT_X - MARGIN - 4;          // 300
+    static const int WATT_H       = 90;  // block_72 (72px) + ~18px for title
+    static const int WATT_Y       = CONTENT_BOT - WATT_H;
+    static const int WATT_X       = MARGIN;
+    // Speed label: from CONTENT_TOP to 4px above WATT box
+    static const int SPEED_X      = MARGIN;
+    static const int SPEED_Y      = CONTENT_TOP;                   // 8
 
-        // --- BOTTOM RIGHT (ESC Temp) ---
-        lv_obj_t* panel_temp = lv_obj_create(lv_scr_act());
-        lv_obj_set_size(panel_temp, 140, 60);
-        lv_obj_align(panel_temp, LV_ALIGN_BOTTOM_RIGHT, -20, -20);
-        lv_obj_set_style_bg_color(panel_temp, color_darkblue, 0);
-        lv_obj_set_style_border_width(panel_temp, 0, 0);
-        lv_obj_set_style_radius(panel_temp, 16, 0);
+    // ================================================================
+    // Widget Builders
+    // ================================================================
 
-        label_temp = lv_label_create(panel_temp);
-        lv_obj_set_style_text_color(label_temp, color_white, 0);
-        lv_obj_center(label_temp);
-        lv_label_set_text(label_temp, "25.0 C");
+    void create_stat_box(int x, int y, int w, int h,
+                         const char* title, lv_obj_t** val_label, lv_color_t color) {
+        lv_obj_t* bg = lv_obj_create(lv_scr_act());
+        lv_obj_set_size(bg, w, h);
+        lv_obj_align(bg, LV_ALIGN_TOP_LEFT, x, y);
+        lv_obj_set_style_bg_color(bg, lv_color_hex(0x000000), 0);
+        lv_obj_set_style_border_width(bg, 1, 0);
+        lv_obj_set_style_border_color(bg, color_dim, 0);
+        lv_obj_set_style_radius(bg, 0, 0);
+        // Remove default LVGL padding so labels truly hug corners
+        lv_obj_set_style_pad_all(bg, 0, 0);
+        lv_obj_clear_flag(bg, LV_OBJ_FLAG_SCROLLABLE);
+
+        lv_obj_t* lbl_title = lv_label_create(bg);
+        lv_obj_set_style_text_color(lbl_title, color_dim, 0);
+        lv_obj_set_style_text_font(lbl_title, &lv_font_unscii_16, 0);
+        lv_label_set_text(lbl_title, title);
+        lv_obj_align(lbl_title, LV_ALIGN_TOP_LEFT, 3, 2);  // tight top-left corner
+
+        *val_label = lv_label_create(bg);
+        lv_obj_set_style_text_color(*val_label, color, 0);
+        lv_obj_set_style_text_font(*val_label, &lv_font_block_56, 0);
+        lv_label_set_text(*val_label, "0");
+        lv_obj_align(*val_label, LV_ALIGN_BOTTOM_RIGHT, 0, 0); // tight bottom-right corner
     }
 
-    void update() {
-        int32_t erpm = g_vehicle_state.erpm;
-        float v = g_vehicle_state.battery_voltage_v;
-        float a = g_vehicle_state.battery_current_a;
-        float temp = g_vehicle_state.mosfet_temp_c;
+    void create_hero_box(int x, int y, int w, int h,
+                         const char* title, lv_obj_t** val_label,
+                         lv_color_t border_color, lv_color_t val_color) {
+        lv_obj_t* panel = lv_obj_create(lv_scr_act());
+        lv_obj_set_size(panel, w, h);
+        lv_obj_align(panel, LV_ALIGN_TOP_LEFT, x, y);
+        lv_obj_set_style_bg_color(panel, lv_color_hex(0x000000), 0);
+        lv_obj_set_style_border_width(panel, 2, 0);
+        lv_obj_set_style_border_color(panel, border_color, 0);
+        lv_obj_set_style_radius(panel, 0, 0);
+        // Remove default LVGL padding so labels truly hug corners
+        lv_obj_set_style_pad_all(panel, 0, 0);
+        lv_obj_clear_flag(panel, LV_OBJ_FLAG_SCROLLABLE);
 
-        lv_arc_set_value(arc_erpm, erpm);
-        lv_label_set_text_fmt(label_erpm, "%d\nERPM", (int)erpm);
+        lv_obj_t* lbl_t = lv_label_create(panel);
+        lv_obj_set_style_text_color(lbl_t, border_color, 0);
+        lv_obj_set_style_text_font(lbl_t, &lv_font_unscii_16, 0);
+        lv_label_set_text(lbl_t, title);
+        lv_obj_align(lbl_t, LV_ALIGN_TOP_LEFT, 3, 2);  // tight top-left corner
 
-        float pct = ((v - 32.0f) / (42.0f - 32.0f)) * 100.0f;
-        if(pct < 0) pct = 0;
-        if(pct > 100) pct = 100;
+        *val_label = lv_label_create(panel);
+        lv_obj_set_style_text_color(*val_label, val_color, 0);
+        lv_obj_set_style_text_font(*val_label, &lv_font_block_72, 0);
+        lv_label_set_text(*val_label, "0");
+        // block_72 at 90px box: fills from y≈18 (below title) to y=90 → top to bottom
+        lv_obj_align(*val_label, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
+    }
 
-        lv_bar_set_value(bar_battery, (int)pct, LV_ANIM_ON);
-        lv_label_set_text_fmt(label_battery, "%.1fV", v);
+    // ================================================================
+    // INIT
+    // ================================================================
+    bool debug_mode_active = false;
+    lv_obj_t* debug_screen;
+    lv_obj_t* main_screen;
+    lv_obj_t* debug_label;
+    int tap_count = 0;
+    uint32_t last_tap_time = 0;
 
-        // Warning Dynamics (Red overrides)
-        if(v < 32.0f) {
-            lv_obj_set_style_text_color(label_battery, lv_color_hex(0xFF3333), 0);
-            lv_obj_set_style_bg_color(bar_battery, lv_color_hex(0xFF3333), LV_PART_INDICATOR);
-        } else {
-            lv_obj_set_style_text_color(label_battery, lv_color_hex(0xFFFFFF), 0);
-            lv_obj_set_style_bg_color(bar_battery, lv_color_hex(0xA020F0), LV_PART_INDICATOR);
+    static void top_right_event_cb(lv_event_t * e) {
+        uint32_t t = lv_tick_get();
+        if (t - last_tap_time > 1000) {
+            tap_count = 0;
+        }
+        tap_count++;
+        last_tap_time = t;
+        if (tap_count >= 3) {
+            debug_mode_active = !debug_mode_active;
+            if (debug_mode_active) {
+                lv_scr_load(debug_screen);
+            } else {
+                lv_scr_load(main_screen);
+            }
+            tap_count = 0;
+        }
+    }
+
+    void init() {
+        main_screen = lv_scr_act();
+        lv_obj_set_style_bg_color(main_screen, lv_color_hex(0x000000), 0);
+
+        // Top right invisible button for debug
+        lv_obj_t* btn_debug = lv_btn_create(main_screen);
+        lv_obj_set_size(btn_debug, 120, 120);
+        lv_obj_align(btn_debug, LV_ALIGN_TOP_RIGHT, 0, 0);
+        lv_obj_set_style_bg_opa(btn_debug, LV_OPA_TRANSP, 0);
+        lv_obj_set_style_border_width(btn_debug, 0, 0);
+        lv_obj_set_style_shadow_width(btn_debug, 0, 0);
+        lv_obj_add_event_cb(btn_debug, top_right_event_cb, LV_EVENT_CLICKED, NULL);
+
+        debug_screen = lv_obj_create(NULL);
+        lv_obj_set_style_bg_color(debug_screen, lv_color_hex(0x000088), 0);
+        debug_label = lv_label_create(debug_screen);
+        lv_obj_set_style_text_color(debug_label, lv_color_hex(0xFFFFFF), 0);
+        lv_obj_set_style_text_font(debug_label, &lv_font_unscii_16, 0);
+        lv_label_set_text(debug_label, "DEBUG MODE");
+        lv_obj_align(debug_label, LV_ALIGN_TOP_LEFT, 10, 10);
+        
+        lv_obj_t* btn_debug_back = lv_btn_create(debug_screen);
+        lv_obj_set_size(btn_debug_back, 120, 120);
+        lv_obj_align(btn_debug_back, LV_ALIGN_TOP_RIGHT, 0, 0);
+        lv_obj_set_style_bg_opa(btn_debug_back, LV_OPA_TRANSP, 0);
+        lv_obj_set_style_border_width(btn_debug_back, 0, 0);
+        lv_obj_set_style_shadow_width(btn_debug_back, 0, 0);
+        lv_obj_add_event_cb(btn_debug_back, top_right_event_cb, LV_EVENT_CLICKED, NULL);
+
+        // ── SPEED: top-left, fills available height above WATT ──────
+        // Use a fixed-size container to control layout precisely
+        lv_obj_t* speed_container = lv_obj_create(lv_scr_act());
+        lv_obj_set_size(speed_container, LEFT_W, WATT_Y - CONTENT_TOP - 4);
+        lv_obj_align(speed_container, LV_ALIGN_TOP_LEFT, SPEED_X, SPEED_Y);
+        lv_obj_set_style_bg_opa(speed_container, LV_OPA_TRANSP, 0);
+        lv_obj_set_style_border_width(speed_container, 0, 0);
+        lv_obj_set_style_pad_all(speed_container, 0, 0);
+        lv_obj_clear_flag(speed_container, LV_OBJ_FLAG_SCROLLABLE);
+
+        label_speed_val = lv_label_create(speed_container);
+        lv_obj_set_style_text_color(label_speed_val, color_purple, 0);
+        lv_obj_set_style_text_font(label_speed_val, &lv_font_block_300, 0);
+        lv_label_set_text(label_speed_val, "0");
+        lv_label_set_long_mode(label_speed_val, LV_LABEL_LONG_CLIP);
+        lv_obj_set_width(label_speed_val, LEFT_W);
+        // Anchor to bottom of its container so it "nearly touches" the WATT box
+        lv_obj_align(label_speed_val, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+
+        // ── WATT: bottom of left column ─────────────────────────────
+        create_hero_box(WATT_X, WATT_Y, LEFT_W, WATT_H,
+                        "WATT", &label_pwr_val, color_cyan, color_cyan);
+
+        // ── RIGHT COLUMN: 4 equally-spaced boxes, full content height ─
+        int y = CONTENT_TOP;
+        create_stat_box(STAT_X, y, STAT_W, STAT_BOX_H, "TRIP",     &label_trip_val,     color_white);
+        y += STAT_BOX_H + STAT_GAP;
+        create_stat_box(STAT_X, y, STAT_W, STAT_BOX_H, "RANGE",    &label_range_val,    color_cyan);
+        y += STAT_BOX_H + STAT_GAP;
+        create_stat_box(STAT_X, y, STAT_W, STAT_BOX_H, "Wh/km",   &label_whkm_val,     color_green);
+        y += STAT_BOX_H + STAT_GAP;
+        create_stat_box(STAT_X, y, STAT_W, STAT_BOX_H, "ESC Temp", &label_temp_esc_val, color_purple);
+
+        // ── BATTERY BAR ──────────────────────────────────────────────
+        bar_colors[0] = lv_color_hex(0xFF0000); bar_colors[1] = lv_color_hex(0xFF4400);
+        bar_colors[2] = lv_color_hex(0xFF8800); bar_colors[3] = lv_color_hex(0xFFCC00);
+        bar_colors[4] = lv_color_hex(0xFFFF00); bar_colors[5] = lv_color_hex(0xCCFF00);
+        bar_colors[6] = lv_color_hex(0x88FF00); bar_colors[7] = lv_color_hex(0x44FF00);
+        bar_colors[8] = lv_color_hex(0x00FF00); bar_colors[9] = lv_color_hex(0x00FFFF);
+
+        for (int i = 0; i < BAR_COUNT; i++) {
+            batt_bars[i] = lv_obj_create(lv_scr_act());
+            lv_obj_set_size(batt_bars[i], BAR_W, BAR_H);
+            lv_obj_align(batt_bars[i], LV_ALIGN_TOP_LEFT,
+                         MARGIN + i * (BAR_W + BAR_SEG_GAP), BAR_Y);
+            lv_obj_set_style_radius(batt_bars[i], 0, 0);
+            lv_obj_set_style_border_width(batt_bars[i], 2, 0);
+            lv_obj_set_style_border_color(batt_bars[i], color_grey, 0);
+            lv_obj_set_style_bg_opa(batt_bars[i], LV_OPA_TRANSP, 0);
+            lv_obj_clear_flag(batt_bars[i], LV_OBJ_FLAG_SCROLLABLE);
         }
 
-        lv_label_set_text_fmt(label_current, "%.1f A", a);
+        // ── FOOTER ───────────────────────────────────────────────────
+        label_footer = lv_label_create(lv_scr_act());
+        lv_obj_set_style_text_color(label_footer, color_dim, 0);
+        lv_obj_set_style_text_font(label_footer, &lv_font_unscii_16, 0);
+        lv_label_set_text(label_footer, "DASH v2.2");
+        lv_obj_align(label_footer, LV_ALIGN_TOP_LEFT, MARGIN, FOOTER_Y + 2);
 
-        lv_label_set_text_fmt(label_temp, "%.1f C", temp);
-        if(temp > 75.0f) {
-            lv_obj_set_style_text_color(label_temp, lv_color_hex(0xFF3333), 0);
+        label_can_status = lv_label_create(lv_scr_act());
+        lv_obj_set_style_text_font(label_can_status, &lv_font_unscii_16, 0);
+        lv_obj_set_style_text_color(label_can_status, color_green, 0);
+        lv_label_set_text(label_can_status, "CAN OK");
+        lv_obj_align(label_can_status, LV_ALIGN_TOP_RIGHT, -MARGIN, FOOTER_Y + 2);
+    }
+
+    // ================================================================
+    // UPDATE
+    // ================================================================
+    void update() {
+        int32_t erpm = g_vehicle_state.erpm;
+        float v      = g_vehicle_state.battery_voltage_v;
+        int32_t tach = g_vehicle_state.tachometer;
+        float t_esc  = g_vehicle_state.mosfet_temp_c;
+        float range  = g_vehicle_state.range_km;
+        float whkm   = g_vehicle_state.wh_per_km;
+        bool can_ok  = g_vehicle_state.can_alive;
+        float pwr    = g_vehicle_state.power_w;
+        float speed  = calculate_speed_kmh(erpm);
+
+        if (debug_mode_active) {
+            char debug_buf[128];
+            snprintf(debug_buf, sizeof(debug_buf), "DEBUG MODE\nSpeed: %.1f\nBatt: %.1f\nPwr: %.0f\nCAN: %d", speed, v, pwr, can_ok);
+            lv_label_set_text(debug_label, debug_buf);
+            return;
+        }
+
+        char buf[16];
+
+        // SPEED
+        snprintf(buf, sizeof(buf), "%02.0f", speed);
+        lv_label_set_text(label_speed_val, buf);
+
+        // WATT
+        snprintf(buf, sizeof(buf), "%.0f", pwr);
+        lv_label_set_text(label_pwr_val, buf);
+        if (pwr < 0) lv_obj_set_style_text_color(label_pwr_val, color_green, 0);
+        else         lv_obj_set_style_text_color(label_pwr_val, color_cyan, 0);
+
+        // TRIP
+        float trip_km = tach / 100000.0f;
+        snprintf(buf, sizeof(buf), "%.1f", trip_km);
+        lv_label_set_text(label_trip_val, buf);
+
+        // RANGE
+        if (range < 10.0f) snprintf(buf, sizeof(buf), "%.1f", range);
+        else               snprintf(buf, sizeof(buf), "%.0f", range);
+        lv_label_set_text(label_range_val, buf);
+
+        // WH/KM
+        snprintf(buf, sizeof(buf), "%.1f", whkm);
+        lv_label_set_text(label_whkm_val, buf);
+
+        // ESC TEMP
+        snprintf(buf, sizeof(buf), "%.0f C", t_esc);
+        lv_label_set_text(label_temp_esc_val, buf);
+        if (t_esc > 70)
+            lv_obj_set_style_text_color(label_temp_esc_val, color_accent, 0);
+        else
+            lv_obj_set_style_text_color(label_temp_esc_val, color_purple, 0);
+
+        // BATTERY STRIP
+        float pct = ((v - 32.0f) / 10.0f) * 100.0f;
+        if (pct < 0) pct = 0;
+        if (pct > 100) pct = 100;
+        int active_bars = (int)(pct / 10.0f);
+        for (int i = 0; i < BAR_COUNT; i++) {
+            if (i < active_bars) {
+                lv_obj_set_style_bg_color(batt_bars[i], bar_colors[i], 0);
+                lv_obj_set_style_bg_opa(batt_bars[i], LV_OPA_COVER, 0);
+            } else {
+                lv_obj_set_style_bg_opa(batt_bars[i], LV_OPA_TRANSP, 0);
+            }
+        }
+
+        // CAN STATUS
+        if (can_ok) {
+            lv_label_set_text(label_can_status, "CAN OK");
+            lv_obj_set_style_text_color(label_can_status, color_green, 0);
         } else {
-            lv_obj_set_style_text_color(label_temp, lv_color_hex(0xFFFFFF), 0);
+            lv_label_set_text(label_can_status, "CAN !!");
+            lv_obj_set_style_text_color(label_can_status, color_accent, 0);
         }
     }
 }

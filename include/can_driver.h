@@ -1,20 +1,56 @@
 #pragma once
+#ifdef ARDUINO
 #include <Arduino.h>
+#else
+#include <stdint.h>
+#include <stdbool.h>
+#endif
 
 // Global Telemetry State (Based on VESC standard)
 struct VehicleState {
+    // --- Raw CAN data (from REALTIME_DATA frames) ---
     int32_t erpm;
-    float current_a;
-    float duty_cycle;
-    float mosfet_temp_c;
-    float motor_temp_c;
-    float battery_current_a;
-    float battery_voltage_v;
-    int32_t tachometer;
+    float current_a;            // Motor current (A) — REALTIME_DATA_0
+    float duty_cycle;           // Duty cycle 0.0–1.0 — REALTIME_DATA_1
+    float mosfet_temp_c;        // ESC MOSFET temp — REALTIME_DATA_2
+    float motor_temp_c;         // Motor temp — REALTIME_DATA_2
+    float battery_current_a;    // Battery current (A), negative = regen — REALTIME_DATA_0
+    float battery_voltage_v;    // Battery voltage — REALTIME_DATA_2
+    int32_t tachometer;         // Cumulative tach counts
+    float speed_kmh;            // Current speed in km/h
+
+    // --- Derived / computed metrics ---
+    float power_w;              // Instantaneous watts (voltage × battery_current)
+    float wh_consumed;          // Cumulative watt-hours this session
+    float top_speed_kmh;        // Session peak speed
+    float avg_speed_kmh;        // Running average speed
+    float max_current_a;        // Session peak motor current
+    float range_km;             // Estimated remaining range
+    float wh_per_km;            // Energy efficiency (Wh/km)
+    bool  regen_active;         // True when battery_current < 0
+
+    // --- System status ---
+    bool  can_alive;            // CAN frames being received
+    uint32_t last_can_rx_ms;    // Timestamp of last CAN frame
+
+    // --- Underglow Control ---
+    uint8_t led_r;
+    uint8_t led_g;
+    uint8_t led_b;
+    uint8_t led_brightness;
+    uint8_t led_mode;           // 0: Off, 1: Solid, 2: Breathing, 3: Speed-Reactive
+
+    // --- Internal accumulators (for avg computation) ---
+    uint32_t speed_sample_count;
+    float speed_sum;
+    uint32_t last_wh_update_ms; // For Wh integration
 };
 
 // Extern declaration so the UI can safely read it
 extern VehicleState g_vehicle_state;
+
+// Total battery capacity — adjust for your pack
+#define BATTERY_TOTAL_WH 360.0f   // e.g., 10S4P 36V 10Ah = 360Wh
 
 namespace CANDriver {
     /**

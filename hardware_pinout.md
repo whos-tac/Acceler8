@@ -47,3 +47,8 @@ Template for Waveshare ESP32-S3-Touch-LCD-4 (Rev 4.0) pinouts.
 #define TOUCH_SCL_PIN 7
 #define TOUCH_SDA_PIN 15
 ```
+
+## MAC Addresses (ESP-NOW)
+- **Waveshare (Dash)**: `3C:0F:02:C2:D4:CC`
+- **Lilygo (Remote)**: `D0:CF:13:32:42:3C`
+- **Receiver (ESP8266)**: `EC:64:C9:CC:D8:54`

@@ -1,5 +1,7 @@
 #pragma once
+#ifdef ARDUINO
 #include <Arduino.h>
+#endif
 #include "can_driver.h"
 
 namespace UIController {

@@ -168,11 +168,6 @@ void RemoteApp::init() {
 
     // Setup ESP-NOW
     preferences.begin("remote", false);
-    if (digitalRead(PIN_BTN_CONFIRM) == LOW) {
-        preferences.putInt("pot_min", 2048);
-        preferences.putInt("pot_max", 2048);
-        Serial.println("Calibration Reset!");
-    }
     pot_min = preferences.getInt("pot_min", 2048);
     pot_max = preferences.getInt("pot_max", 2048);
     last_activity_time = millis();

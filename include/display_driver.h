@@ -1,5 +1,7 @@
 #pragma once
+#ifdef ARDUINO
 #include <Arduino.h>
+#endif
 
 // LVGL needs to be included for display interfacing
 // #include <lvgl.h> 

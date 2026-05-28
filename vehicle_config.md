@@ -10,5 +10,9 @@
 - **Wheel Diameter**: Unknown (Pending)
 - **Gear Ratio**: Unknown (Pending)
 
-## Display Logic
-- Default to displaying Motor ERPM instead of km/h until mechanical variables are defined.
+## Electrical & CAN
+- **Master ESC ID**: 163
+- **Slave ESC ID**: 224
+- **CAN Baud Rate**: 1000k (1Mbps)
+- **Protocol**: Flipsky FTESC CAN Protocol V1.4
+- **Aggregation**: Total current summed from both ESCs

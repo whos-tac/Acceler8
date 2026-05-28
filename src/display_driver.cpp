@@ -1,10 +1,12 @@
 #include "display_driver.h"
-#include <Arduino_GFX_Library.h>
 #include <lvgl.h>
-#include <Wire.h>
 
 #define SCREEN_WIDTH 480
 #define SCREEN_HEIGHT 480
+
+#ifdef ARDUINO
+#include <Arduino_GFX_Library.h>
+#include <Wire.h>
 
 // Using ST7701 Waveshare custom profile
 Arduino_DataBus *bus = new Arduino_SWSPI(GFX_NOT_DEFINED /* DC */, 42 /* CS */, 2 /* SCK */, 1 /* MOSI */, GFX_NOT_DEFINED /* MISO */);
@@ -36,20 +38,14 @@ void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color
 }
 
 namespace DisplayDriver {
-
     void init() {
-        // Initialize I2C Bus for the expansion chip
         Wire.begin(15, 7);
-
-        // Turn on Backlight via TCA9554 IO Expander
         Wire.beginTransmission(0x24); Wire.write(0x02); Wire.write(0xff); Wire.endTransmission();
         Wire.beginTransmission(0x24); Wire.write(0x03); Wire.write(0x3a); Wire.endTransmission();
 
-        // Boot Panel
         gfx->begin();
         lv_init();
 
-        // Allocate LVGL Graphics buffer in PSRAM for performance
         buf1 = (lv_color_t *)heap_caps_malloc(SCREEN_WIDTH * SCREEN_HEIGHT / 10 * sizeof(lv_color_t), MALLOC_CAP_DMA);
         lv_disp_draw_buf_init(&draw_buf, buf1, NULL, SCREEN_WIDTH * SCREEN_HEIGHT / 10);
 
@@ -64,6 +60,48 @@ namespace DisplayDriver {
 
     void tick() {
         lv_timer_handler();
-        // The time increment lv_tick_inc happens in main.cpp's loop
     }
 }
+
+#else
+
+// ---------------- Native Desktop Driver with SDL ---------------- //
+#define SDL_MAIN_HANDLED /* To fix Windows entry points */
+#include <SDL2/SDL.h>
+#include "sdl/sdl.h"
+
+namespace DisplayDriver {
+    void init() {
+#ifndef NATIVE_FULL_STACK
+        lv_init();
+        
+        sdl_init();
+
+        static lv_disp_draw_buf_t draw_buf;
+        static lv_color_t buf1[SCREEN_WIDTH * SCREEN_HEIGHT / 10];
+        lv_disp_draw_buf_init(&draw_buf, buf1, NULL, SCREEN_WIDTH * SCREEN_HEIGHT / 10);
+
+        static lv_disp_drv_t disp_drv;
+        lv_disp_drv_init(&disp_drv);
+        disp_drv.hor_res = SCREEN_WIDTH;
+        disp_drv.ver_res = SCREEN_HEIGHT;
+        disp_drv.flush_cb = sdl_display_flush;
+        disp_drv.draw_buf = &draw_buf;
+        lv_disp_drv_register(&disp_drv);
+
+        static lv_indev_drv_t indev_drv;
+        lv_indev_drv_init(&indev_drv);
+        indev_drv.type = LV_INDEV_TYPE_POINTER;
+        indev_drv.read_cb = sdl_mouse_read;
+        lv_indev_drv_register(&indev_drv);
+#endif
+    }
+
+    void tick() {
+#ifndef NATIVE_FULL_STACK
+        lv_timer_handler();
+#endif
+    }
+}
+
+#endif
