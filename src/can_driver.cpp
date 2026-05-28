@@ -17,11 +17,6 @@ static uint32_t millis() {
 
 VehicleState g_vehicle_state;
 
-// Fallback mechanical configuration variables (can be modified by Settings UI)
-int motor_pole_pairs = 7;
-float gear_ratio = 4.0f;
-float wheel_diameter_mm = 200.0f;
-
 namespace CANDriver {
 
     void init() {
