@@ -47,6 +47,7 @@ extern "C" void dash_onDataRecv(const uint8_t * mac, const uint8_t *incomingData
         g_vehicle_state.battery_voltage_v = pkt.battery_voltage_v;
         g_vehicle_state.power_w = pkt.power_w;
         g_vehicle_state.can_alive = true; // fake CAN alive
+        g_vehicle_state.has_received_can = true;
 
 #ifdef DEBUG_ESPNOW
 #ifdef ARDUINO

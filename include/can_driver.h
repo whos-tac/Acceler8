@@ -31,6 +31,7 @@ struct VehicleState {
 
     // --- System status ---
     bool  can_alive;            // CAN frames being received
+    bool  has_received_can;     // True if at least one CAN frame was ever received
     uint32_t last_can_rx_ms;    // Timestamp of last CAN frame
     bool remote_disconnected;
 

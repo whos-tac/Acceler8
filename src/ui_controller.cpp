@@ -376,8 +376,7 @@ namespace UIController {
         }
 
         // ── GLOBAL ALERTS ────────────────────────────────────────────
-        uint32_t now = millis();
-        bool can_timeout = (now > 500 && now - g_vehicle_state.last_can_rx_ms > 500);
+        bool can_timeout = (!g_vehicle_state.can_alive && g_vehicle_state.has_received_can);
         bool overtemp = (t_esc > 85.0f || g_vehicle_state.motor_temp_c > 100.0f);
         bool remote_dc = g_vehicle_state.remote_disconnected;
         

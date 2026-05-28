@@ -54,6 +54,7 @@ namespace CANDriver {
         g_vehicle_state.wh_per_km = 0.0f;
         g_vehicle_state.regen_active = false;
         g_vehicle_state.can_alive = false;  // Start as false, wait for frames
+        g_vehicle_state.has_received_can = false;
         g_vehicle_state.last_can_rx_ms = 0;
         g_vehicle_state.speed_sample_count = 0;
         g_vehicle_state.speed_sum = 0.0f;
@@ -135,6 +136,7 @@ namespace CANDriver {
 
         if (master_alive || slave_alive) {
             g_vehicle_state.can_alive = true;
+            g_vehicle_state.has_received_can = true;
             g_vehicle_state.last_can_rx_ms = now;
 
             float v = 0, batt_amps = 0, mot_amps = 0;
