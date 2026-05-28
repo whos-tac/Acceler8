@@ -7,8 +7,9 @@ This document outlines the design for integrating critical safety features inspi
 
 ### 1. Connection Health Tracking
 To ensure the dashboard never displays stale or "frozen" data (which can be dangerous for a rider):
-- **Staleness Tracking**: A `last_update_timestamp` will be added to the `EscData` struct for each ESC in `g_vehicle_state`. If the time since the last heartbeat exceeds 500ms, the system will flag a "CAN Timeout / Disconnect" state.
-- **RTOS Watchdog**: The CAN driver task will be registered with the ESP32 `esp_task_wdt`. If the task hangs or fails to process the queue, the watchdog will reset the system or trigger an immediate fail-safe state.
+- **CAN Bus Staleness Tracking**: A `last_update_timestamp` will be added to the `EscData` struct for each ESC in `g_vehicle_state`. If the time since the last heartbeat exceeds 500ms, the system will flag a "CAN Timeout / Disconnect" state.
+- **Remote UART/ESP-NOW Watchdog**: A `last_remote_rx_ms` timestamp will track the link between the Remote and the Dash/Receiver. If the remote connection drops for >250ms, a critical "REMOTE DISCONNECT" alert triggers, and the system must force the throttle to Neutral (0%).
+- **RTOS Watchdog**: The CAN and UART driver tasks will be registered with the ESP32 `esp_task_wdt`. If the task hangs or fails to process the queue, the watchdog will reset the system or trigger an immediate fail-safe state.
 
 ### 2. Fault Detection Triggers
 The system will monitor the following metrics from the Flipsky FT85BD CAN stream to trigger safety alerts:
