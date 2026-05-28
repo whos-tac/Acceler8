@@ -1,0 +1,90 @@
+<h2>Vertical Screen HUD (170x320)</h2>
+<p class="subtitle">Ah! The remote is held vertically (170px width, 320px height). That makes a huge difference! Here are two vertical cyberpunk HUD layout options using ASCII-only indicators.</p>
+
+<div class="options">
+  <div class="option" data-choice="vert-stack" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>The Symmetrical Stack (Recommended)</h3>
+      <p>A beautifully balanced vertical flow. Connection status at the top, circular Speed Dial in the middle, and twin vertical battery bars side-by-side underneath, followed by Power readout at the bottom.</p>
+      
+      <!-- Visual Mockup -->
+      <div style="margin-top: 15px; width: 170px; height: 320px; background: #000000; border: 2px solid #555555; position: relative; font-family: monospace; color: #ffffff; padding: 8px; box-sizing: border-box; border-radius: 0; margin-left: auto; margin-right: auto;">
+        <!-- Top Status Line -->
+        <div style="text-align: center; font-size: 9px; color: #00FF88; border-bottom: 1px solid #222222; padding-bottom: 4px;">
+          SIG: [#][#][#][-] | CAN: OK
+        </div>
+
+        <!-- Center Speed Dial -->
+        <div style="margin: 20px auto 15px auto; width: 110px; height: 110px; border: 5px solid #222222; border-top-color: #C3B1E1; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
+          <span style="font-size: 38px; font-weight: 900; color: #ffffff; line-height: 1;">45</span>
+          <span style="font-size: 8px; color: #555555; margin-top: 1px;">KM/H</span>
+        </div>
+
+        <!-- Twin Vertical Battery Bars (Side by Side below Dial) -->
+        <div style="display: flex; justify-content: space-around; width: 100px; margin: 0 auto; height: 80px;">
+          <!-- Board Batt -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+            <div style="width: 12px; height: 60px; border: 1px solid #555555; padding: 1px; box-sizing: border-box;">
+              <div style="background: #00FF88; width: 100%; height: 80%;"></div>
+            </div>
+            <span style="font-size: 8px; color: #555555;">BRD</span>
+          </div>
+          <!-- Remote Batt -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+            <div style="width: 12px; height: 60px; border: 1px solid #555555; padding: 1px; box-sizing: border-box;">
+              <div style="background: #00CCCC; width: 100%; height: 90%;"></div>
+            </div>
+            <span style="font-size: 8px; color: #555555;">REM</span>
+          </div>
+        </div>
+
+        <!-- Bottom Stat: Power -->
+        <div style="position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; font-size: 11px; color: #00CCCC; border-top: 1px solid #222222; padding-top: 6px;">
+          POWER: <span style="color: #ffffff;">380W</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="option" data-choice="vert-flanked" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>The Flanked Cockpit</h3>
+      <p>Battery bars run the full height along the left and right edges. The Speed Dial sits directly in the center of the vertical space. The top and bottom are used for signal status and power.</p>
+      
+      <!-- Visual Mockup -->
+      <div style="margin-top: 15px; width: 170px; height: 320px; background: #000000; border: 2px solid #555555; position: relative; font-family: monospace; color: #ffffff; padding: 8px; box-sizing: border-box; border-radius: 0; margin-left: auto; margin-right: auto;">
+        
+        <!-- Left Battery (Full Height) -->
+        <div style="position: absolute; left: 8px; top: 30px; bottom: 40px; width: 10px; border: 1px solid #555555; padding: 1px; box-sizing: border-box;">
+          <div style="background: #00FF88; width: 100%; height: 85%;"></div>
+        </div>
+        <div style="position: absolute; left: 6px; bottom: 25px; font-size: 7px; color: #555555;">BRD</div>
+
+        <!-- Right Battery (Full Height) -->
+        <div style="position: absolute; right: 8px; top: 30px; bottom: 40px; width: 10px; border: 1px solid #555555; padding: 1px; box-sizing: border-box;">
+          <div style="background: #00CCCC; width: 100%; height: 90%;"></div>
+        </div>
+        <div style="position: absolute; right: 6px; bottom: 25px; font-size: 7px; color: #555555; text-align: right;">REM</div>
+
+        <!-- Top Status Line -->
+        <div style="text-align: center; font-size: 9px; color: #00FF88; padding-top: 2px;">
+          SIG: [#][#][#][-]
+        </div>
+
+        <!-- Center Dial -->
+        <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 110px; height: 110px; border: 5px solid #222222; border-top-color: #C3B1E1; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
+          <span style="font-size: 38px; font-weight: 900; color: #ffffff; line-height: 1;">45</span>
+          <span style="font-size: 8px; color: #555555; margin-top: 1px;">KM/H</span>
+        </div>
+
+        <!-- Bottom Stat: Power & CAN -->
+        <div style="position: absolute; bottom: 8px; left: 15px; right: 15px; text-align: center; font-size: 9px; color: #555555;">
+          <div style="color: #00CCCC; margin-bottom: 2px;">PWR: <span style="color: #fff;">380W</span></div>
+          <div style="color: #00FF88;">CAN: OK</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

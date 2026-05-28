@@ -5,6 +5,12 @@
 #include <stdio.h>
 #include <math.h>
 
+#ifdef ARDUINO
+#include <Arduino.h>
+#else
+extern "C" uint32_t millis();
+#endif
+
 LV_FONT_DECLARE(lv_font_block_300);
 LV_FONT_DECLARE(lv_font_block_72);
 LV_FONT_DECLARE(lv_font_block_56);
@@ -26,6 +32,9 @@ namespace UIController {
     lv_color_t bar_colors[10];
     lv_obj_t * label_footer;
     lv_obj_t * label_can_status;
+    
+    lv_obj_t * alert_overlay;
+    lv_obj_t * alert_label;
 
     // ================================================================
     // Colors
@@ -268,6 +277,24 @@ namespace UIController {
         lv_obj_set_style_text_color(label_can_status, color_green, 0);
         lv_label_set_text(label_can_status, "CAN OK");
         lv_obj_align(label_can_status, LV_ALIGN_TOP_RIGHT, -MARGIN, FOOTER_Y + 2);
+
+        // ── ALERT OVERLAY ────────────────────────────────────────────
+        alert_overlay = lv_obj_create(main_screen);
+        lv_obj_set_size(alert_overlay, SCREEN_W, SCREEN_H);
+        lv_obj_align(alert_overlay, LV_ALIGN_CENTER, 0, 0);
+        lv_obj_set_style_bg_color(alert_overlay, lv_color_hex(0xFF0000), 0);
+        lv_obj_set_style_bg_opa(alert_overlay, LV_OPA_COVER, 0);
+        lv_obj_set_style_border_width(alert_overlay, 0, 0);
+        lv_obj_set_style_radius(alert_overlay, 0, 0);
+        lv_obj_clear_flag(alert_overlay, LV_OBJ_FLAG_SCROLLABLE);
+
+        alert_label = lv_label_create(alert_overlay);
+        lv_obj_set_style_text_color(alert_label, lv_color_hex(0xFFFFFF), 0);
+        lv_obj_set_style_text_font(alert_label, &lv_font_block_56, 0);
+        lv_label_set_text(alert_label, "ALERT");
+        lv_obj_align(alert_label, LV_ALIGN_CENTER, 0, 0);
+        
+        lv_obj_add_flag(alert_overlay, LV_OBJ_FLAG_HIDDEN);
     }
 
     // ================================================================
@@ -346,6 +373,25 @@ namespace UIController {
         } else {
             lv_label_set_text(label_can_status, "CAN !!");
             lv_obj_set_style_text_color(label_can_status, color_accent, 0);
+        }
+
+        // ── GLOBAL ALERTS ────────────────────────────────────────────
+        uint32_t now = millis();
+        bool can_timeout = (now > 500 && now - g_vehicle_state.last_can_rx_ms > 500);
+        bool overtemp = (t_esc > 85.0f || g_vehicle_state.motor_temp_c > 100.0f);
+        bool remote_dc = g_vehicle_state.remote_disconnected;
+        
+        if (can_timeout || overtemp || remote_dc) {
+            lv_obj_clear_flag(alert_overlay, LV_OBJ_FLAG_HIDDEN);
+            if (can_timeout) {
+                lv_label_set_text(alert_label, "ERR: CAN TIMEOUT");
+            } else if (remote_dc) {
+                lv_label_set_text(alert_label, "REMOTE DISCONNECT");
+            } else if (overtemp) {
+                lv_label_set_text(alert_label, "ERR: OVERTEMP");
+            }
+        } else {
+            lv_obj_add_flag(alert_overlay, LV_OBJ_FLAG_HIDDEN);
         }
     }
 }

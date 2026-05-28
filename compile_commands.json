@@ -1,0 +1,1352 @@
+[
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_disp.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_disp.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_disp.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_disp.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_event.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_event.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_event.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_event.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_group.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_group.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_group.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_group.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_indev.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_indev.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_indev.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_indev.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_indev_scroll.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_indev_scroll.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_indev_scroll.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_indev_scroll.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj_class.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj_class.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj_class.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj_class.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj_draw.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj_draw.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj_draw.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj_draw.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj_pos.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj_pos.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj_pos.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj_pos.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj_scroll.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj_scroll.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj_scroll.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj_scroll.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj_style.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj_style.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj_style.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj_style.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj_style_gen.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj_style_gen.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj_style_gen.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj_style_gen.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj_tree.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj_tree.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_obj_tree.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_obj_tree.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_refr.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_refr.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_refr.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_refr.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\core\\lv_theme.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\core\\lv_theme.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\core\\lv_theme.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\core\\lv_theme.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\arm2d\\lv_gpu_arm2d.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\arm2d\\lv_gpu_arm2d.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\arm2d\\lv_gpu_arm2d.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\arm2d\\lv_gpu_arm2d.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_arc.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_arc.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_arc.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_arc.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_img.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_img.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_img.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_img.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_label.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_label.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_label.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_label.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_layer.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_layer.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_layer.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_layer.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_line.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_line.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_line.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_line.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_mask.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_mask.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_mask.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_mask.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_rect.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_rect.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_rect.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_rect.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_transform.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_transform.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_transform.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_transform.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_triangle.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_triangle.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\lv_draw_triangle.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\lv_draw_triangle.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\lv_img_buf.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\lv_img_buf.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\lv_img_buf.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\lv_img_buf.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\lv_img_cache.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\lv_img_cache.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\lv_img_cache.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\lv_img_cache.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\lv_img_decoder.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\lv_img_decoder.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\lv_img_decoder.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\lv_img_decoder.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\pxp\\lv_draw_pxp.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\pxp\\lv_draw_pxp.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\pxp\\lv_draw_pxp.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\pxp\\lv_draw_pxp.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\pxp\\lv_draw_pxp_blend.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\pxp\\lv_draw_pxp_blend.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\pxp\\lv_draw_pxp_blend.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\pxp\\lv_draw_pxp_blend.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\pxp\\lv_gpu_nxp_pxp.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\pxp\\lv_gpu_nxp_pxp.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\pxp\\lv_gpu_nxp_pxp.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\pxp\\lv_gpu_nxp_pxp.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\pxp\\lv_gpu_nxp_pxp_osa.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\pxp\\lv_gpu_nxp_pxp_osa.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\pxp\\lv_gpu_nxp_pxp_osa.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\pxp\\lv_gpu_nxp_pxp_osa.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\vglite\\lv_draw_vglite.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\vglite\\lv_draw_vglite.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\vglite\\lv_draw_vglite.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\vglite\\lv_draw_vglite.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\vglite\\lv_draw_vglite_arc.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\vglite\\lv_draw_vglite_arc.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\vglite\\lv_draw_vglite_arc.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\vglite\\lv_draw_vglite_arc.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\vglite\\lv_draw_vglite_blend.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\vglite\\lv_draw_vglite_blend.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\vglite\\lv_draw_vglite_blend.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\vglite\\lv_draw_vglite_blend.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\vglite\\lv_draw_vglite_line.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\vglite\\lv_draw_vglite_line.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\vglite\\lv_draw_vglite_line.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\vglite\\lv_draw_vglite_line.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\vglite\\lv_draw_vglite_rect.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\vglite\\lv_draw_vglite_rect.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\vglite\\lv_draw_vglite_rect.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\vglite\\lv_draw_vglite_rect.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\vglite\\lv_vglite_buf.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\vglite\\lv_vglite_buf.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\vglite\\lv_vglite_buf.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\vglite\\lv_vglite_buf.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\vglite\\lv_vglite_utils.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\vglite\\lv_vglite_utils.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\nxp\\vglite\\lv_vglite_utils.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\nxp\\vglite\\lv_vglite_utils.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\renesas\\lv_gpu_d2_draw_label.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\renesas\\lv_gpu_d2_draw_label.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\renesas\\lv_gpu_d2_draw_label.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\renesas\\lv_gpu_d2_draw_label.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\renesas\\lv_gpu_d2_ra6m3.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\renesas\\lv_gpu_d2_ra6m3.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\renesas\\lv_gpu_d2_ra6m3.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\renesas\\lv_gpu_d2_ra6m3.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_arc.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_arc.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_arc.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_arc.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_bg.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_bg.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_bg.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_bg.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_composite.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_composite.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_composite.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_composite.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_img.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_img.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_img.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_img.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_label.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_label.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_label.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_label.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_layer.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_layer.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_layer.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_layer.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_line.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_line.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_line.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_line.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_mask.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_mask.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_mask.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_mask.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_polygon.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_polygon.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_polygon.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_polygon.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_rect.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_rect.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_rect.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_rect.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_stack_blur.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_stack_blur.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_stack_blur.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_stack_blur.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_texture_cache.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_texture_cache.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_texture_cache.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_texture_cache.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_utils.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_utils.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sdl\\lv_draw_sdl_utils.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sdl\\lv_draw_sdl_utils.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\stm32_dma2d\\lv_gpu_stm32_dma2d.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\stm32_dma2d\\lv_gpu_stm32_dma2d.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\stm32_dma2d\\lv_gpu_stm32_dma2d.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\stm32_dma2d\\lv_gpu_stm32_dma2d.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_arc.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_arc.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_arc.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_arc.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_blend.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_blend.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_blend.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_blend.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_dither.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_dither.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_dither.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_dither.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_gradient.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_gradient.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_gradient.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_gradient.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_img.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_img.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_img.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_img.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_layer.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_layer.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_layer.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_layer.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_letter.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_letter.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_letter.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_letter.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_line.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_line.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_line.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_line.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_polygon.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_polygon.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_polygon.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_polygon.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_rect.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_rect.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_rect.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_rect.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_transform.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_transform.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\sw\\lv_draw_sw_transform.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\sw\\lv_draw_sw_transform.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\draw\\swm341_dma2d\\lv_gpu_swm341_dma2d.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\draw\\swm341_dma2d\\lv_gpu_swm341_dma2d.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\draw\\swm341_dma2d\\lv_gpu_swm341_dma2d.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\draw\\swm341_dma2d\\lv_gpu_swm341_dma2d.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\layouts\\flex\\lv_flex.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\layouts\\flex\\lv_flex.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\layouts\\flex\\lv_flex.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\layouts\\flex\\lv_flex.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\layouts\\grid\\lv_grid.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\layouts\\grid\\lv_grid.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\layouts\\grid\\lv_grid.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\layouts\\grid\\lv_grid.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\bmp\\lv_bmp.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\bmp\\lv_bmp.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\bmp\\lv_bmp.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\bmp\\lv_bmp.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\ffmpeg\\lv_ffmpeg.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\ffmpeg\\lv_ffmpeg.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\ffmpeg\\lv_ffmpeg.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\ffmpeg\\lv_ffmpeg.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\freetype\\lv_freetype.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\freetype\\lv_freetype.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\freetype\\lv_freetype.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\freetype\\lv_freetype.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\fsdrv\\lv_fs_fatfs.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\fsdrv\\lv_fs_fatfs.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\fsdrv\\lv_fs_fatfs.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\fsdrv\\lv_fs_fatfs.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\fsdrv\\lv_fs_littlefs.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\fsdrv\\lv_fs_littlefs.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\fsdrv\\lv_fs_littlefs.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\fsdrv\\lv_fs_littlefs.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\fsdrv\\lv_fs_posix.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\fsdrv\\lv_fs_posix.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\fsdrv\\lv_fs_posix.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\fsdrv\\lv_fs_posix.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\fsdrv\\lv_fs_stdio.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\fsdrv\\lv_fs_stdio.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\fsdrv\\lv_fs_stdio.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\fsdrv\\lv_fs_stdio.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\fsdrv\\lv_fs_win32.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\fsdrv\\lv_fs_win32.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\fsdrv\\lv_fs_win32.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\fsdrv\\lv_fs_win32.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\gif\\gifdec.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\gif\\gifdec.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\gif\\gifdec.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\gif\\gifdec.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\gif\\lv_gif.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\gif\\lv_gif.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\gif\\lv_gif.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\gif\\lv_gif.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\png\\lodepng.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\png\\lodepng.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\png\\lodepng.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\png\\lodepng.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\png\\lv_png.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\png\\lv_png.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\png\\lv_png.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\png\\lv_png.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\qrcode\\lv_qrcode.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\qrcode\\lv_qrcode.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\qrcode\\lv_qrcode.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\qrcode\\lv_qrcode.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\qrcode\\qrcodegen.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\qrcode\\qrcodegen.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\qrcode\\qrcodegen.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\qrcode\\qrcodegen.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\rlottie\\lv_rlottie.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\rlottie\\lv_rlottie.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\rlottie\\lv_rlottie.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\rlottie\\lv_rlottie.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\sjpg\\lv_sjpg.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\sjpg\\lv_sjpg.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\sjpg\\lv_sjpg.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\sjpg\\lv_sjpg.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\sjpg\\tjpgd.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\sjpg\\tjpgd.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\sjpg\\tjpgd.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\sjpg\\tjpgd.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\tiny_ttf\\lv_tiny_ttf.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\tiny_ttf\\lv_tiny_ttf.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\libs\\tiny_ttf\\lv_tiny_ttf.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\libs\\tiny_ttf\\lv_tiny_ttf.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\lv_extra.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\lv_extra.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\lv_extra.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\lv_extra.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\others\\fragment\\lv_fragment.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\others\\fragment\\lv_fragment.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\others\\fragment\\lv_fragment.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\others\\fragment\\lv_fragment.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\others\\fragment\\lv_fragment_manager.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\others\\fragment\\lv_fragment_manager.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\others\\fragment\\lv_fragment_manager.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\others\\fragment\\lv_fragment_manager.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\others\\gridnav\\lv_gridnav.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\others\\gridnav\\lv_gridnav.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\others\\gridnav\\lv_gridnav.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\others\\gridnav\\lv_gridnav.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\others\\ime\\lv_ime_pinyin.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\others\\ime\\lv_ime_pinyin.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\others\\ime\\lv_ime_pinyin.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\others\\ime\\lv_ime_pinyin.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\others\\imgfont\\lv_imgfont.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\others\\imgfont\\lv_imgfont.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\others\\imgfont\\lv_imgfont.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\others\\imgfont\\lv_imgfont.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\others\\monkey\\lv_monkey.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\others\\monkey\\lv_monkey.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\others\\monkey\\lv_monkey.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\others\\monkey\\lv_monkey.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\others\\msg\\lv_msg.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\others\\msg\\lv_msg.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\others\\msg\\lv_msg.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\others\\msg\\lv_msg.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\others\\snapshot\\lv_snapshot.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\others\\snapshot\\lv_snapshot.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\others\\snapshot\\lv_snapshot.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\others\\snapshot\\lv_snapshot.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\themes\\basic\\lv_theme_basic.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\themes\\basic\\lv_theme_basic.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\themes\\basic\\lv_theme_basic.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\themes\\basic\\lv_theme_basic.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\themes\\default\\lv_theme_default.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\themes\\default\\lv_theme_default.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\themes\\default\\lv_theme_default.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\themes\\default\\lv_theme_default.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\themes\\mono\\lv_theme_mono.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\themes\\mono\\lv_theme_mono.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\themes\\mono\\lv_theme_mono.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\themes\\mono\\lv_theme_mono.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\animimg\\lv_animimg.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\animimg\\lv_animimg.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\animimg\\lv_animimg.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\animimg\\lv_animimg.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\calendar\\lv_calendar.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\calendar\\lv_calendar.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\calendar\\lv_calendar.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\calendar\\lv_calendar.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\calendar\\lv_calendar_header_arrow.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\calendar\\lv_calendar_header_arrow.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\calendar\\lv_calendar_header_arrow.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\calendar\\lv_calendar_header_arrow.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\calendar\\lv_calendar_header_dropdown.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\calendar\\lv_calendar_header_dropdown.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\calendar\\lv_calendar_header_dropdown.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\calendar\\lv_calendar_header_dropdown.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\chart\\lv_chart.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\chart\\lv_chart.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\chart\\lv_chart.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\chart\\lv_chart.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\colorwheel\\lv_colorwheel.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\colorwheel\\lv_colorwheel.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\colorwheel\\lv_colorwheel.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\colorwheel\\lv_colorwheel.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\imgbtn\\lv_imgbtn.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\imgbtn\\lv_imgbtn.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\imgbtn\\lv_imgbtn.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\imgbtn\\lv_imgbtn.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\keyboard\\lv_keyboard.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\keyboard\\lv_keyboard.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\keyboard\\lv_keyboard.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\keyboard\\lv_keyboard.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\led\\lv_led.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\led\\lv_led.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\led\\lv_led.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\led\\lv_led.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\list\\lv_list.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\list\\lv_list.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\list\\lv_list.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\list\\lv_list.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\menu\\lv_menu.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\menu\\lv_menu.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\menu\\lv_menu.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\menu\\lv_menu.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\meter\\lv_meter.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\meter\\lv_meter.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\meter\\lv_meter.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\meter\\lv_meter.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\msgbox\\lv_msgbox.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\msgbox\\lv_msgbox.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\msgbox\\lv_msgbox.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\msgbox\\lv_msgbox.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\span\\lv_span.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\span\\lv_span.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\span\\lv_span.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\span\\lv_span.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\spinbox\\lv_spinbox.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\spinbox\\lv_spinbox.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\spinbox\\lv_spinbox.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\spinbox\\lv_spinbox.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\spinner\\lv_spinner.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\spinner\\lv_spinner.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\spinner\\lv_spinner.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\spinner\\lv_spinner.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\tabview\\lv_tabview.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\tabview\\lv_tabview.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\tabview\\lv_tabview.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\tabview\\lv_tabview.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\tileview\\lv_tileview.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\tileview\\lv_tileview.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\tileview\\lv_tileview.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\tileview\\lv_tileview.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\win\\lv_win.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\win\\lv_win.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\extra\\widgets\\win\\lv_win.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\extra\\widgets\\win\\lv_win.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_dejavu_16_persian_hebrew.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_dejavu_16_persian_hebrew.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_dejavu_16_persian_hebrew.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_dejavu_16_persian_hebrew.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_fmt_txt.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_fmt_txt.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_fmt_txt.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_fmt_txt.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_loader.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_loader.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_loader.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_loader.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_10.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_10.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_10.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_10.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_12.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_12.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_12.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_12.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_12_subpx.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_12_subpx.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_12_subpx.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_12_subpx.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_14.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_14.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_14.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_14.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_16.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_16.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_16.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_16.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_18.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_18.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_18.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_18.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_20.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_20.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_20.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_20.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_22.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_22.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_22.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_22.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_24.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_24.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_24.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_24.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_26.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_26.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_26.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_26.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_28.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_28.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_28.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_28.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_28_compressed.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_28_compressed.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_28_compressed.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_28_compressed.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_30.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_30.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_30.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_30.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_32.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_32.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_32.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_32.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_34.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_34.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_34.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_34.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_36.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_36.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_36.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_36.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_38.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_38.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_38.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_38.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_40.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_40.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_40.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_40.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_42.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_42.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_42.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_42.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_44.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_44.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_44.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_44.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_46.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_46.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_46.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_46.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_48.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_48.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_48.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_48.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_8.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_8.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_montserrat_8.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_montserrat_8.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_simsun_16_cjk.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_simsun_16_cjk.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_simsun_16_cjk.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_simsun_16_cjk.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_unscii_16.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_unscii_16.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_unscii_16.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_unscii_16.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_unscii_8.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_unscii_8.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\font\\lv_font_unscii_8.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\font\\lv_font_unscii_8.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\hal\\lv_hal_disp.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\hal\\lv_hal_disp.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\hal\\lv_hal_disp.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\hal\\lv_hal_disp.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\hal\\lv_hal_indev.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\hal\\lv_hal_indev.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\hal\\lv_hal_indev.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\hal\\lv_hal_indev.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\hal\\lv_hal_tick.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\hal\\lv_hal_tick.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\hal\\lv_hal_tick.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\hal\\lv_hal_tick.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_anim.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_anim.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_anim.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_anim.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_anim_timeline.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_anim_timeline.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_anim_timeline.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_anim_timeline.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_area.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_area.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_area.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_area.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_async.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_async.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_async.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_async.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_bidi.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_bidi.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_bidi.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_bidi.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_color.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_color.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_color.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_color.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_fs.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_fs.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_fs.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_fs.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_gc.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_gc.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_gc.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_gc.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_ll.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_ll.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_ll.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_ll.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_log.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_log.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_log.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_log.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_lru.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_lru.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_lru.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_lru.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_math.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_math.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_math.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_math.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_mem.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_mem.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_mem.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_mem.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_printf.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_printf.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_printf.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_printf.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_style.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_style.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_style.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_style.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_style_gen.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_style_gen.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_style_gen.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_style_gen.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_templ.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_templ.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_templ.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_templ.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_timer.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_timer.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_timer.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_timer.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_tlsf.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_tlsf.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_tlsf.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_tlsf.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_txt.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_txt.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_txt.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_txt.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_txt_ap.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_txt_ap.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_txt_ap.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_txt_ap.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\misc\\lv_utils.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\misc\\lv_utils.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\misc\\lv_utils.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\misc\\lv_utils.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_arc.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_arc.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_arc.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_arc.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_bar.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_bar.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_bar.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_bar.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_btn.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_btn.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_btn.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_btn.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_btnmatrix.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_btnmatrix.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_btnmatrix.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_btnmatrix.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_canvas.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_canvas.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_canvas.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_canvas.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_checkbox.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_checkbox.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_checkbox.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_checkbox.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_dropdown.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_dropdown.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_dropdown.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_dropdown.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_img.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_img.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_img.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_img.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_label.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_label.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_label.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_label.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_line.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_line.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_line.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_line.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_objx_templ.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_objx_templ.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_objx_templ.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_objx_templ.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_roller.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_roller.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_roller.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_roller.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_slider.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_slider.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_slider.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_slider.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_switch.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_switch.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_switch.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_switch.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_table.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_table.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_table.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_table.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_textarea.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_textarea.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lvgl\\src\\widgets\\lv_textarea.c",
+        "output": ".pio\\build\\native\\lib55e\\lvgl\\widgets\\lv_textarea.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\display\\GC9A01.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\display\\GC9A01.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\display\\GC9A01.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\display\\GC9A01.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\display\\ILI9341.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\display\\ILI9341.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\display\\ILI9341.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\display\\ILI9341.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\display\\R61581.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\display\\R61581.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\display\\R61581.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\display\\R61581.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\display\\SHARP_MIP.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\display\\SHARP_MIP.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\display\\SHARP_MIP.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\display\\SHARP_MIP.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\display\\SSD1963.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\display\\SSD1963.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\display\\SSD1963.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\display\\SSD1963.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\display\\ST7565.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\display\\ST7565.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\display\\ST7565.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\display\\ST7565.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\display\\UC1610.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\display\\UC1610.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\display\\UC1610.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\display\\UC1610.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\display\\drm.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\display\\drm.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\display\\drm.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\display\\drm.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\display\\fbdev.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\display\\fbdev.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\display\\fbdev.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\display\\fbdev.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\gtkdrv\\gtkdrv.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\gtkdrv\\gtkdrv.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\gtkdrv\\gtkdrv.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\gtkdrv\\gtkdrv.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\indev\\AD_touch.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\indev\\AD_touch.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\indev\\AD_touch.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\indev\\AD_touch.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\indev\\FT5406EE8.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\indev\\FT5406EE8.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\indev\\FT5406EE8.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\indev\\FT5406EE8.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\indev\\XPT2046.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\indev\\XPT2046.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\indev\\XPT2046.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\indev\\XPT2046.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\indev\\evdev.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\indev\\evdev.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\indev\\evdev.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\indev\\evdev.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\indev\\libinput.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\indev\\libinput.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\indev\\libinput.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\indev\\libinput.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\indev\\xkb.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\indev\\xkb.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\indev\\xkb.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\indev\\xkb.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\sdl\\sdl.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\sdl\\sdl.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\sdl\\sdl.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\sdl\\sdl.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\sdl\\sdl_common.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\sdl\\sdl_common.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\sdl\\sdl_common.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\sdl\\sdl_common.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\sdl\\sdl_gpu.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\sdl\\sdl_gpu.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\sdl\\sdl_gpu.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\sdl\\sdl_gpu.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\wayland\\wayland.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\wayland\\wayland.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\wayland\\wayland.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\wayland\\wayland.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\win32drv\\win32drv.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\win32drv\\win32drv.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\win32drv\\win32drv.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\win32drv\\win32drv.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\lib067\\lv_drivers\\win_drv.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include .pio\\libdeps\\native\\lv_drivers\\win_drv.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": ".pio\\libdeps\\native\\lv_drivers\\win_drv.c",
+        "output": ".pio\\build\\native\\lib067\\lv_drivers\\win_drv.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\g++.exe -o .pio\\build\\native\\src\\can_driver.o -c -std=c++11 -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -Isrc -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include src\\can_driver.cpp",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": "src\\can_driver.cpp",
+        "output": ".pio\\build\\native\\src\\can_driver.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\g++.exe -o .pio\\build\\native\\src\\display_driver.o -c -std=c++11 -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -Isrc -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include src\\display_driver.cpp",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": "src\\display_driver.cpp",
+        "output": ".pio\\build\\native\\src\\display_driver.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\src\\lv_font_block_180.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -Isrc -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include src\\lv_font_block_180.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": "src\\lv_font_block_180.c",
+        "output": ".pio\\build\\native\\src\\lv_font_block_180.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\src\\lv_font_block_220.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -Isrc -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include src\\lv_font_block_220.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": "src\\lv_font_block_220.c",
+        "output": ".pio\\build\\native\\src\\lv_font_block_220.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\src\\lv_font_block_24.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -Isrc -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include src\\lv_font_block_24.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": "src\\lv_font_block_24.c",
+        "output": ".pio\\build\\native\\src\\lv_font_block_24.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\src\\lv_font_block_300.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -Isrc -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include src\\lv_font_block_300.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": "src\\lv_font_block_300.c",
+        "output": ".pio\\build\\native\\src\\lv_font_block_300.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\src\\lv_font_block_56.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -Isrc -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include src\\lv_font_block_56.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": "src\\lv_font_block_56.c",
+        "output": ".pio\\build\\native\\src\\lv_font_block_56.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -o .pio\\build\\native\\src\\lv_font_block_72.o -c -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -Isrc -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include src\\lv_font_block_72.c",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": "src\\lv_font_block_72.c",
+        "output": ".pio\\build\\native\\src\\lv_font_block_72.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\g++.exe -o .pio\\build\\native\\src\\main.o -c -std=c++11 -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -Isrc -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include src\\main.cpp",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": "src\\main.cpp",
+        "output": ".pio\\build\\native\\src\\main.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\g++.exe -o .pio\\build\\native\\src\\ui_controller.o -c -std=c++11 -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -Isrc -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include src\\ui_controller.cpp",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": "src\\ui_controller.cpp",
+        "output": ".pio\\build\\native\\src\\ui_controller.o"
+    },
+    {
+        "command": "C:\\msys64\\mingw64\\bin\\g++.exe -o .pio\\build\\native\\src\\underglow_controller.o -c -std=c++11 -DPLATFORMIO=60118 -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DUSE_SDL=1 -Isrc -I.pio\\libdeps\\native\\lv_drivers -I.pio\\libdeps\\native\\lvgl -I.pio\\libdeps\\native\\lvgl\\src -Iinclude -I.pio\\libdeps\\native -IC:\\Users\\thatw\\.platformio\\platforms\\native\\builder\\sdl2\\include src\\underglow_controller.cpp",
+        "directory": "C:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard",
+        "file": "src\\underglow_controller.cpp",
+        "output": ".pio\\build\\native\\src\\underglow_controller.o"
+    }
+]

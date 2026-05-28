@@ -7,6 +7,7 @@
 #ifdef ARDUINO
 #include <Arduino.h>
 #include <driver/twai.h>
+#include <esp_task_wdt.h>
 #else
 #include <SDL2/SDL.h>
 static uint32_t millis() {
@@ -30,6 +31,7 @@ namespace CANDriver {
         if (twai_driver_install(&g_config, &t_config, &f_config) == ESP_OK) {
             twai_start();
         }
+        esp_task_wdt_add(NULL);
 #endif
 
         // Simulator/Default Initialization: Base values
@@ -87,6 +89,7 @@ namespace CANDriver {
         uint32_t now = millis();
 
 #ifdef ARDUINO
+        esp_task_wdt_reset();
         // ============================================================
         // FLIPSKY FTESC CAN PROTOCOL (Custom EID format)
         // ============================================================

@@ -32,6 +32,7 @@ struct VehicleState {
     // --- System status ---
     bool  can_alive;            // CAN frames being received
     uint32_t last_can_rx_ms;    // Timestamp of last CAN frame
+    bool remote_disconnected;
 
     // --- Underglow Control ---
     uint8_t led_r;
