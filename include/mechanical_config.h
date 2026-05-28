@@ -7,6 +7,13 @@ extern int motor_pole_pairs;
 extern float gear_ratio;
 extern float wheel_diameter_mm;
 
+void load_mechanical_config();
+void save_mechanical_config();
+
+#ifdef ARDUINO
+#include <Arduino.h>
+#endif
+
 #ifndef PI
 #define PI 3.14159265358979323846
 #endif

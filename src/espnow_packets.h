@@ -16,9 +16,10 @@ typedef struct {
     bool remote_disconnected;
 } TelemetryPacket;
 
-// Packet sent from Remote to Receiver
+// Packet sent from Remote to Receiver and Dash
 typedef struct {
     float throttle_percent; // -100.0 (full brake) to 100.0 (full throttle)
+    uint8_t button_state;   // Bitmask: bit 0=UP, 1=DOWN, 2=LEFT, 3=RIGHT, 4=CONFIRM
 } ControlPacket;
 
 // Packet sent from Receiver to Dash

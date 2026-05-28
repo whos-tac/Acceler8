@@ -34,6 +34,7 @@ struct VehicleState {
     bool  has_received_can;     // True if at least one CAN frame was ever received
     uint32_t last_can_rx_ms;    // Timestamp of last CAN frame
     bool remote_disconnected;
+    uint8_t remote_button_state; // From Remote ControlPacket
 
     // --- Underglow Control ---
     uint8_t led_r;

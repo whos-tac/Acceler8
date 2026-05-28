@@ -7,7 +7,10 @@
 #include "espnow_dash.h"
 #include "odometer.h"
 
+#include "mechanical_config.h"
+
 void DashApp::init() {
+    load_mechanical_config();
     DisplayDriver::init();
     CANDriver::init();
     UIController::init();

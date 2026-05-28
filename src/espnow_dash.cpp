@@ -68,6 +68,10 @@ extern "C" void dash_onDataRecv(const uint8_t * mac, const uint8_t *incomingData
         printf("[ESP-NOW] RX Receiver -> Dash | Remote Disconnected: %d\n", pkt.remote_disconnected);
 #endif
 #endif
+    } else if (len == sizeof(ControlPacket)) {
+        ControlPacket pkt;
+        memcpy(&pkt, incomingData, sizeof(ControlPacket));
+        g_vehicle_state.remote_button_state = pkt.button_state;
     }
 }
 

@@ -247,6 +247,15 @@ void RemoteApp::init() {
         Serial.println("Failed to add Receiver peer");
         return;
     }
+
+    static esp_now_peer_info_t dashPeerInfo;
+    memcpy(dashPeerInfo.peer_addr, dash_mac, 6);
+    dashPeerInfo.channel = 0;  
+    dashPeerInfo.encrypt = false;
+    if (esp_now_add_peer(&dashPeerInfo) != ESP_OK) {
+        Serial.println("Failed to add Dash peer");
+        return;
+    }
 #endif
 
     // Setup UI
@@ -444,7 +453,13 @@ void RemoteApp::update() {
         last_send = millis();
         ControlPacket pkt;
         pkt.throttle_percent = throttle;
+#ifdef ARDUINO
+        pkt.button_state = last_btn_state;
+#else
+        pkt.button_state = 0;
+#endif
         esp_now_send(receiver_mac, (uint8_t *)&pkt, sizeof(ControlPacket));
+        esp_now_send(dash_mac, (uint8_t *)&pkt, sizeof(ControlPacket));
         
 #ifdef DEBUG_ESPNOW
 #ifdef ARDUINO
