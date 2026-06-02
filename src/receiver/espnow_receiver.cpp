@@ -39,7 +39,7 @@ namespace EspnowReceiver {
             
             last_remote_rx_ms = millis();
 
-#ifdef DEBUG_ESPNOW
+#if defined(DEBUG_ESPNOW) && defined(RECEIVER_DEBUG_MODE)
 #ifdef ARDUINO
             Serial.printf("[ESP-NOW] RX Remote -> Receiver | Throttle: %.1f%%\n", current_throttle);
 #else
@@ -62,7 +62,7 @@ namespace EspnowReceiver {
 
         // Add Dashboard as a peer so we can send telemetry back
         esp_now_add_peer(dash_mac, ESP_NOW_ROLE_COMBO, 0, NULL, 0);
-#ifdef RECEIVER_DEBUG_MODE
+#if defined(DEBUG_ESPNOW) && defined(RECEIVER_DEBUG_MODE)
         Serial.println("ESP-NOW initialized in COMBO mode.");
 #endif
 #endif

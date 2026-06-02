@@ -125,7 +125,12 @@ void ReceiverApp::update() {
         target = 0.0f;             // Coast to 0
         rate = FAILSAFE_COAST_RATE;
     } else {
-        target = current_throttle;
+        if (std::abs(current_throttle) <= THROTTLE_DEADZONE) {
+            target = 0.0f;
+        } else {
+            float sign = (current_throttle > 0.0f) ? 1.0f : -1.0f;
+            target = sign * (std::abs(current_throttle) - THROTTLE_DEADZONE) * (100.0f / (100.0f - THROTTLE_DEADZONE));
+        }
         if (target < 0.0f) {
             target *= (MAX_BRAKE_CURRENT_A / MAX_DRIVE_CURRENT_A);
         }
@@ -144,12 +149,6 @@ void ReceiverApp::update() {
     
     // ── Apply deadzone to output ──
     float output = ramped_throttle;
-    if (std::abs(output) < THROTTLE_DEADZONE) {
-        output = 0.0f;
-    } else {
-        float sign = (output > 0.0f) ? 1.0f : -1.0f;
-        output = sign * (std::abs(output) - THROTTLE_DEADZONE) * (100.0f / (100.0f - THROTTLE_DEADZONE));
-    }
     
     // ── Send to ESC every 50ms (20Hz) ──
     static uint32_t last_uart = 0;
@@ -165,7 +164,7 @@ void ReceiverApp::update() {
         
         EscUartDriver::send_throttle(throttle_val);
 
-#if defined(DEBUG_ESPNOW) && !defined(RECEIVER_DEBUG_MODE)
+#if defined(DEBUG_ESPNOW) && defined(RECEIVER_DEBUG_MODE)
 #ifdef ARDUINO
         Serial.printf("[UART] Ramped: %.1f%% | Output: %.1f%% | Signal: %s\n",
                       ramped_throttle, output, signal_lost ? "LOST" : "OK");
@@ -193,7 +192,9 @@ void ReceiverApp::update() {
         if (line.startsWith("telemetry speed ")) {
             float speed = line.substring(16).toFloat();
             EspnowReceiver::send_mock_telemetry(speed, 42.0f, 150.0f);
+#if defined(DEBUG_ESPNOW) && defined(RECEIVER_DEBUG_MODE)
             Serial.printf("Sent mock telemetry: Speed %.1f\n", speed);
+#endif
         }
     }
 #elif !defined(ARDUINO)
