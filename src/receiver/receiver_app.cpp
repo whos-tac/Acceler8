@@ -101,6 +101,9 @@ void ReceiverApp::update() {
     float rate;
     
     static bool safe_start = false;
+    if (signal_lost) {
+        safe_start = false;
+    }
     if (!signal_lost && current_throttle == 0.0f) {
         safe_start = true;
     }
@@ -129,7 +132,7 @@ void ReceiverApp::update() {
         output = 0.0f;
     } else {
         float sign = (output > 0.0f) ? 1.0f : -1.0f;
-        output = sign * (std::abs(output) - THROTTLE_DEADZONE) * (100.0f / 97.0f);
+        output = sign * (std::abs(output) - THROTTLE_DEADZONE) * (100.0f / (100.0f - THROTTLE_DEADZONE));
     }
     
     // ── Send to ESC every 50ms (20Hz) ──

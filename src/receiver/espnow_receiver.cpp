@@ -51,6 +51,7 @@ namespace EspnowReceiver {
 
     void init() {
 #ifdef ARDUINO
+        WiFi.disconnect(true);
         WiFi.mode(WIFI_STA);
         wifi_set_channel(1);
         if (esp_now_init() != 0) {
