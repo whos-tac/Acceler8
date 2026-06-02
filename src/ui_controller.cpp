@@ -325,7 +325,7 @@ uint8_t global_last_btn = 0;
 
         bool alert_hidden = lv_obj_has_flag(alert_overlay, LV_OBJ_FLAG_HIDDEN);
 
-        if (pressed_confirm && !debug_mode_active && lv_scr_act() == main_screen && alert_hidden) {
+        if (pressed_confirm && !debug_mode_active && lv_scr_act() == main_screen) {
             SettingsScreen::enter();
             return;
         }
@@ -342,9 +342,11 @@ uint8_t global_last_btn = 0;
         bool can_timeout = (!g_vehicle_state.can_alive && g_vehicle_state.has_received_can);
         bool overtemp = (t_esc > 85.0f || g_vehicle_state.motor_temp_c > 100.0f);
         bool remote_dc = g_vehicle_state.remote_disconnected;
+        bool mock_mode = g_vehicle_state.mock_mode_active;
+        float mock_speed = g_vehicle_state.speed_kmh;
         DASH_UNLOCK();
 
-        float speed  = calculate_speed_kmh(erpm);
+        float speed = mock_mode ? mock_speed : calculate_speed_kmh(erpm);
 
         if (fabs(pwr) < 0.5f) pwr = 0.0f;
         if (fabs(speed) < 0.5f) speed = 0.0f;

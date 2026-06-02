@@ -60,7 +60,8 @@ void update() {
     set_all(0, 0, 0);
   } else if (mode == 1) {
     // SOLID
-    set_all(r, g, b);
+    float brightness_f = brightness / 255.0f;
+    set_all((uint8_t)(r * brightness_f), (uint8_t)(g * brightness_f), (uint8_t)(b * brightness_f));
   } else if (mode == 2) {
     // BREATHING EFFECT (Purple -> Cyan)
     static float angle = 0;
@@ -89,6 +90,9 @@ void update() {
 
     RgbColor speed_color =
         RgbColor::LinearBlend(colorCyan, colorPurple, speed_factor);
+
+    float brightness_f = brightness / 255.0f;
+    speed_color = speed_color.Dim((uint8_t)(brightness_f * 255));
 
     for (uint16_t i = 0; i < PixelCount; i++) {
       strip.SetPixelColor(i, speed_color);

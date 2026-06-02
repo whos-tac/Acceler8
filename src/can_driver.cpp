@@ -136,8 +136,8 @@ namespace CANDriver {
         // ============================================================
         DASH_LOCK();
         
-        bool master_alive = (now - master_esc.last_update < 500);
-        bool slave_alive = (now - slave_esc.last_update < 500);
+        bool master_alive = (master_esc.last_update != 0 && now - master_esc.last_update < 500);
+        bool slave_alive = (slave_esc.last_update != 0 && now - slave_esc.last_update < 500);
 
         if (master_alive || slave_alive) {
             g_vehicle_state.can_alive = true;
@@ -215,7 +215,9 @@ namespace CANDriver {
 
         // --- Power (Watts) ---
 #ifdef ARDUINO
-        g_vehicle_state.power_w = g_vehicle_state.battery_voltage_v * g_vehicle_state.battery_current_a;
+        if (!g_vehicle_state.mock_mode_active) {
+            g_vehicle_state.power_w = g_vehicle_state.battery_voltage_v * g_vehicle_state.battery_current_a;
+        }
 #endif
 
         // --- Regen flag ---
@@ -223,8 +225,13 @@ namespace CANDriver {
 
         // --- Speed for derived calcs ---
 #ifdef ARDUINO
-        float speed = fabs(calculate_speed_kmh(g_vehicle_state.erpm));
-        g_vehicle_state.speed_kmh = speed;
+        float speed;
+        if (!g_vehicle_state.mock_mode_active) {
+            speed = fabs(calculate_speed_kmh(g_vehicle_state.erpm));
+            g_vehicle_state.speed_kmh = speed;
+        } else {
+            speed = fabs(g_vehicle_state.speed_kmh);
+        }
 #else
         float speed = fabs(g_vehicle_state.speed_kmh);
 #endif
