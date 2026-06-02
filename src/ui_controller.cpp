@@ -336,6 +336,9 @@ namespace UIController {
         float pwr    = g_vehicle_state.power_w;
         float speed  = calculate_speed_kmh(erpm);
 
+        if (fabs(pwr) < 0.5f) pwr = 0.0f;
+        if (fabs(speed) < 0.5f) speed = 0.0f;
+
         if (debug_mode_active) {
             char debug_buf[128];
             snprintf(debug_buf, sizeof(debug_buf), "DEBUG MODE\nSpeed: %.1f\nBatt: %.1f\nPwr: %.0f\nCAN: %d", speed, v, pwr, can_ok);

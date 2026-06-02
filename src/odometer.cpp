@@ -56,7 +56,7 @@ void Odometer::update() {
         last_dist_update_ms = now;
 
 #ifdef ARDUINO
-        if ((total_distance - last_saved_distance) >= 1.0) {
+        if ((total_distance - last_saved_distance) >= 0.99) {
             save_if_needed();
         }
 #endif

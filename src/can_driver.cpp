@@ -195,6 +195,8 @@ namespace CANDriver {
             g_vehicle_state.erpm = 0;
             g_vehicle_state.battery_current_a = 0.0f;
             g_vehicle_state.current_a = 0.0f;
+            memset(&master_esc, 0, sizeof(EscData));
+            memset(&slave_esc, 0, sizeof(EscData));
         }
 
 #else

@@ -79,6 +79,7 @@ namespace EspNowDash {
 
     void init() {
 #ifdef ARDUINO
+        WiFi.disconnect(true);
         // Set WiFi to station mode
         WiFi.mode(WIFI_STA);
 
