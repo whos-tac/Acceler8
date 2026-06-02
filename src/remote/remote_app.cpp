@@ -155,12 +155,14 @@ static void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 extern "C" void remote_onDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
     if (len == sizeof(TelemetryPacket)) {
 #ifdef ARDUINO
-        if (telemetry_mutex) xSemaphoreTake(telemetry_mutex, 0);
-#endif
+        if (telemetry_mutex && xSemaphoreTake(telemetry_mutex, 0) == pdTRUE) {
+            memcpy(&current_telemetry, incomingData, sizeof(TelemetryPacket));
+            new_telemetry_ready = true;
+            xSemaphoreGive(telemetry_mutex);
+        }
+#else
         memcpy(&current_telemetry, incomingData, sizeof(TelemetryPacket));
         new_telemetry_ready = true;
-#ifdef ARDUINO
-        if (telemetry_mutex) xSemaphoreGive(telemetry_mutex);
 #endif
     }
 }
@@ -515,24 +517,24 @@ void RemoteApp::update() {
     update_adc_calibration(pot_val);
     
     float p_max = (float)stored_pot_max;
-    if ((float)pot_val > p_max) p_max = (float)pot_val;
     float p_min = (float)stored_pot_min;
-    if ((float)pot_val < p_min) p_min = (float)pot_val;
-    if (p_max < 2149.0f) p_max = 2149.0f; 
-    if (p_min > 1947.0f) p_min = 1947.0f; 
 #else
     float p_max = 4095.0f;
     float p_min = 0.0f;
 #endif
 
+    float pot_f = (float)pot_val;
+    if (pot_f > p_max) pot_f = p_max;
+    if (pot_f < p_min) pot_f = p_min;
+
     float throttle = 0.0f;
-    if (pot_val > 2148) {
-        throttle = ((pot_val - 2148.0f) / (p_max - 2148.0f)) * 100.0f;
-    } else if (pot_val < 1948) {
-        throttle = ((pot_val - 1948.0f) / (1948.0f - p_min)) * 100.0f; // Negative
+    if (pot_f > 2148.0f) {
+        throttle = ((pot_f - 2148.0f) / (p_max - 2148.0f)) * 100.0f;
+    } else if (pot_f < 1948.0f) {
+        throttle = ((pot_f - 1948.0f) / (1948.0f - p_min)) * 100.0f; // Negative
     }
     
-    if (pot_val < 10 || pot_val > 4085) {
+    if (pot_val == 0 || pot_val == 4095) {
         throttle = 0.0f;
     }
 
