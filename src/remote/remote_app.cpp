@@ -304,8 +304,10 @@ void RemoteApp::init() {
     lv_obj_set_style_arc_color(arc_throttle, lv_color_hex(0x000000), LV_PART_MAIN); 
     lv_obj_set_style_arc_opa(arc_throttle, LV_OPA_0, LV_PART_MAIN); // invisible bg
     lv_obj_set_style_arc_color(arc_throttle, lv_color_hex(0xFF9900), LV_PART_INDICATOR); // Orange throttle
-    lv_obj_set_style_arc_opa(arc_throttle, LV_OPA_50, LV_PART_INDICATOR); // 50% transparent
+    lv_obj_set_style_arc_opa(arc_throttle, LV_OPA_60, LV_PART_INDICATOR); // 60% transparent
+    lv_obj_set_style_arc_width(arc_throttle, 12, LV_PART_INDICATOR); // make it slightly thicker than the speed arc
     lv_obj_remove_style(arc_throttle, NULL, LV_PART_KNOB);
+    lv_obj_move_foreground(arc_throttle);
 
     lbl_speed = lv_label_create(lv_scr_act());
     lv_obj_set_style_text_color(lbl_speed, lv_color_hex(0xFFFFFF), 0);
