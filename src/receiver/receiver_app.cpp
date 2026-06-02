@@ -19,6 +19,7 @@ extern "C" uint32_t millis();
 #define MAX_BRAKE_CURRENT_A   20.0f   // Max regen brake current (Amps) — gentler than drive
 #define THROTTLE_DEADZONE     3.0f    // ±3% deadzone at center
 #define RAMP_RATE_PER_SEC     75.0f   // Max throttle change %/sec (0→100% in ~1.3s)
+#define RAMP_DOWN_RATE_PER_SEC 500.0f // Fast decay %/sec when decelerating or braking
 #define FAILSAFE_COAST_RATE   200.0f  // Throttle decay %/sec on signal loss (100→0% in ~0.5s)
 #define FAILSAFE_TIMEOUT_MS   250     // ms before connection is considered lost
 #define UART_UPDATE_MS        50      // UART command send interval (20Hz)
@@ -111,7 +112,6 @@ void ReceiverApp::update() {
 
     bool signal_lost = (!first_packet_received || (now - last_remote_rx_ms > FAILSAFE_TIMEOUT_MS));
     float target;
-    float rate;
     
     static bool safe_start = false;
     if (signal_lost) {
@@ -123,7 +123,6 @@ void ReceiverApp::update() {
     
     if (signal_lost || !safe_start) {
         target = 0.0f;             // Coast to 0
-        rate = FAILSAFE_COAST_RATE;
     } else {
         if (std::abs(current_throttle) <= THROTTLE_DEADZONE) {
             target = 0.0f;
@@ -134,17 +133,56 @@ void ReceiverApp::update() {
         if (target < 0.0f) {
             target *= (MAX_BRAKE_CURRENT_A / MAX_DRIVE_CURRENT_A);
         }
-        rate = RAMP_RATE_PER_SEC;
     }
     
     // ── Ramp limiter: smoothly move ramped_throttle towards target ──
-    float max_delta = rate * dt; // max change per tick
-    if (ramped_throttle < target) {
-        ramped_throttle += max_delta;
-        if (ramped_throttle > target) ramped_throttle = target;
-    } else if (ramped_throttle > target) {
-        ramped_throttle -= max_delta;
-        if (ramped_throttle < target) ramped_throttle = target;
+    float time_left = dt;
+    while (time_left > 0.0f && ramped_throttle != target) {
+        float current_rate;
+        if (signal_lost || !safe_start) {
+            current_rate = FAILSAFE_COAST_RATE;
+        } else {
+            bool accelerating = false;
+            // If target > 0 and target > ramped_throttle, AND we are already >= 0, we are accelerating forward
+            if (target > 0.0f && target > ramped_throttle && ramped_throttle >= 0.0f) {
+                accelerating = true;
+            } 
+            // If target < 0 and target < ramped_throttle, AND we are already <= 0, we are accelerating backward
+            else if (target < 0.0f && target < ramped_throttle && ramped_throttle <= 0.0f) {
+                accelerating = true;
+            }
+            current_rate = accelerating ? RAMP_RATE_PER_SEC : RAMP_DOWN_RATE_PER_SEC;
+        }
+        
+        float max_delta = current_rate * time_left;
+        
+        if (ramped_throttle < target) {
+            if (ramped_throttle < 0.0f && target >= 0.0f) {
+                // Crossing 0 from negative to positive
+                float dist = 0.0f - ramped_throttle;
+                if (max_delta > dist) {
+                    ramped_throttle = 0.0f;
+                    time_left -= dist / current_rate;
+                    continue; // Loop again to process the remaining time_left
+                }
+            }
+            ramped_throttle += max_delta;
+            if (ramped_throttle > target) ramped_throttle = target;
+            break;
+        } else {
+            if (ramped_throttle > 0.0f && target <= 0.0f) {
+                // Crossing 0 from positive to negative
+                float dist = ramped_throttle - 0.0f;
+                if (max_delta > dist) {
+                    ramped_throttle = 0.0f;
+                    time_left -= dist / current_rate;
+                    continue; // Loop again to process the remaining time_left
+                }
+            }
+            ramped_throttle -= max_delta;
+            if (ramped_throttle < target) ramped_throttle = target;
+            break;
+        }
     }
     
     // ── Apply deadzone to output ──
