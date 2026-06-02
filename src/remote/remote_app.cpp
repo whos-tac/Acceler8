@@ -32,6 +32,7 @@ static uint8_t dash_mac[] = {0x3C, 0x0F, 0x02, 0xC2, 0xD4, 0xCC};
 // Telemetry State
 static volatile bool new_telemetry_ready = false;
 static TelemetryPacket current_telemetry = {0};
+static uint32_t last_telemetry_time = 0;
 
 // Pin Definitions
 #define PIN_POT 1
@@ -45,10 +46,10 @@ static TelemetryPacket current_telemetry = {0};
 #ifdef ARDUINO
 #include <Preferences.h>
 static Preferences preferences;
-static int pot_min = 2048;
-static int pot_max = 2048;
-static int stored_pot_min = 2048;
-static int stored_pot_max = 2048;
+static int pot_min = 1000;
+static int pot_max = 3000;
+static int stored_pot_min = 1000;
+static int stored_pot_max = 3000;
 static uint32_t last_activity_time = 0;
 static int last_pot_val = -1;
 static uint8_t last_btn_state = 0;
@@ -183,12 +184,12 @@ void RemoteApp::init() {
     // Setup ESP-NOW
     preferences.begin("remote", false);
     if (digitalRead(PIN_BTN_CONFIRM) == LOW) {
-        preferences.putInt("pot_min", 2048);
-        preferences.putInt("pot_max", 2048);
+        preferences.putInt("pot_min", 1000);
+        preferences.putInt("pot_max", 3000);
         Serial.println("Calibration Reset!");
     }
-    stored_pot_min = preferences.getInt("pot_min", 2048);
-    stored_pot_max = preferences.getInt("pot_max", 2048);
+    stored_pot_min = preferences.getInt("pot_min", 1000);
+    stored_pot_max = preferences.getInt("pot_max", 3000);
     pot_min = stored_pot_min;
     pot_max = stored_pot_max;
     last_activity_time = millis();
@@ -393,6 +394,7 @@ void RemoteApp::update() {
 #ifdef ARDUINO
         if (telemetry_mutex) xSemaphoreGive(telemetry_mutex);
 #endif
+        last_telemetry_time = millis();
 
 #ifdef DEBUG_ESPNOW
 #ifdef ARDUINO
@@ -475,6 +477,18 @@ void RemoteApp::update() {
                     lv_obj_set_style_text_color(lbl_status, lv_color_hex(0xFF3300), 0);
                 }
             }
+        }
+    }
+
+    if (millis() - last_telemetry_time > 1000) {
+        if (lbl_speed) lv_label_set_text(lbl_speed, "0");
+        if (lbl_power) {
+            lv_label_set_text(lbl_power, "POWER: 0W");
+            lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00CCCC), 0);
+        }
+        if (lbl_status) {
+            lv_label_set_text(lbl_status, "SIG: [--] | CAN: !!");
+            lv_obj_set_style_text_color(lbl_status, lv_color_hex(0xFF3300), 0);
         }
     }
 
