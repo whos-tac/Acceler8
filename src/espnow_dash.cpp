@@ -45,6 +45,7 @@ extern "C" void dash_onDataRecv(const uint8_t * mac, const uint8_t *incomingData
         // Update vehicle state so UI reflects it.
         DASH_LOCK();
         g_vehicle_state.speed_kmh = pkt.speed_kmh;
+        g_vehicle_state.erpm = pkt.speed_kmh * 100.0f; // mock erpm
         g_vehicle_state.battery_voltage_v = pkt.battery_voltage_v;
         g_vehicle_state.power_w = pkt.power_w;
         g_vehicle_state.can_alive = true; // fake CAN alive
@@ -124,7 +125,7 @@ namespace EspNowDash {
         if (millis() - last_send_time > 100) {
             last_send_time = millis();
 
-            TelemetryPacket packet;
+            TelemetryPacket packet = {0};
             DASH_LOCK();
             packet.speed_kmh = g_vehicle_state.speed_kmh;
             packet.battery_voltage_v = g_vehicle_state.battery_voltage_v;

@@ -114,15 +114,13 @@ namespace SettingsScreen {
     }
 
     void update(uint8_t curr_btn) {
-        static uint8_t last_btn = 0;
+        bool pressed_up = (curr_btn & (1 << 0)) && !(UIController::global_last_btn & (1 << 0));
+        bool pressed_down = (curr_btn & (1 << 1)) && !(UIController::global_last_btn & (1 << 1));
+        bool pressed_left = (curr_btn & (1 << 2)) && !(UIController::global_last_btn & (1 << 2));
+        bool pressed_right = (curr_btn & (1 << 3)) && !(UIController::global_last_btn & (1 << 3));
+        bool pressed_confirm = (curr_btn & (1 << 4)) && !(UIController::global_last_btn & (1 << 4));
         
-        bool pressed_up = (curr_btn & (1 << 0)) && !(last_btn & (1 << 0));
-        bool pressed_down = (curr_btn & (1 << 1)) && !(last_btn & (1 << 1));
-        bool pressed_left = (curr_btn & (1 << 2)) && !(last_btn & (1 << 2));
-        bool pressed_right = (curr_btn & (1 << 3)) && !(last_btn & (1 << 3));
-        bool pressed_confirm = (curr_btn & (1 << 4)) && !(last_btn & (1 << 4));
-        
-        last_btn = curr_btn;
+        UIController::global_last_btn = curr_btn;
 
         bool needs_update = false;
 

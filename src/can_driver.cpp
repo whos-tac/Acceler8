@@ -190,7 +190,7 @@ namespace CANDriver {
                     last_log = now;
                 }
             }
-        } else {
+        } else if (g_vehicle_state.has_received_can) {
             g_vehicle_state.can_alive = false;
             g_vehicle_state.speed_kmh = 0.0f;
             g_vehicle_state.power_w = 0.0f;

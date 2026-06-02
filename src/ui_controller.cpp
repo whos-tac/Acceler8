@@ -308,6 +308,8 @@ namespace UIController {
     // ================================================================
     // UPDATE
     // ================================================================
+uint8_t global_last_btn = 0;
+
     void update() {
         DASH_LOCK();
         uint8_t curr_btn = g_vehicle_state.remote_button_state;
@@ -318,9 +320,8 @@ namespace UIController {
             return;
         }
 
-        static uint8_t last_btn = 0;
-        bool pressed_confirm = (curr_btn & (1 << 4)) && !(last_btn & (1 << 4));
-        last_btn = curr_btn;
+        bool pressed_confirm = (curr_btn & (1 << 4)) && !(global_last_btn & (1 << 4));
+        global_last_btn = curr_btn;
 
         bool alert_hidden = lv_obj_has_flag(alert_overlay, LV_OBJ_FLAG_HIDDEN);
 

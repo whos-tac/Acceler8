@@ -46,14 +46,22 @@ void update() {
     return;
   last_update = now;
 
-  if (g_vehicle_state.led_mode == 0) {
+  DASH_LOCK();
+  uint8_t mode = g_vehicle_state.led_mode;
+  uint8_t r = g_vehicle_state.led_r;
+  uint8_t g = g_vehicle_state.led_g;
+  uint8_t b = g_vehicle_state.led_b;
+  uint8_t brightness = g_vehicle_state.led_brightness;
+  float speed_kmh = g_vehicle_state.speed_kmh;
+  DASH_UNLOCK();
+
+  if (mode == 0) {
     // OFF
     set_all(0, 0, 0);
-  } else if (g_vehicle_state.led_mode == 1) {
+  } else if (mode == 1) {
     // SOLID
-    set_all(g_vehicle_state.led_r, g_vehicle_state.led_g,
-            g_vehicle_state.led_b);
-  } else if (g_vehicle_state.led_mode == 2) {
+    set_all(r, g, b);
+  } else if (mode == 2) {
     // BREATHING EFFECT (Purple -> Cyan)
     static float angle = 0;
     angle += 0.02f;
@@ -65,17 +73,17 @@ void update() {
     RgbColor blended = RgbColor::LinearBlend(colorPurple, colorCyan, intensity);
 
     // Apply brightness global scale
-    float brightness_f = g_vehicle_state.led_brightness / 255.0f;
+    float brightness_f = brightness / 255.0f;
     blended = blended.Dim((uint8_t)(brightness_f * 255));
 
     for (uint16_t i = 0; i < PixelCount; i++) {
       strip.SetPixelColor(i, blended);
     }
     strip.Show();
-  } else if (g_vehicle_state.led_mode == 3) {
+  } else if (mode == 3) {
     // SPEED REACTIVE
     // Color shifts from Cyan (Slow) to Purple (Fast)
-    float speed_factor = g_vehicle_state.speed_kmh / 40.0f; // Scale to 40km/h
+    float speed_factor = speed_kmh / 40.0f; // Scale to 40km/h
     if (speed_factor > 1.0f)
       speed_factor = 1.0f;
 

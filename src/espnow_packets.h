@@ -14,18 +14,18 @@ typedef struct {
     float range_km;
     bool can_alive;
     bool remote_disconnected;
-} TelemetryPacket;
+} __attribute__((packed)) TelemetryPacket;
 
 // Packet sent from Remote to Receiver and Dash
 typedef struct {
     float throttle_percent; // -100.0 (full brake) to 100.0 (full throttle)
     uint8_t button_state;   // Bitmask: bit 0=UP, 1=DOWN, 2=LEFT, 3=RIGHT, 4=CONFIRM
-} ControlPacket;
+} __attribute__((packed)) ControlPacket;
 
 // Packet sent from Receiver to Dash
 typedef struct {
     bool remote_disconnected;
-} ReceiverStatusPacket;
+} __attribute__((packed)) ReceiverStatusPacket;
 
 // MAC Addresses:
 // Dash: 3C:0F:02:C2:D4:CC
