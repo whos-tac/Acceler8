@@ -23,6 +23,7 @@ void loop() {
 
     RemoteApp::update();
     lv_tick_inc(delta);
+    lv_timer_handler();
     delay(10);
 }
 #endif

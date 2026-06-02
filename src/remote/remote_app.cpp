@@ -10,6 +10,10 @@
 #include <WiFi.h>
 #include <esp_now.h>
 #include <esp_sleep.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
+#include <driver/rtc_io.h>
+static SemaphoreHandle_t telemetry_mutex = NULL;
 #else
 // Mock ESP-NOW
 #include <cstring>
@@ -42,6 +46,8 @@ static TelemetryPacket current_telemetry = {0};
 static Preferences preferences;
 static int pot_min = 2048;
 static int pot_max = 2048;
+static int stored_pot_min = 2048;
+static int stored_pot_max = 2048;
 static uint32_t last_activity_time = 0;
 static int last_pot_val = -1;
 static uint8_t last_btn_state = 0;
@@ -97,6 +103,7 @@ static void check_inactivity_sleep(float throttle) {
 #endif
         digitalWrite(PIN_POWER_ON, LOW);
         esp_sleep_enable_ext0_wakeup((gpio_num_t)PIN_BTN_CONFIRM, 0);
+        rtc_gpio_pullup_en((gpio_num_t)PIN_BTN_CONFIRM);
         esp_deep_sleep_start();
     }
 }
@@ -145,8 +152,14 @@ static void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 
 extern "C" void remote_onDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
     if (len == sizeof(TelemetryPacket)) {
+#ifdef ARDUINO
+        if (telemetry_mutex) xSemaphoreTake(telemetry_mutex, portMAX_DELAY);
+#endif
         memcpy(&current_telemetry, incomingData, sizeof(TelemetryPacket));
         new_telemetry_ready = true;
+#ifdef ARDUINO
+        if (telemetry_mutex) xSemaphoreGive(telemetry_mutex);
+#endif
     }
 }
 
@@ -170,8 +183,10 @@ void RemoteApp::init() {
         preferences.putInt("pot_max", 2048);
         Serial.println("Calibration Reset!");
     }
-    pot_min = preferences.getInt("pot_min", 2048);
-    pot_max = preferences.getInt("pot_max", 2048);
+    stored_pot_min = preferences.getInt("pot_min", 2048);
+    stored_pot_max = preferences.getInt("pot_max", 2048);
+    pot_min = stored_pot_min;
+    pot_max = stored_pot_max;
     last_activity_time = millis();
     last_btn_state = 0;
     const uint8_t pins[] = {PIN_BTN_UP, PIN_BTN_DOWN, PIN_BTN_LEFT, PIN_BTN_RIGHT, PIN_BTN_CONFIRM};
@@ -184,6 +199,8 @@ void RemoteApp::init() {
         Serial.println("Error initializing ESP-NOW");
         return;
     }
+
+    telemetry_mutex = xSemaphoreCreateMutex();
 
     esp_now_register_send_cb(onDataSent);
     esp_now_register_recv_cb(remote_onDataRecv);
@@ -362,34 +379,43 @@ void RemoteApp::update() {
     static uint32_t last_send = 0;
     
     if (new_telemetry_ready) {
+        TelemetryPacket local_telemetry;
+#ifdef ARDUINO
+        if (telemetry_mutex) xSemaphoreTake(telemetry_mutex, portMAX_DELAY);
+#endif
         new_telemetry_ready = false;
+        local_telemetry = current_telemetry;
+#ifdef ARDUINO
+        if (telemetry_mutex) xSemaphoreGive(telemetry_mutex);
+#endif
+
 #ifdef DEBUG_ESPNOW
 #ifdef ARDUINO
         Serial.printf("[ESP-NOW] RX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Power: %.0fW\n", 
-                      current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+                      local_telemetry.speed_kmh, local_telemetry.battery_voltage_v, local_telemetry.power_w);
 #else
         printf("[ESP-NOW] RX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Power: %.0fW\n", 
-                      current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+                      local_telemetry.speed_kmh, local_telemetry.battery_voltage_v, local_telemetry.power_w);
 #endif
 #endif
         // 1. Update Speed dial and label
         if (lbl_speed) {
             char spd_buf[16];
-            snprintf(spd_buf, sizeof(spd_buf), "%.0f", current_telemetry.speed_kmh);
+            snprintf(spd_buf, sizeof(spd_buf), "%.0f", local_telemetry.speed_kmh);
             lv_label_set_text(lbl_speed, spd_buf);
         }
         if (arc_speed) {
-            lv_arc_set_value(arc_speed, (int)current_telemetry.speed_kmh);
+            lv_arc_set_value(arc_speed, (int)local_telemetry.speed_kmh);
         }
 
         // 2. Update Board Battery
         if (lbl_board_volts) {
             char v_buf[16];
-            snprintf(v_buf, sizeof(v_buf), "%.1fV", current_telemetry.battery_voltage_v);
+            snprintf(v_buf, sizeof(v_buf), "%.1fV", local_telemetry.battery_voltage_v);
             lv_label_set_text(lbl_board_volts, v_buf);
         }
         if (bar_board) {
-            float pct = ((current_telemetry.battery_voltage_v - 32.0f) / 10.0f) * 100.0f;
+            float pct = ((local_telemetry.battery_voltage_v - 32.0f) / 10.0f) * 100.0f;
             if (pct < 0) pct = 0; if (pct > 100) pct = 100;
             int bar_h = (int)(pct * 0.46f); // Map 100% to max 46px inner height (leaving padding)
             lv_obj_set_height(bar_board, bar_h);
@@ -398,9 +424,9 @@ void RemoteApp::update() {
         // 3. Update Power readout
         if (lbl_power) {
             char pwr_buf[32];
-            snprintf(pwr_buf, sizeof(pwr_buf), "POWER: %.0fW", current_telemetry.power_w);
+            snprintf(pwr_buf, sizeof(pwr_buf), "POWER: %.0fW", local_telemetry.power_w);
             lv_label_set_text(lbl_power, pwr_buf);
-            if (current_telemetry.power_w < 0) {
+            if (local_telemetry.power_w < 0) {
                 lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00FF88), 0); // regen green
             } else {
                 lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00CCCC), 0); // normal cyan
@@ -410,11 +436,11 @@ void RemoteApp::update() {
         // 4. Update Header status
         if (lbl_status) {
             const char* sig = "[#][#][#][-]";
-            const char* can = current_telemetry.can_alive ? "OK" : "!!";
+            const char* can = local_telemetry.can_alive ? "OK" : "!!";
             char stat_buf[64];
             snprintf(stat_buf, sizeof(stat_buf), "SIG: %s | CAN: %s", sig, can);
             lv_label_set_text(lbl_status, stat_buf);
-            if (current_telemetry.can_alive) {
+            if (local_telemetry.can_alive) {
                 lv_obj_set_style_text_color(lbl_status, lv_color_hex(0x00FF88), 0);
             } else {
                 lv_obj_set_style_text_color(lbl_status, lv_color_hex(0xFF3300), 0);
@@ -452,8 +478,8 @@ void RemoteApp::update() {
 #ifdef ARDUINO
     update_adc_calibration(pot_val);
     
-    float p_max = (float)pot_max;
-    float p_min = (float)pot_min;
+    float p_max = (float)stored_pot_max;
+    float p_min = (float)stored_pot_min;
     if (p_max < 2149.0f) p_max = 2149.0f; 
     if (p_min > 1947.0f) p_min = 1947.0f; 
 #else
@@ -468,7 +494,7 @@ void RemoteApp::update() {
         throttle = ((pot_val - 1948.0f) / (1948.0f - p_min)) * 100.0f; // Negative
     }
     
-    if (pot_val < 50 || pot_val > 4045) {
+    if (pot_val < 10 || pot_val > 4085) {
         throttle = 0.0f;
     }
 
@@ -505,7 +531,4 @@ void RemoteApp::update() {
 #endif
 #endif
     }
-#ifdef ARDUINO
-    lv_timer_handler();
-#endif
 }
