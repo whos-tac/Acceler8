@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "remote_app.h"
+#include <lvgl.h>
 
 #ifdef ARDUINO
 #include <WiFi.h>
@@ -16,6 +17,7 @@ void setup() {
 
 void loop() {
     RemoteApp::update();
+    lv_tick_inc(10);
     delay(10);
 }
 #endif

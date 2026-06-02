@@ -90,6 +90,10 @@ static void check_inactivity_sleep(float throttle) {
 
     if (millis() - last_activity_time > 300000) { // 5 minutes
         Serial.println("Inactivity timeout. Deep sleep.");
+#ifdef TFT_BL
+        pinMode(TFT_BL, OUTPUT);
+        digitalWrite(TFT_BL, LOW);
+#endif
         digitalWrite(PIN_POWER_ON, LOW);
         esp_sleep_enable_ext0_wakeup((gpio_num_t)PIN_BTN_CONFIRM, 0);
         esp_deep_sleep_start();
