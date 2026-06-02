@@ -1,7 +1,7 @@
 #pragma once
 
 // Global odometer value (in km)
-extern float total_distance;
+extern double total_distance;
 
 class Odometer {
 public:

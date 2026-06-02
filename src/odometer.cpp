@@ -10,9 +10,9 @@ static Preferences preferences;
 #include <SDL2/SDL.h>
 #endif
 
-float total_distance = 0.0f;
+double total_distance = 0.0;
 static double fractional_distance = 0.0;
-static float last_saved_distance = 0.0f;
+static double last_saved_distance = 0.0;
 static uint32_t last_dist_update_ms = 0;
 
 static uint32_t get_millis() {
@@ -26,7 +26,7 @@ static uint32_t get_millis() {
 void Odometer::init() {
 #ifdef ARDUINO
     preferences.begin("dash", false);
-    total_distance = preferences.getFloat("tot_dist", 0.0f);
+    total_distance = preferences.getDouble("tot_dist", 0.0);
     last_saved_distance = total_distance;
 #endif
     fractional_distance = 0.0f;
@@ -56,7 +56,7 @@ void Odometer::update() {
         last_dist_update_ms = now;
 
 #ifdef ARDUINO
-        if ((total_distance - last_saved_distance) >= 1.0f) {
+        if ((total_distance - last_saved_distance) >= 1.0) {
             save_if_needed();
         }
 #endif
@@ -68,15 +68,15 @@ void Odometer::update() {
 void Odometer::save_if_needed() {
 #ifdef ARDUINO
     if (total_distance != last_saved_distance) {
-        preferences.putFloat("tot_dist", total_distance);
+        preferences.putDouble("tot_dist", total_distance);
         last_saved_distance = total_distance;
     }
 #endif
 }
 
 void Odometer::reset() {
-    total_distance = 0.0f;
-    fractional_distance = 0.0f;
-    last_saved_distance = -1.0f;
+    total_distance = 0.0;
+    fractional_distance = 0.0;
+    last_saved_distance = -1.0;
     save_if_needed();
 }

@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <string.h>
+#include "odometer.h"
 
 #ifdef ARDUINO
 #include <Arduino.h>
@@ -117,7 +118,7 @@ namespace CANDriver {
                             target->battery_current = parseI24(&message.data[3]) / 1000.0f;
                             break;
                         case 0x0C: // Data 1: ERPM & Duty
-                            target->erpm = (float)parseI24(&message.data[0]);
+                            target->erpm = fabs((float)parseI24(&message.data[0]));
                             target->duty = (float)parseI24(&message.data[3]) / 1000.0f;
                             break;
                         case 0x0D: // Data 2: Temps & Voltage (scaled by 100)
@@ -216,10 +217,10 @@ namespace CANDriver {
 
         // --- Speed for derived calcs ---
 #ifdef ARDUINO
-        float speed = calculate_speed_kmh(g_vehicle_state.erpm);
+        float speed = fabs(calculate_speed_kmh(g_vehicle_state.erpm));
         g_vehicle_state.speed_kmh = speed;
 #else
-        float speed = g_vehicle_state.speed_kmh;
+        float speed = fabs(g_vehicle_state.speed_kmh);
 #endif
 
         // --- Top speed (session max) ---
@@ -255,7 +256,7 @@ namespace CANDriver {
         g_vehicle_state.last_wh_update_ms = now;
 
         // --- Wh/km efficiency ---
-        float trip_km = ((float)g_vehicle_state.tachometer / 100000.0f);
+        float trip_km = (float)total_distance;
         if (trip_km > 0.01f) {
             g_vehicle_state.wh_per_km = g_vehicle_state.wh_consumed / trip_km;
         }

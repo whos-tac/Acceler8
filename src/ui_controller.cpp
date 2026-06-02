@@ -329,7 +329,6 @@ namespace UIController {
 
         int32_t erpm = g_vehicle_state.erpm;
         float v      = g_vehicle_state.battery_voltage_v;
-        int32_t tach = g_vehicle_state.tachometer;
         float t_esc  = g_vehicle_state.mosfet_temp_c;
         float range  = g_vehicle_state.range_km;
         float whkm   = g_vehicle_state.wh_per_km;
@@ -344,65 +343,65 @@ namespace UIController {
             return;
         }
 
-        static float last_speed = -999.0f;
-        static float last_pwr = -999999.0f;
-        static float last_trip = -999.0f;
-        static float last_range = -999.0f;
-        static float last_whkm = -999.0f;
-        static float last_tesc = -999.0f;
+        static char last_speed_str[16] = "";
+        static char last_pwr_str[16] = "";
+        static char last_trip_str[16] = "";
+        static char last_range_str[16] = "";
+        static char last_whkm_str[16] = "";
+        static char last_tesc_str[16] = "";
         static int last_active_bars = -1;
         static int last_can_ok = -1; // -1 to force first update
 
         char buf[16];
 
         // SPEED
-        if (fabs(speed - last_speed) > 0.1f) {
-            snprintf(buf, sizeof(buf), "%02.0f", speed);
+        snprintf(buf, sizeof(buf), "%02.0f", speed);
+        if (strcmp(buf, last_speed_str) != 0) {
             lv_label_set_text(label_speed_val, buf);
-            last_speed = speed;
+            strncpy(last_speed_str, buf, sizeof(last_speed_str));
         }
 
         // WATT
-        if (fabs(pwr - last_pwr) > 0.5f) {
-            snprintf(buf, sizeof(buf), "%.0f", pwr);
+        snprintf(buf, sizeof(buf), "%.0f", pwr);
+        if (strcmp(buf, last_pwr_str) != 0) {
             lv_label_set_text(label_pwr_val, buf);
             if (pwr < 0) lv_obj_set_style_text_color(label_pwr_val, color_green, 0);
             else         lv_obj_set_style_text_color(label_pwr_val, color_cyan, 0);
-            last_pwr = pwr;
+            strncpy(last_pwr_str, buf, sizeof(last_pwr_str));
         }
 
         // TRIP
-        float trip_km = tach / 100000.0f;
-        if (fabs(trip_km - last_trip) > 0.05f) {
-            snprintf(buf, sizeof(buf), "%.1f", trip_km);
+        float trip_km = (float)total_distance;
+        snprintf(buf, sizeof(buf), "%.1f", trip_km);
+        if (strcmp(buf, last_trip_str) != 0) {
             lv_label_set_text(label_trip_val, buf);
-            last_trip = trip_km;
+            strncpy(last_trip_str, buf, sizeof(last_trip_str));
         }
 
         // RANGE
-        if (fabs(range - last_range) > 0.5f) {
-            if (range < 10.0f) snprintf(buf, sizeof(buf), "%.1f", range);
-            else               snprintf(buf, sizeof(buf), "%.0f", range);
+        if (range < 10.0f) snprintf(buf, sizeof(buf), "%.1f", range);
+        else               snprintf(buf, sizeof(buf), "%.0f", range);
+        if (strcmp(buf, last_range_str) != 0) {
             lv_label_set_text(label_range_val, buf);
-            last_range = range;
+            strncpy(last_range_str, buf, sizeof(last_range_str));
         }
 
         // WH/KM
-        if (fabs(whkm - last_whkm) > 0.05f) {
-            snprintf(buf, sizeof(buf), "%.1f", whkm);
+        snprintf(buf, sizeof(buf), "%.1f", whkm);
+        if (strcmp(buf, last_whkm_str) != 0) {
             lv_label_set_text(label_whkm_val, buf);
-            last_whkm = whkm;
+            strncpy(last_whkm_str, buf, sizeof(last_whkm_str));
         }
 
         // ESC TEMP
-        if (fabs(t_esc - last_tesc) > 0.5f) {
-            snprintf(buf, sizeof(buf), "%.0f C", t_esc);
+        snprintf(buf, sizeof(buf), "%.0f C", t_esc);
+        if (strcmp(buf, last_tesc_str) != 0) {
             lv_label_set_text(label_temp_esc_val, buf);
             if (t_esc > 70)
                 lv_obj_set_style_text_color(label_temp_esc_val, color_accent, 0);
             else
                 lv_obj_set_style_text_color(label_temp_esc_val, color_purple, 0);
-            last_tesc = t_esc;
+            strncpy(last_tesc_str, buf, sizeof(last_tesc_str));
         }
 
         // BATTERY STRIP
