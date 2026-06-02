@@ -138,6 +138,7 @@ namespace SettingsScreen {
                 }
             }
             if (pressed_left) {
+                load_mechanical_config();
                 UIController::show_main_screen();
             }
         } else {

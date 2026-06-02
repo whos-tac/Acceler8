@@ -57,6 +57,8 @@ struct VehicleState {
     uint32_t speed_sample_count;
     double speed_sum;
     uint32_t last_wh_update_ms; // For Wh integration
+
+    bool mock_mode_active = false;
 };
 
 // Extern declaration so the UI can safely read it

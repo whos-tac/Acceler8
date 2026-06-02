@@ -44,9 +44,11 @@ extern "C" void dash_onDataRecv(const uint8_t * mac, const uint8_t *incomingData
         // When receiving telemetry over ESP-NOW, it's debug data from Receiver mock.
         // Update vehicle state so UI reflects it.
         DASH_LOCK();
+        g_vehicle_state.mock_mode_active = true;
         g_vehicle_state.speed_kmh = pkt.speed_kmh;
         g_vehicle_state.erpm = pkt.speed_kmh * 100.0f; // mock erpm
         g_vehicle_state.battery_voltage_v = pkt.battery_voltage_v;
+        g_vehicle_state.battery_current_a = pkt.battery_current_a;
         g_vehicle_state.power_w = pkt.power_w;
         g_vehicle_state.can_alive = true; // fake CAN alive
         g_vehicle_state.has_received_can = true;
