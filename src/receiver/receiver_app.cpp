@@ -85,8 +85,21 @@ void ReceiverApp::update() {
     last_loop_ms = now;
 
     // ── Determine target throttle and ramp rate ──
-    uint32_t last_remote_rx_ms = EspnowReceiver::get_last_rx_ms();
-    float current_throttle = EspnowReceiver::get_latest_throttle();
+    uint32_t last_remote_rx_ms;
+    float current_throttle;
+#ifdef ARDUINO
+    noInterrupts();
+#endif
+    last_remote_rx_ms = EspnowReceiver::get_last_rx_ms();
+    current_throttle = EspnowReceiver::get_latest_throttle();
+#ifdef ARDUINO
+    interrupts();
+#endif
+
+    static bool first_packet_received = false;
+    if (last_remote_rx_ms != 0) {
+        first_packet_received = true;
+    }
 
     // Prevent NaN
     if (std::isnan(current_throttle)) {
@@ -96,7 +109,7 @@ void ReceiverApp::update() {
     if (current_throttle > 100.0f) current_throttle = 100.0f;
     if (current_throttle < -100.0f) current_throttle = -100.0f;
 
-    bool signal_lost = (now - last_remote_rx_ms > FAILSAFE_TIMEOUT_MS);
+    bool signal_lost = (!first_packet_received || (now - last_remote_rx_ms > FAILSAFE_TIMEOUT_MS));
     float target;
     float rate;
     
@@ -104,7 +117,7 @@ void ReceiverApp::update() {
     if (signal_lost) {
         safe_start = false;
     }
-    if (!signal_lost && current_throttle == 0.0f) {
+    if (!signal_lost && std::abs(current_throttle) <= THROTTLE_DEADZONE) {
         safe_start = true;
     }
     
@@ -113,6 +126,9 @@ void ReceiverApp::update() {
         rate = FAILSAFE_COAST_RATE;
     } else {
         target = current_throttle;
+        if (target < 0.0f) {
+            target *= (MAX_BRAKE_CURRENT_A / MAX_DRIVE_CURRENT_A);
+        }
         rate = RAMP_RATE_PER_SEC;
     }
     
@@ -140,7 +156,6 @@ void ReceiverApp::update() {
     static uint32_t last_keep_alive = 0;
     if (now - last_uart > UART_UPDATE_MS) {
         last_uart = now;
-        last_keep_alive = now; // Throttle satisfies watchdog
         
         // Map -100.0 -> 100.0 to 0 -> 1023 (512 is neutral)
         int32_t raw_val = 512 + (int32_t)(output * 5.12f);
@@ -156,7 +171,9 @@ void ReceiverApp::update() {
                       ramped_throttle, output, signal_lost ? "LOST" : "OK");
 #endif
 #endif
-    } else if (now - last_keep_alive >= 200) {
+    }
+    
+    if (now - last_keep_alive >= 200) {
         last_keep_alive = now;
         EscUartDriver::send_keep_alive();
     }
