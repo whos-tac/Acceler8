@@ -7,6 +7,7 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <espnow.h>
+#include <user_interface.h>
 #else
 // Mock ESP-NOW & Serial
 extern "C" uint32_t millis();
@@ -51,6 +52,7 @@ namespace EspnowReceiver {
     void init() {
 #ifdef ARDUINO
         WiFi.mode(WIFI_STA);
+        wifi_set_channel(1);
         if (esp_now_init() != 0) {
             return;
         }

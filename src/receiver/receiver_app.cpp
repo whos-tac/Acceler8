@@ -100,14 +100,14 @@ void ReceiverApp::update() {
     float target;
     float rate;
     
-    if (signal_lost) {
-        if (current_throttle < 0.0f) {
-            target = current_throttle; // LOCK brakes
-            rate = RAMP_RATE_PER_SEC;  // Allow normal ramp to the locked brake value
-        } else {
-            target = 0.0f;             // Coast to 0
-            rate = FAILSAFE_COAST_RATE;
-        }
+    static bool safe_start = false;
+    if (!signal_lost && current_throttle == 0.0f) {
+        safe_start = true;
+    }
+    
+    if (signal_lost || !safe_start) {
+        target = 0.0f;             // Coast to 0
+        rate = FAILSAFE_COAST_RATE;
     } else {
         target = current_throttle;
         rate = RAMP_RATE_PER_SEC;
@@ -125,8 +125,11 @@ void ReceiverApp::update() {
     
     // ── Apply deadzone to output ──
     float output = ramped_throttle;
-    if (output > -THROTTLE_DEADZONE && output < THROTTLE_DEADZONE) {
+    if (std::abs(output) < THROTTLE_DEADZONE) {
         output = 0.0f;
+    } else {
+        float sign = (output > 0.0f) ? 1.0f : -1.0f;
+        output = sign * (std::abs(output) - THROTTLE_DEADZONE) * (100.0f / 97.0f);
     }
     
     // ── Send to ESC every 50ms (20Hz) ──
