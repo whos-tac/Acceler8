@@ -45,7 +45,7 @@ struct VehicleState {
 
     // --- Internal accumulators (for avg computation) ---
     uint32_t speed_sample_count;
-    float speed_sum;
+    double speed_sum;
     uint32_t last_wh_update_ms; // For Wh integration
 };
 

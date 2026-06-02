@@ -95,8 +95,10 @@ namespace CANDriver {
         // FLIPSKY FTESC CAN PROTOCOL (Custom EID format)
         // ============================================================
         twai_message_t message;
-        while (twai_receive(&message, 0) == ESP_OK) {
-            if (message.extd) {
+        int rx_count = 0;
+        while (twai_receive(&message, 0) == ESP_OK && rx_count < 20) {
+            rx_count++;
+            if (message.extd && message.data_length_code >= 6) {
                 uint32_t raw_id = message.identifier;
                 // Flipsky Layout: Bits 8-15 = ESC ID, Bits 0-7 = Command ID
                 uint8_t mcu_id = (raw_id >> 8) & 0xFF;
@@ -174,7 +176,6 @@ namespace CANDriver {
                 g_vehicle_state.current_a = mot_amps;           // Total motor amps
                 g_vehicle_state.mosfet_temp_c = max_fet;
                 g_vehicle_state.motor_temp_c = max_mot;
-                g_vehicle_state.tachometer += (g_vehicle_state.erpm / 100); 
 
                 // Minimal logging for confidence
                 static uint32_t last_log = 0;
@@ -188,6 +189,11 @@ namespace CANDriver {
             }
         } else {
             g_vehicle_state.can_alive = false;
+            g_vehicle_state.speed_kmh = 0.0f;
+            g_vehicle_state.power_w = 0.0f;
+            g_vehicle_state.erpm = 0;
+            g_vehicle_state.battery_current_a = 0.0f;
+            g_vehicle_state.current_a = 0.0f;
         }
 
 #else

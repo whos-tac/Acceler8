@@ -344,61 +344,94 @@ namespace UIController {
             return;
         }
 
+        static float last_speed = -999.0f;
+        static float last_pwr = -999999.0f;
+        static float last_trip = -999.0f;
+        static float last_range = -999.0f;
+        static float last_whkm = -999.0f;
+        static float last_tesc = -999.0f;
+        static int last_active_bars = -1;
+        static int last_can_ok = -1; // -1 to force first update
+
         char buf[16];
 
         // SPEED
-        snprintf(buf, sizeof(buf), "%02.0f", speed);
-        lv_label_set_text(label_speed_val, buf);
+        if (fabs(speed - last_speed) > 0.1f) {
+            snprintf(buf, sizeof(buf), "%02.0f", speed);
+            lv_label_set_text(label_speed_val, buf);
+            last_speed = speed;
+        }
 
         // WATT
-        snprintf(buf, sizeof(buf), "%.0f", pwr);
-        lv_label_set_text(label_pwr_val, buf);
-        if (pwr < 0) lv_obj_set_style_text_color(label_pwr_val, color_green, 0);
-        else         lv_obj_set_style_text_color(label_pwr_val, color_cyan, 0);
+        if (fabs(pwr - last_pwr) > 0.5f) {
+            snprintf(buf, sizeof(buf), "%.0f", pwr);
+            lv_label_set_text(label_pwr_val, buf);
+            if (pwr < 0) lv_obj_set_style_text_color(label_pwr_val, color_green, 0);
+            else         lv_obj_set_style_text_color(label_pwr_val, color_cyan, 0);
+            last_pwr = pwr;
+        }
 
         // TRIP
         float trip_km = tach / 100000.0f;
-        snprintf(buf, sizeof(buf), "%.1f", trip_km);
-        lv_label_set_text(label_trip_val, buf);
+        if (fabs(trip_km - last_trip) > 0.05f) {
+            snprintf(buf, sizeof(buf), "%.1f", trip_km);
+            lv_label_set_text(label_trip_val, buf);
+            last_trip = trip_km;
+        }
 
         // RANGE
-        if (range < 10.0f) snprintf(buf, sizeof(buf), "%.1f", range);
-        else               snprintf(buf, sizeof(buf), "%.0f", range);
-        lv_label_set_text(label_range_val, buf);
+        if (fabs(range - last_range) > 0.5f) {
+            if (range < 10.0f) snprintf(buf, sizeof(buf), "%.1f", range);
+            else               snprintf(buf, sizeof(buf), "%.0f", range);
+            lv_label_set_text(label_range_val, buf);
+            last_range = range;
+        }
 
         // WH/KM
-        snprintf(buf, sizeof(buf), "%.1f", whkm);
-        lv_label_set_text(label_whkm_val, buf);
+        if (fabs(whkm - last_whkm) > 0.05f) {
+            snprintf(buf, sizeof(buf), "%.1f", whkm);
+            lv_label_set_text(label_whkm_val, buf);
+            last_whkm = whkm;
+        }
 
         // ESC TEMP
-        snprintf(buf, sizeof(buf), "%.0f C", t_esc);
-        lv_label_set_text(label_temp_esc_val, buf);
-        if (t_esc > 70)
-            lv_obj_set_style_text_color(label_temp_esc_val, color_accent, 0);
-        else
-            lv_obj_set_style_text_color(label_temp_esc_val, color_purple, 0);
+        if (fabs(t_esc - last_tesc) > 0.5f) {
+            snprintf(buf, sizeof(buf), "%.0f C", t_esc);
+            lv_label_set_text(label_temp_esc_val, buf);
+            if (t_esc > 70)
+                lv_obj_set_style_text_color(label_temp_esc_val, color_accent, 0);
+            else
+                lv_obj_set_style_text_color(label_temp_esc_val, color_purple, 0);
+            last_tesc = t_esc;
+        }
 
         // BATTERY STRIP
         float pct = ((v - 32.0f) / 10.0f) * 100.0f;
         if (pct < 0) pct = 0;
         if (pct > 100) pct = 100;
         int active_bars = (int)(pct / 10.0f);
-        for (int i = 0; i < BAR_COUNT; i++) {
-            if (i < active_bars) {
-                lv_obj_set_style_bg_color(batt_bars[i], bar_colors[i], 0);
-                lv_obj_set_style_bg_opa(batt_bars[i], LV_OPA_COVER, 0);
-            } else {
-                lv_obj_set_style_bg_opa(batt_bars[i], LV_OPA_TRANSP, 0);
+        if (active_bars != last_active_bars) {
+            for (int i = 0; i < BAR_COUNT; i++) {
+                if (i < active_bars) {
+                    lv_obj_set_style_bg_color(batt_bars[i], bar_colors[i], 0);
+                    lv_obj_set_style_bg_opa(batt_bars[i], LV_OPA_COVER, 0);
+                } else {
+                    lv_obj_set_style_bg_opa(batt_bars[i], LV_OPA_TRANSP, 0);
+                }
             }
+            last_active_bars = active_bars;
         }
 
         // CAN STATUS
-        if (can_ok) {
-            lv_label_set_text(label_can_status, "CAN OK");
-            lv_obj_set_style_text_color(label_can_status, color_green, 0);
-        } else {
-            lv_label_set_text(label_can_status, "CAN !!");
-            lv_obj_set_style_text_color(label_can_status, color_accent, 0);
+        if (can_ok != (last_can_ok == 1)) {
+            if (can_ok) {
+                lv_label_set_text(label_can_status, "CAN OK");
+                lv_obj_set_style_text_color(label_can_status, color_green, 0);
+            } else {
+                lv_label_set_text(label_can_status, "CAN !!");
+                lv_obj_set_style_text_color(label_can_status, color_accent, 0);
+            }
+            last_can_ok = can_ok ? 1 : 0;
         }
 
         // ── GLOBAL ALERTS ────────────────────────────────────────────

@@ -11,7 +11,7 @@ static Preferences preferences;
 #endif
 
 float total_distance = 0.0f;
-static float fractional_distance = 0.0f;
+static double fractional_distance = 0.0;
 static float last_saved_distance = 0.0f;
 static uint32_t last_dist_update_ms = 0;
 
@@ -39,12 +39,18 @@ void Odometer::update() {
     
     if (dt_ms > 0 && dt_ms < 1000) { // sanity check
         float dt_h = dt_ms / 3600000.0f;
-        fractional_distance += g_vehicle_state.speed_kmh * dt_h;
+        float current_speed = calculate_speed_kmh(fabs((float)g_vehicle_state.erpm));
         
-        // Accumulate to total_distance to prevent float precision loss
-        while (fractional_distance >= 0.1f) {
-            total_distance += 0.1f;
-            fractional_distance -= 0.1f;
+        // Cap the maximum allowable speed integration per tick (e.g., 200 km/h)
+        if (current_speed > 200.0f) current_speed = 200.0f;
+
+        fractional_distance += current_speed * dt_h;
+        
+        // Accumulate to total_distance to prevent precision loss, without a while loop
+        if (fractional_distance >= 0.1) {
+            double increments = floor(fractional_distance * 10.0) / 10.0;
+            total_distance += increments;
+            fractional_distance -= increments;
         }
         
         last_dist_update_ms = now;
