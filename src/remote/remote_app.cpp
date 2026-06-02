@@ -189,6 +189,8 @@ void RemoteApp::init() {
         delay(10);
     }
     pot_center = center_sum / 10;
+    if (pot_center < 1800) pot_center = 1800;
+    if (pot_center > 2300) pot_center = 2300;
 
     // Setup ESP-NOW
     preferences.begin("remote", false);
@@ -212,7 +214,6 @@ void RemoteApp::init() {
     WiFi.mode(WIFI_STA);
     if (esp_now_init() != ESP_OK) {
         Serial.println("Error initializing ESP-NOW");
-        return;
     }
 
     telemetry_mutex = xSemaphoreCreateMutex();
@@ -226,7 +227,6 @@ void RemoteApp::init() {
     peerInfo.encrypt = false;
     if (esp_now_add_peer(&peerInfo) != ESP_OK) {
         Serial.println("Failed to add Receiver peer");
-        return;
     }
 
     static esp_now_peer_info_t dashPeerInfo;
@@ -235,7 +235,6 @@ void RemoteApp::init() {
     dashPeerInfo.encrypt = false;
     if (esp_now_add_peer(&dashPeerInfo) != ESP_OK) {
         Serial.println("Failed to add Dash peer");
-        return;
     }
 #endif
 
@@ -390,10 +389,19 @@ void RemoteApp::init() {
 #endif
 }
 
+static char last_spd_buf[16] = "";
+static int last_speed_val = -1;
+static char last_v_buf[16] = "";
+static int last_bar_h = -1;
+static char last_pwr_buf[32] = "";
+static char last_stat_buf[64] = "";
+
 void RemoteApp::update() {
     static uint32_t last_send = 0;
+    static bool timeout_applied = false;
     
     if (new_telemetry_ready) {
+        timeout_applied = false;
         TelemetryPacket local_telemetry;
 #ifdef ARDUINO
         if (telemetry_mutex) xSemaphoreTake(telemetry_mutex, portMAX_DELAY);
@@ -418,14 +426,12 @@ void RemoteApp::update() {
         if (lbl_speed) {
             char spd_buf[16];
             snprintf(spd_buf, sizeof(spd_buf), "%.0f", local_telemetry.speed_kmh);
-            static char last_spd_buf[16] = "";
             if (strcmp(spd_buf, last_spd_buf) != 0) {
                 strcpy(last_spd_buf, spd_buf);
                 lv_label_set_text(lbl_speed, spd_buf);
             }
         }
         if (arc_speed) {
-            static int last_speed_val = -1;
             int speed_val = (int)local_telemetry.speed_kmh;
             if (speed_val != last_speed_val) {
                 last_speed_val = speed_val;
@@ -437,7 +443,6 @@ void RemoteApp::update() {
         if (lbl_board_volts) {
             char v_buf[16];
             snprintf(v_buf, sizeof(v_buf), "%.1fV", local_telemetry.battery_voltage_v);
-            static char last_v_buf[16] = "";
             if (strcmp(v_buf, last_v_buf) != 0) {
                 strcpy(last_v_buf, v_buf);
                 lv_label_set_text(lbl_board_volts, v_buf);
@@ -447,7 +452,6 @@ void RemoteApp::update() {
             float pct = ((local_telemetry.battery_voltage_v - 32.0f) / 10.0f) * 100.0f;
             if (pct < 0) pct = 0; if (pct > 100) pct = 100;
             int bar_h = (int)(pct * 0.46f); // Map 100% to max 46px inner height (leaving padding)
-            static int last_bar_h = -1;
             if (bar_h != last_bar_h) {
                 last_bar_h = bar_h;
                 lv_obj_set_height(bar_board, bar_h);
@@ -458,7 +462,6 @@ void RemoteApp::update() {
         if (lbl_power) {
             char pwr_buf[32];
             snprintf(pwr_buf, sizeof(pwr_buf), "POWER: %.0fW", local_telemetry.power_w);
-            static char last_pwr_buf[32] = "";
             if (strcmp(pwr_buf, last_pwr_buf) != 0) {
                 strcpy(last_pwr_buf, pwr_buf);
                 lv_label_set_text(lbl_power, pwr_buf);
@@ -476,7 +479,6 @@ void RemoteApp::update() {
             const char* can = local_telemetry.can_alive ? "OK" : "!!";
             char stat_buf[64];
             snprintf(stat_buf, sizeof(stat_buf), "SIG: %s | CAN: %s", sig, can);
-            static char last_stat_buf[64] = "";
             if (strcmp(stat_buf, last_stat_buf) != 0) {
                 strcpy(last_stat_buf, stat_buf);
                 lv_label_set_text(lbl_status, stat_buf);
@@ -490,17 +492,26 @@ void RemoteApp::update() {
     }
 
     if (millis() - last_telemetry_time > 1000) {
-        if (lbl_speed) lv_label_set_text(lbl_speed, "0");
-        if (arc_speed) lv_arc_set_value(arc_speed, 0);
-        if (lbl_board_volts) lv_label_set_text(lbl_board_volts, "0.0V");
-        if (bar_board) lv_obj_set_height(bar_board, 0);
-        if (lbl_power) {
-            lv_label_set_text(lbl_power, "POWER: 0W");
-            lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00CCCC), 0);
-        }
-        if (lbl_status) {
-            lv_label_set_text(lbl_status, "SIG: [--] | CAN: !!");
-            lv_obj_set_style_text_color(lbl_status, lv_color_hex(0xFF3300), 0);
+        if (!timeout_applied) {
+            timeout_applied = true;
+            if (lbl_speed) lv_label_set_text(lbl_speed, "0");
+            if (arc_speed) lv_arc_set_value(arc_speed, 0);
+            if (lbl_board_volts) lv_label_set_text(lbl_board_volts, "0.0V");
+            if (bar_board) lv_obj_set_height(bar_board, 0);
+            if (lbl_power) {
+                lv_label_set_text(lbl_power, "POWER: 0W");
+                lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00CCCC), 0);
+            }
+            if (lbl_status) {
+                lv_label_set_text(lbl_status, "SIG: [--] | CAN: !!");
+                lv_obj_set_style_text_color(lbl_status, lv_color_hex(0xFF3300), 0);
+            }
+            last_spd_buf[0] = '\0';
+            last_speed_val = -1;
+            last_v_buf[0] = '\0';
+            last_bar_h = -1;
+            last_pwr_buf[0] = '\0';
+            last_stat_buf[0] = '\0';
         }
     }
 
@@ -542,8 +553,8 @@ void RemoteApp::update() {
 #ifdef ARDUINO
     update_adc_calibration(pot_val);
     
-    float p_max = (float)stored_pot_max;
-    float p_min = (float)stored_pot_min;
+    float p_max = (float)pot_max;
+    float p_min = (float)pot_min;
 #else
     float p_max = 4095.0f;
     float p_min = 0.0f;
