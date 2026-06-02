@@ -53,7 +53,7 @@ static lv_color_t buf[170 * 320 / 10];
 
 #ifdef ARDUINO
 static void update_adc_calibration(int pot_val) {
-    if (pot_val > 100 && pot_val < 4000) {
+    if (pot_val > 50 && pot_val < 4095) {
         if (pot_val < pot_min) {
             pot_min = pot_val;
             preferences.putInt("pot_min", pot_min);
@@ -65,7 +65,7 @@ static void update_adc_calibration(int pot_val) {
     }
 }
 
-static void check_inactivity_sleep(int pot_val) {
+static void check_inactivity_sleep(float throttle) {
     uint8_t current_btn_state = 0;
     const uint8_t pins[] = {PIN_BTN_UP, PIN_BTN_DOWN, PIN_BTN_LEFT, PIN_BTN_RIGHT, PIN_BTN_CONFIRM};
     for (int i = 0; i < 5; i++) {
@@ -80,9 +80,8 @@ static void check_inactivity_sleep(int pot_val) {
         last_btn_state = current_btn_state;
     }
 
-    if (last_pot_val == -1 || abs(pot_val - last_pot_val) > 30) {
+    if (abs(throttle) > 2.0f) {
         activity = true;
-        last_pot_val = pot_val;
     }
 
     if (activity) {
@@ -112,6 +111,7 @@ static void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t
 // LVGL UI elements
 static lv_obj_t * lbl_status;
 static lv_obj_t * arc_speed;
+static lv_obj_t * arc_throttle;
 static lv_obj_t * lbl_speed;
 static lv_obj_t * bar_board;
 static lv_obj_t * bar_remote;
@@ -295,6 +295,18 @@ void RemoteApp::init() {
     lv_obj_set_style_arc_color(arc_speed, lv_color_hex(0xC3B1E1), LV_PART_INDICATOR); // active purple
     lv_obj_remove_style(arc_speed, NULL, LV_PART_KNOB); // hide knob
 
+    arc_throttle = lv_arc_create(lv_scr_act());
+    lv_obj_set_size(arc_throttle, 110, 110);
+    lv_arc_set_rotation(arc_throttle, 135);
+    lv_arc_set_bg_angles(arc_throttle, 0, 270);
+    lv_arc_set_value(arc_throttle, 0);
+    lv_obj_align(arc_throttle, LV_ALIGN_TOP_MID, 0, 22);
+    lv_obj_set_style_arc_color(arc_throttle, lv_color_hex(0x000000), LV_PART_MAIN); 
+    lv_obj_set_style_arc_opa(arc_throttle, LV_OPA_0, LV_PART_MAIN); // invisible bg
+    lv_obj_set_style_arc_color(arc_throttle, lv_color_hex(0xFF9900), LV_PART_INDICATOR); // Orange throttle
+    lv_obj_set_style_arc_opa(arc_throttle, LV_OPA_50, LV_PART_INDICATOR); // 50% transparent
+    lv_obj_remove_style(arc_throttle, NULL, LV_PART_KNOB);
+
     lbl_speed = lv_label_create(lv_scr_act());
     lv_obj_set_style_text_color(lbl_speed, lv_color_hex(0xFFFFFF), 0);
     lv_obj_set_style_text_font(lbl_speed, &lv_font_montserrat_36, 0); // Bold digits
@@ -427,7 +439,6 @@ void RemoteApp::update() {
     // Assume 2048 is neutral. Deadband around neutral.
 #ifdef ARDUINO
     update_adc_calibration(pot_val);
-    check_inactivity_sleep(pot_val);
     
     float p_max = (float)pot_max;
     float p_min = (float)pot_min;
@@ -447,6 +458,14 @@ void RemoteApp::update() {
     
     if (throttle > 100.0f) throttle = 100.0f;
     if (throttle < -100.0f) throttle = -100.0f;
+
+    if (arc_throttle) {
+        lv_arc_set_value(arc_throttle, (int)abs(throttle));
+    }
+
+#ifdef ARDUINO
+    check_inactivity_sleep(throttle);
+#endif
 
     // Send every 50ms (20Hz)
     if (millis() - last_send > 50) {
