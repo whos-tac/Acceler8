@@ -33,6 +33,7 @@ static uint8_t dash_mac[] = {0x3C, 0x0F, 0x02, 0xC2, 0xD4, 0xCC};
 static volatile bool new_telemetry_ready = false;
 static TelemetryPacket current_telemetry = {0};
 static uint32_t last_telemetry_time = 0;
+static int pot_center = 2048;
 
 // Pin Definitions
 #define PIN_POT 1
@@ -180,6 +181,14 @@ void RemoteApp::init() {
     pinMode(PIN_BTN_LEFT, INPUT_PULLUP);
     pinMode(PIN_BTN_RIGHT, INPUT_PULLUP);
     pinMode(PIN_BTN_CONFIRM, INPUT_PULLUP);
+
+    delay(100);
+    int center_sum = 0;
+    for (int i = 0; i < 10; i++) {
+        center_sum += analogRead(PIN_POT);
+        delay(10);
+    }
+    pot_center = center_sum / 10;
 
     // Setup ESP-NOW
     preferences.begin("remote", false);
@@ -482,6 +491,9 @@ void RemoteApp::update() {
 
     if (millis() - last_telemetry_time > 1000) {
         if (lbl_speed) lv_label_set_text(lbl_speed, "0");
+        if (arc_speed) lv_arc_set_value(arc_speed, 0);
+        if (lbl_board_volts) lv_label_set_text(lbl_board_volts, "0.0V");
+        if (bar_board) lv_obj_set_height(bar_board, 0);
         if (lbl_power) {
             lv_label_set_text(lbl_power, "POWER: 0W");
             lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00CCCC), 0);
@@ -542,10 +554,23 @@ void RemoteApp::update() {
     if (pot_f < p_min) pot_f = p_min;
 
     float throttle = 0.0f;
-    if (pot_f > 2148.0f) {
-        throttle = ((pot_f - 2148.0f) / (p_max - 2148.0f)) * 100.0f;
-    } else if (pot_f < 1948.0f) {
-        throttle = ((pot_f - 1948.0f) / (1948.0f - p_min)) * 100.0f; // Negative
+    float deadband_high = pot_center + 100.0f;
+    float deadband_low = pot_center - 100.0f;
+
+    if (pot_f > deadband_high) {
+        float denom = p_max - deadband_high;
+        if (denom < 10.0f) {
+            throttle = 0.0f;
+        } else {
+            throttle = ((pot_f - deadband_high) / denom) * 100.0f;
+        }
+    } else if (pot_f < deadband_low) {
+        float denom = deadband_low - p_min;
+        if (denom < 10.0f) {
+            throttle = 0.0f;
+        } else {
+            throttle = ((pot_f - deadband_low) / denom) * 100.0f; // Negative
+        }
     }
     
     if (pot_val == 0 || pot_val == 4095) {
