@@ -7,6 +7,7 @@
 #include "esc_uart_driver.h"
 #include <cstring>
 #include <cstdio>
+#include <cmath>
 #include <lvgl.h>
 
 #ifndef ARDUINO
@@ -78,21 +79,39 @@ void ReceiverApp::init() {
 }
 
 void ReceiverApp::update() {
-    static uint32_t last_loop_ms = 0;
+    static uint32_t last_loop_ms = millis();
     uint32_t now = millis();
-    float dt = 0.0f;
-    if (last_loop_ms != 0) {
-        dt = (now - last_loop_ms) / 1000.0f;
-    }
+    float dt = (now - last_loop_ms) / 1000.0f;
     last_loop_ms = now;
 
     // ── Determine target throttle and ramp rate ──
     uint32_t last_remote_rx_ms = EspnowReceiver::get_last_rx_ms();
     float current_throttle = EspnowReceiver::get_latest_throttle();
 
+    // Prevent NaN
+    if (std::isnan(current_throttle)) {
+        current_throttle = 0.0f;
+    }
+    // Inclusive Clamping
+    if (current_throttle > 100.0f) current_throttle = 100.0f;
+    if (current_throttle < -100.0f) current_throttle = -100.0f;
+
     bool signal_lost = (now - last_remote_rx_ms > FAILSAFE_TIMEOUT_MS);
-    float target = signal_lost ? 0.0f : current_throttle;
-    float rate   = signal_lost ? FAILSAFE_COAST_RATE : RAMP_RATE_PER_SEC;
+    float target;
+    float rate;
+    
+    if (signal_lost) {
+        if (current_throttle < 0.0f) {
+            target = current_throttle; // LOCK brakes
+            rate = RAMP_RATE_PER_SEC;  // Allow normal ramp to the locked brake value
+        } else {
+            target = 0.0f;             // Coast to 0
+            rate = FAILSAFE_COAST_RATE;
+        }
+    } else {
+        target = current_throttle;
+        rate = RAMP_RATE_PER_SEC;
+    }
     
     // ── Ramp limiter: smoothly move ramped_throttle towards target ──
     float max_delta = rate * dt; // max change per tick
@@ -112,8 +131,10 @@ void ReceiverApp::update() {
     
     // ── Send to ESC every 50ms (20Hz) ──
     static uint32_t last_uart = 0;
+    static uint32_t last_keep_alive = 0;
     if (now - last_uart > UART_UPDATE_MS) {
         last_uart = now;
+        last_keep_alive = now; // Throttle satisfies watchdog
         
         // Map -100.0 -> 100.0 to 0 -> 1023 (512 is neutral)
         int32_t raw_val = 512 + (int32_t)(output * 5.12f);
@@ -123,19 +144,15 @@ void ReceiverApp::update() {
         
         EscUartDriver::send_throttle(throttle_val);
 
-        // Send keep-alive command every 200ms to satisfy FTESC UART watchdog
-        static uint32_t last_keep_alive = 0;
-        if (now - last_keep_alive >= 200) {
-            last_keep_alive = now;
-            EscUartDriver::send_keep_alive();
-        }
-
 #if defined(DEBUG_ESPNOW) && !defined(RECEIVER_DEBUG_MODE)
 #ifdef ARDUINO
         Serial.printf("[UART] Ramped: %.1f%% | Output: %.1f%% | Signal: %s\n",
                       ramped_throttle, output, signal_lost ? "LOST" : "OK");
 #endif
 #endif
+    } else if (now - last_keep_alive >= 200) {
+        last_keep_alive = now;
+        EscUartDriver::send_keep_alive();
     }
 
     // ── Send ReceiverStatusPacket to Dash every 100ms ──

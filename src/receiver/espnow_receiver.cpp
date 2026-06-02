@@ -19,10 +19,13 @@ static uint8_t dash_mac[]   = {0x3C, 0x0F, 0x02, 0xC2, 0xD4, 0xCC};
 
 namespace EspnowReceiver {
 
-    static float current_throttle = 0.0f;
-    static uint32_t last_remote_rx_ms = 0;
+    static volatile float current_throttle = 0.0f;
+    static volatile uint32_t last_remote_rx_ms = 0;
 
     extern "C" void onDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
+        if (memcmp(mac, remote_mac, 6) != 0) {
+            return;
+        }
         if (len == sizeof(ControlPacket)) {
             ControlPacket pkt;
             memcpy(&pkt, incomingData, sizeof(ControlPacket));
@@ -51,16 +54,12 @@ namespace EspnowReceiver {
         if (esp_now_init() != 0) {
             return;
         }
-#ifdef RECEIVER_DEBUG_MODE
         esp_now_set_self_role(ESP_NOW_ROLE_COMBO);
-#else
-        esp_now_set_self_role(ESP_NOW_ROLE_SLAVE);
-#endif
         esp_now_register_recv_cb(onDataRecv);
 
-#ifdef RECEIVER_DEBUG_MODE
-        // Add Dashboard as a peer so we can send debug telemetry back
+        // Add Dashboard as a peer so we can send telemetry back
         esp_now_add_peer(dash_mac, ESP_NOW_ROLE_COMBO, 0, NULL, 0);
+#ifdef RECEIVER_DEBUG_MODE
         Serial.println("ESP-NOW initialized in COMBO mode.");
 #endif
 #endif

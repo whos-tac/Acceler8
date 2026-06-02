@@ -63,8 +63,8 @@ namespace EscUartDriver {
         Serial.write(FTESC_STX);
         Serial.write(15); // payload length (DLEN)
         Serial.write(payload, 15);
-        Serial.write((crc >> 8) & 0xFF);
-        Serial.write(crc & 0xFF);
+        Serial.write(crc & 0xFF);         // Low byte first
+        Serial.write((crc >> 8) & 0xFF);  // High byte second
         Serial.write(FTESC_ETX);
 #else
         // Simulation - no UART output
@@ -82,8 +82,8 @@ namespace EscUartDriver {
         Serial.write(FTESC_STX);
         Serial.write(1); // payload length (DLEN)
         Serial.write(payload, 1);
-        Serial.write((crc >> 8) & 0xFF);
-        Serial.write(crc & 0xFF);
+        Serial.write(crc & 0xFF);         // Low byte first
+        Serial.write((crc >> 8) & 0xFF);  // High byte second
         Serial.write(FTESC_ETX);
 #else
         // Simulation - no UART output
