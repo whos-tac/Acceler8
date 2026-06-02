@@ -25,6 +25,7 @@ static uint8_t receiver_mac[] = {0xEC, 0x64, 0xC9, 0xCC, 0xD8, 0x54};
 static uint8_t dash_mac[] = {0x3C, 0x0F, 0x02, 0xC2, 0xD4, 0xCC};
 
 // Telemetry State
+static volatile bool new_telemetry_ready = false;
 static TelemetryPacket current_telemetry = {0};
 
 // Pin Definitions
@@ -56,11 +57,9 @@ static void update_adc_calibration(int pot_val) {
     if (pot_val > 50 && pot_val < 4095) {
         if (pot_val < pot_min) {
             pot_min = pot_val;
-            preferences.putInt("pot_min", pot_min);
         }
         if (pot_val > pot_max) {
             pot_max = pot_val;
-            preferences.putInt("pot_max", pot_max);
         }
     }
 }
@@ -90,6 +89,8 @@ static void check_inactivity_sleep(float throttle) {
 
     if (millis() - last_activity_time > 300000) { // 5 minutes
         Serial.println("Inactivity timeout. Deep sleep.");
+        preferences.putInt("pot_min", pot_min);
+        preferences.putInt("pot_max", pot_max);
 #ifdef TFT_BL
         pinMode(TFT_BL, OUTPUT);
         digitalWrite(TFT_BL, LOW);
@@ -145,63 +146,7 @@ static void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 extern "C" void remote_onDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
     if (len == sizeof(TelemetryPacket)) {
         memcpy(&current_telemetry, incomingData, sizeof(TelemetryPacket));
-#ifdef DEBUG_ESPNOW
-#ifdef ARDUINO
-        Serial.printf("[ESP-NOW] RX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Power: %.0fW\n", 
-                      current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
-#else
-        printf("[ESP-NOW] RX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Power: %.0fW\n", 
-                      current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
-#endif
-#endif
-        // 1. Update Speed dial and label
-        if (lbl_speed) {
-            char spd_buf[16];
-            snprintf(spd_buf, sizeof(spd_buf), "%.0f", current_telemetry.speed_kmh);
-            lv_label_set_text(lbl_speed, spd_buf);
-        }
-        if (arc_speed) {
-            lv_arc_set_value(arc_speed, (int)current_telemetry.speed_kmh);
-        }
-
-        // 2. Update Board Battery
-        if (lbl_board_volts) {
-            char v_buf[16];
-            snprintf(v_buf, sizeof(v_buf), "%.1fV", current_telemetry.battery_voltage_v);
-            lv_label_set_text(lbl_board_volts, v_buf);
-        }
-        if (bar_board) {
-            float pct = ((current_telemetry.battery_voltage_v - 32.0f) / 10.0f) * 100.0f;
-            if (pct < 0) pct = 0; if (pct > 100) pct = 100;
-            int bar_h = (int)(pct * 0.46f); // Map 100% to max 46px inner height (leaving padding)
-            lv_obj_set_height(bar_board, bar_h);
-        }
-
-        // 3. Update Power readout
-        if (lbl_power) {
-            char pwr_buf[32];
-            snprintf(pwr_buf, sizeof(pwr_buf), "POWER: %.0fW", current_telemetry.power_w);
-            lv_label_set_text(lbl_power, pwr_buf);
-            if (current_telemetry.power_w < 0) {
-                lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00FF88), 0); // regen green
-            } else {
-                lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00CCCC), 0); // normal cyan
-            }
-        }
-
-        // 4. Update Header status
-        if (lbl_status) {
-            const char* sig = "[#][#][#][-]";
-            const char* can = current_telemetry.can_alive ? "OK" : "!!";
-            char stat_buf[64];
-            snprintf(stat_buf, sizeof(stat_buf), "SIG: %s | CAN: %s", sig, can);
-            lv_label_set_text(lbl_status, stat_buf);
-            if (current_telemetry.can_alive) {
-                lv_obj_set_style_text_color(lbl_status, lv_color_hex(0x00FF88), 0);
-            } else {
-                lv_obj_set_style_text_color(lbl_status, lv_color_hex(0xFF3300), 0);
-            }
-        }
+        new_telemetry_ready = true;
     }
 }
 
@@ -416,11 +361,72 @@ void RemoteApp::init() {
 void RemoteApp::update() {
     static uint32_t last_send = 0;
     
+    if (new_telemetry_ready) {
+        new_telemetry_ready = false;
+#ifdef DEBUG_ESPNOW
+#ifdef ARDUINO
+        Serial.printf("[ESP-NOW] RX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Power: %.0fW\n", 
+                      current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+#else
+        printf("[ESP-NOW] RX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Power: %.0fW\n", 
+                      current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+#endif
+#endif
+        // 1. Update Speed dial and label
+        if (lbl_speed) {
+            char spd_buf[16];
+            snprintf(spd_buf, sizeof(spd_buf), "%.0f", current_telemetry.speed_kmh);
+            lv_label_set_text(lbl_speed, spd_buf);
+        }
+        if (arc_speed) {
+            lv_arc_set_value(arc_speed, (int)current_telemetry.speed_kmh);
+        }
+
+        // 2. Update Board Battery
+        if (lbl_board_volts) {
+            char v_buf[16];
+            snprintf(v_buf, sizeof(v_buf), "%.1fV", current_telemetry.battery_voltage_v);
+            lv_label_set_text(lbl_board_volts, v_buf);
+        }
+        if (bar_board) {
+            float pct = ((current_telemetry.battery_voltage_v - 32.0f) / 10.0f) * 100.0f;
+            if (pct < 0) pct = 0; if (pct > 100) pct = 100;
+            int bar_h = (int)(pct * 0.46f); // Map 100% to max 46px inner height (leaving padding)
+            lv_obj_set_height(bar_board, bar_h);
+        }
+
+        // 3. Update Power readout
+        if (lbl_power) {
+            char pwr_buf[32];
+            snprintf(pwr_buf, sizeof(pwr_buf), "POWER: %.0fW", current_telemetry.power_w);
+            lv_label_set_text(lbl_power, pwr_buf);
+            if (current_telemetry.power_w < 0) {
+                lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00FF88), 0); // regen green
+            } else {
+                lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00CCCC), 0); // normal cyan
+            }
+        }
+
+        // 4. Update Header status
+        if (lbl_status) {
+            const char* sig = "[#][#][#][-]";
+            const char* can = current_telemetry.can_alive ? "OK" : "!!";
+            char stat_buf[64];
+            snprintf(stat_buf, sizeof(stat_buf), "SIG: %s | CAN: %s", sig, can);
+            lv_label_set_text(lbl_status, stat_buf);
+            if (current_telemetry.can_alive) {
+                lv_obj_set_style_text_color(lbl_status, lv_color_hex(0x00FF88), 0);
+            } else {
+                lv_obj_set_style_text_color(lbl_status, lv_color_hex(0xFF3300), 0);
+            }
+        }
+    }
+
     // Read Potentiometer & Remote Battery Volts
 #ifdef ARDUINO
     int pot_val = analogRead(PIN_POT); // 0-4095
     // LilyGo T-Display S3 battery reading pin (or generic scaling for 3.7V - 4.2V range)
-    float rem_volts = 3.7f + (analogRead(4) / 4095.0f) * 0.5f; 
+    float rem_volts = (analogRead(4) / 4095.0f) * 3.3f * 2.0f; 
 #else
     if (slider_pot) sim_pot_val = lv_slider_get_value(slider_pot);
     int pot_val = sim_pot_val;
@@ -462,6 +468,10 @@ void RemoteApp::update() {
         throttle = ((pot_val - 1948.0f) / (1948.0f - p_min)) * 100.0f; // Negative
     }
     
+    if (pot_val < 50 || pot_val > 4045) {
+        throttle = 0.0f;
+    }
+
     if (throttle > 100.0f) throttle = 100.0f;
     if (throttle < -100.0f) throttle = -100.0f;
 
@@ -476,7 +486,7 @@ void RemoteApp::update() {
     // Send every 50ms (20Hz)
     if (millis() - last_send > 50) {
         last_send = millis();
-        ControlPacket pkt;
+        ControlPacket pkt = {0};
         pkt.throttle_percent = throttle;
 #ifdef ARDUINO
         pkt.button_state = last_btn_state;
@@ -484,6 +494,7 @@ void RemoteApp::update() {
         pkt.button_state = 0;
 #endif
         esp_now_send(receiver_mac, (uint8_t *)&pkt, sizeof(ControlPacket));
+        delay(1);
         esp_now_send(dash_mac, (uint8_t *)&pkt, sizeof(ControlPacket));
         
 #ifdef DEBUG_ESPNOW
