@@ -13,6 +13,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
 #include <driver/rtc_io.h>
+#include <driver/gpio.h>
 static SemaphoreHandle_t telemetry_mutex = NULL;
 #else
 // Mock ESP-NOW
@@ -104,6 +105,7 @@ static void check_inactivity_sleep(float throttle) {
         digitalWrite(PIN_POWER_ON, LOW);
         esp_sleep_enable_ext0_wakeup((gpio_num_t)PIN_BTN_CONFIRM, 0);
         rtc_gpio_pullup_en((gpio_num_t)PIN_BTN_CONFIRM);
+        gpio_hold_en((gpio_num_t)PIN_POWER_ON);
         esp_deep_sleep_start();
     }
 }
@@ -153,7 +155,7 @@ static void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 extern "C" void remote_onDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
     if (len == sizeof(TelemetryPacket)) {
 #ifdef ARDUINO
-        if (telemetry_mutex) xSemaphoreTake(telemetry_mutex, portMAX_DELAY);
+        if (telemetry_mutex) xSemaphoreTake(telemetry_mutex, 0);
 #endif
         memcpy(&current_telemetry, incomingData, sizeof(TelemetryPacket));
         new_telemetry_ready = true;
@@ -194,6 +196,7 @@ void RemoteApp::init() {
         if (digitalRead(pins[i]) == LOW) last_btn_state |= (1 << i);
     }
 
+    WiFi.disconnect(true);
     WiFi.mode(WIFI_STA);
     if (esp_now_init() != ESP_OK) {
         Serial.println("Error initializing ESP-NOW");
@@ -402,34 +405,55 @@ void RemoteApp::update() {
         if (lbl_speed) {
             char spd_buf[16];
             snprintf(spd_buf, sizeof(spd_buf), "%.0f", local_telemetry.speed_kmh);
-            lv_label_set_text(lbl_speed, spd_buf);
+            static char last_spd_buf[16] = "";
+            if (strcmp(spd_buf, last_spd_buf) != 0) {
+                strcpy(last_spd_buf, spd_buf);
+                lv_label_set_text(lbl_speed, spd_buf);
+            }
         }
         if (arc_speed) {
-            lv_arc_set_value(arc_speed, (int)local_telemetry.speed_kmh);
+            static int last_speed_val = -1;
+            int speed_val = (int)local_telemetry.speed_kmh;
+            if (speed_val != last_speed_val) {
+                last_speed_val = speed_val;
+                lv_arc_set_value(arc_speed, speed_val);
+            }
         }
 
         // 2. Update Board Battery
         if (lbl_board_volts) {
             char v_buf[16];
             snprintf(v_buf, sizeof(v_buf), "%.1fV", local_telemetry.battery_voltage_v);
-            lv_label_set_text(lbl_board_volts, v_buf);
+            static char last_v_buf[16] = "";
+            if (strcmp(v_buf, last_v_buf) != 0) {
+                strcpy(last_v_buf, v_buf);
+                lv_label_set_text(lbl_board_volts, v_buf);
+            }
         }
         if (bar_board) {
             float pct = ((local_telemetry.battery_voltage_v - 32.0f) / 10.0f) * 100.0f;
             if (pct < 0) pct = 0; if (pct > 100) pct = 100;
             int bar_h = (int)(pct * 0.46f); // Map 100% to max 46px inner height (leaving padding)
-            lv_obj_set_height(bar_board, bar_h);
+            static int last_bar_h = -1;
+            if (bar_h != last_bar_h) {
+                last_bar_h = bar_h;
+                lv_obj_set_height(bar_board, bar_h);
+            }
         }
 
         // 3. Update Power readout
         if (lbl_power) {
             char pwr_buf[32];
             snprintf(pwr_buf, sizeof(pwr_buf), "POWER: %.0fW", local_telemetry.power_w);
-            lv_label_set_text(lbl_power, pwr_buf);
-            if (local_telemetry.power_w < 0) {
-                lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00FF88), 0); // regen green
-            } else {
-                lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00CCCC), 0); // normal cyan
+            static char last_pwr_buf[32] = "";
+            if (strcmp(pwr_buf, last_pwr_buf) != 0) {
+                strcpy(last_pwr_buf, pwr_buf);
+                lv_label_set_text(lbl_power, pwr_buf);
+                if (local_telemetry.power_w < 0) {
+                    lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00FF88), 0); // regen green
+                } else {
+                    lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00CCCC), 0); // normal cyan
+                }
             }
         }
 
@@ -439,11 +463,15 @@ void RemoteApp::update() {
             const char* can = local_telemetry.can_alive ? "OK" : "!!";
             char stat_buf[64];
             snprintf(stat_buf, sizeof(stat_buf), "SIG: %s | CAN: %s", sig, can);
-            lv_label_set_text(lbl_status, stat_buf);
-            if (local_telemetry.can_alive) {
-                lv_obj_set_style_text_color(lbl_status, lv_color_hex(0x00FF88), 0);
-            } else {
-                lv_obj_set_style_text_color(lbl_status, lv_color_hex(0xFF3300), 0);
+            static char last_stat_buf[64] = "";
+            if (strcmp(stat_buf, last_stat_buf) != 0) {
+                strcpy(last_stat_buf, stat_buf);
+                lv_label_set_text(lbl_status, stat_buf);
+                if (local_telemetry.can_alive) {
+                    lv_obj_set_style_text_color(lbl_status, lv_color_hex(0x00FF88), 0);
+                } else {
+                    lv_obj_set_style_text_color(lbl_status, lv_color_hex(0xFF3300), 0);
+                }
             }
         }
     }
@@ -464,13 +492,21 @@ void RemoteApp::update() {
     if (lbl_remote_volts) {
         char rem_buf[16];
         snprintf(rem_buf, sizeof(rem_buf), "%.2fV", rem_volts);
-        lv_label_set_text(lbl_remote_volts, rem_buf);
+        static char last_rem_buf[16] = "";
+        if (strcmp(rem_buf, last_rem_buf) != 0) {
+            strcpy(last_rem_buf, rem_buf);
+            lv_label_set_text(lbl_remote_volts, rem_buf);
+        }
     }
     if (bar_remote) {
         float pct = ((rem_volts - 3.7f) / 0.5f) * 100.0f;
         if (pct < 0) pct = 0; if (pct > 100) pct = 100;
         int bar_h = (int)(pct * 0.46f); // Map 100% to max 46px inner height (leaving padding)
-        lv_obj_set_height(bar_remote, bar_h);
+        static int last_rem_bar_h = -1;
+        if (bar_h != last_rem_bar_h) {
+            last_rem_bar_h = bar_h;
+            lv_obj_set_height(bar_remote, bar_h);
+        }
     }
     
     // Map to -100 to 100
@@ -479,7 +515,9 @@ void RemoteApp::update() {
     update_adc_calibration(pot_val);
     
     float p_max = (float)stored_pot_max;
+    if ((float)pot_val > p_max) p_max = (float)pot_val;
     float p_min = (float)stored_pot_min;
+    if ((float)pot_val < p_min) p_min = (float)pot_val;
     if (p_max < 2149.0f) p_max = 2149.0f; 
     if (p_min > 1947.0f) p_min = 1947.0f; 
 #else
@@ -502,7 +540,12 @@ void RemoteApp::update() {
     if (throttle < -100.0f) throttle = -100.0f;
 
     if (arc_throttle) {
-        lv_arc_set_value(arc_throttle, (int)abs(throttle));
+        static int last_throttle_val = -1;
+        int throttle_val = (int)abs(throttle);
+        if (throttle_val != last_throttle_val) {
+            last_throttle_val = throttle_val;
+            lv_arc_set_value(arc_throttle, throttle_val);
+        }
     }
 
 #ifdef ARDUINO
