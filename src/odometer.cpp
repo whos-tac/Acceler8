@@ -39,7 +39,10 @@ void Odometer::update() {
     
     if (dt_ms > 0 && dt_ms < 1000) { // sanity check
         float dt_h = dt_ms / 3600000.0f;
-        float current_speed = calculate_speed_kmh(fabs((float)g_vehicle_state.erpm));
+        DASH_LOCK();
+        int32_t current_erpm = g_vehicle_state.erpm;
+        DASH_UNLOCK();
+        float current_speed = calculate_speed_kmh(fabs((float)current_erpm));
         
         // Cap the maximum allowable speed integration per tick (e.g., 200 km/h)
         if (current_speed > 200.0f) current_speed = 200.0f;

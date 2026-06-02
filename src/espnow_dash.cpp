@@ -43,11 +43,13 @@ extern "C" void dash_onDataRecv(const uint8_t * mac, const uint8_t *incomingData
         
         // When receiving telemetry over ESP-NOW, it's debug data from Receiver mock.
         // Update vehicle state so UI reflects it.
+        DASH_LOCK();
         g_vehicle_state.speed_kmh = pkt.speed_kmh;
         g_vehicle_state.battery_voltage_v = pkt.battery_voltage_v;
         g_vehicle_state.power_w = pkt.power_w;
         g_vehicle_state.can_alive = true; // fake CAN alive
         g_vehicle_state.has_received_can = true;
+        DASH_UNLOCK();
 
 #ifdef DEBUG_ESPNOW
 #ifdef ARDUINO
@@ -59,7 +61,9 @@ extern "C" void dash_onDataRecv(const uint8_t * mac, const uint8_t *incomingData
     } else if (len == sizeof(ReceiverStatusPacket)) {
         ReceiverStatusPacket pkt;
         memcpy(&pkt, incomingData, sizeof(ReceiverStatusPacket));
+        DASH_LOCK();
         g_vehicle_state.remote_disconnected = pkt.remote_disconnected;
+        DASH_UNLOCK();
         
 #ifdef DEBUG_ESPNOW
 #ifdef ARDUINO
@@ -71,7 +75,9 @@ extern "C" void dash_onDataRecv(const uint8_t * mac, const uint8_t *incomingData
     } else if (len == sizeof(ControlPacket)) {
         ControlPacket pkt;
         memcpy(&pkt, incomingData, sizeof(ControlPacket));
+        DASH_LOCK();
         g_vehicle_state.remote_button_state = pkt.button_state;
+        DASH_UNLOCK();
     }
 }
 
@@ -119,6 +125,7 @@ namespace EspNowDash {
             last_send_time = millis();
 
             TelemetryPacket packet;
+            DASH_LOCK();
             packet.speed_kmh = g_vehicle_state.speed_kmh;
             packet.battery_voltage_v = g_vehicle_state.battery_voltage_v;
             packet.battery_current_a = g_vehicle_state.battery_current_a;
@@ -127,6 +134,7 @@ namespace EspNowDash {
             packet.mosfet_temp_c = g_vehicle_state.mosfet_temp_c;
             packet.range_km = g_vehicle_state.range_km;
             packet.can_alive = g_vehicle_state.can_alive;
+            DASH_UNLOCK();
 
             esp_now_send(remote_mac, (uint8_t *)&packet, sizeof(TelemetryPacket));
         }

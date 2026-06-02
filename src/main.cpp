@@ -5,21 +5,31 @@
 #include <lvgl.h>
 #include "dash_app.h"
 
+#include "can_driver.h"
+
 #ifdef ARDUINO
+SemaphoreHandle_t dash_mutex = NULL;
 
 void setup() {
     Serial.begin(115200);
     delay(100);
     Serial.println("ESK8 Dashboard Executing...");
 
+    dash_mutex = xSemaphoreCreateMutex();
+
     DashApp::init();
 }
 
 void loop() {
+    static uint32_t last_tick = millis();
+    
     DashApp::update();
     
-    // Explicit tick increment for LVGL
-    lv_tick_inc(5);
+    uint32_t now = millis();
+    uint32_t dt = now - last_tick;
+    last_tick = now;
+    
+    lv_tick_inc(dt);
     delay(5);
 }
 
@@ -36,10 +46,15 @@ int main(int argc, char **argv) {
 
     DashApp::init();
 
+    uint32_t last_tick = SDL_GetTicks();
     while(true) {
         DashApp::update();
         
-        lv_tick_inc(5);
+        uint32_t now = SDL_GetTicks();
+        uint32_t dt = now - last_tick;
+        last_tick = now;
+        
+        lv_tick_inc(dt);
         SDL_Delay(5);
     }
     return 0;

@@ -1,9 +1,19 @@
 #pragma once
 #ifdef ARDUINO
 #include <Arduino.h>
-#else
 #include <stdint.h>
 #include <stdbool.h>
+#endif
+
+#ifdef ARDUINO
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
+extern SemaphoreHandle_t dash_mutex;
+#define DASH_LOCK() do { if(dash_mutex) xSemaphoreTake(dash_mutex, portMAX_DELAY); } while(0)
+#define DASH_UNLOCK() do { if(dash_mutex) xSemaphoreGive(dash_mutex); } while(0)
+#else
+#define DASH_LOCK()
+#define DASH_UNLOCK()
 #endif
 
 // Global Telemetry State (Based on VESC standard)

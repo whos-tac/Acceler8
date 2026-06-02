@@ -134,6 +134,8 @@ namespace CANDriver {
         // ============================================================
         // DUAL ESC AGGREGATION Logic
         // ============================================================
+        DASH_LOCK();
+        
         bool master_alive = (now - master_esc.last_update < 500);
         bool slave_alive = (now - slave_esc.last_update < 500);
 
@@ -237,22 +239,24 @@ namespace CANDriver {
         }
 
         // --- Average speed (running) ---
-        if (speed > 1.0f) {  // Only count when actually moving
-            g_vehicle_state.speed_sum += speed;
-            g_vehicle_state.speed_sample_count++;
+        uint32_t dt_ms = now - g_vehicle_state.last_wh_update_ms;
+        if (speed > 1.0f && dt_ms > 0 && dt_ms < 1000) {  // Only count when actually moving
+            g_vehicle_state.speed_sum += (double)speed * dt_ms;
+            g_vehicle_state.speed_sample_count += dt_ms;
             if (g_vehicle_state.speed_sample_count > 0) {
-                g_vehicle_state.avg_speed_kmh = g_vehicle_state.speed_sum / (float)g_vehicle_state.speed_sample_count;
+                g_vehicle_state.avg_speed_kmh = (float)(g_vehicle_state.speed_sum / (double)g_vehicle_state.speed_sample_count);
             }
         }
 
         // --- Wh consumed (integrate power over time) ---
-        uint32_t dt_ms = now - g_vehicle_state.last_wh_update_ms;
+        static double internal_wh_acc = 0.0;
         if (dt_ms > 0 && dt_ms < 1000) {  // Sanity guard
-            float dt_h = (float)dt_ms / 3600000.0f;  // ms → hours
-            float power = g_vehicle_state.power_w;
+            double dt_h = (double)dt_ms / 3600000.0;  // ms → hours
+            double power = (double)g_vehicle_state.power_w;
             // Only count positive power consumption (not regen recovery for simplicity)
-            if (power > 0.0f) {
-                g_vehicle_state.wh_consumed += power * dt_h;
+            if (power > 0.0) {
+                internal_wh_acc += power * dt_h;
+                g_vehicle_state.wh_consumed = (float)internal_wh_acc;
             }
         }
         g_vehicle_state.last_wh_update_ms = now;
@@ -279,6 +283,8 @@ namespace CANDriver {
             g_vehicle_state.range_km = (BATTERY_TOTAL_WH * batt_pct) / 25.0f;  // Assume ~25 Wh/km (conservative)
             if (g_vehicle_state.range_km > 99.0f) g_vehicle_state.range_km = 99.0f;
         }
+        
+        DASH_UNLOCK();
     }
 
 }

@@ -309,7 +309,9 @@ namespace UIController {
     // UPDATE
     // ================================================================
     void update() {
+        DASH_LOCK();
         uint8_t curr_btn = g_vehicle_state.remote_button_state;
+        DASH_UNLOCK();
 
         if (SettingsScreen::is_active()) {
             SettingsScreen::update(curr_btn);
@@ -327,6 +329,7 @@ namespace UIController {
             return;
         }
 
+        DASH_LOCK();
         int32_t erpm = g_vehicle_state.erpm;
         float v      = g_vehicle_state.battery_voltage_v;
         float t_esc  = g_vehicle_state.mosfet_temp_c;
@@ -334,6 +337,12 @@ namespace UIController {
         float whkm   = g_vehicle_state.wh_per_km;
         bool can_ok  = g_vehicle_state.can_alive;
         float pwr    = g_vehicle_state.power_w;
+        
+        bool can_timeout = (!g_vehicle_state.can_alive && g_vehicle_state.has_received_can);
+        bool overtemp = (t_esc > 85.0f || g_vehicle_state.motor_temp_c > 100.0f);
+        bool remote_dc = g_vehicle_state.remote_disconnected;
+        DASH_UNLOCK();
+
         float speed  = calculate_speed_kmh(erpm);
 
         if (fabs(pwr) < 0.5f) pwr = 0.0f;
@@ -437,9 +446,7 @@ namespace UIController {
         }
 
         // ── GLOBAL ALERTS ────────────────────────────────────────────
-        bool can_timeout = (!g_vehicle_state.can_alive && g_vehicle_state.has_received_can);
-        bool overtemp = (t_esc > 85.0f || g_vehicle_state.motor_temp_c > 100.0f);
-        bool remote_dc = g_vehicle_state.remote_disconnected;
+
         
         if (can_timeout || overtemp || remote_dc) {
             lv_obj_clear_flag(alert_overlay, LV_OBJ_FLAG_HIDDEN);

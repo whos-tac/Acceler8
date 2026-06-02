@@ -149,21 +149,22 @@ namespace SettingsScreen {
                 if (current_setting_idx == 3 && pressed_confirm) { // Odometer reset
                     Odometer::reset();
                 }
-            }
-            if (current_setting_idx == 0) { // Pole pairs
-                if (pressed_up || pressed_right) { motor_pole_pairs++; needs_update = true; }
-                if (pressed_down || pressed_left) { motor_pole_pairs--; needs_update = true; }
-                if (motor_pole_pairs < 1) motor_pole_pairs = 1;
-            } else if (current_setting_idx == 1) { // Gear ratio
-                int gear_ratio_x10 = (int)(gear_ratio * 10.0f + 0.5f);
-                if (pressed_up || pressed_right) { gear_ratio_x10 += 1; needs_update = true; }
-                if (pressed_down || pressed_left) { gear_ratio_x10 -= 1; needs_update = true; }
-                if (gear_ratio_x10 < 1) gear_ratio_x10 = 1;
-                gear_ratio = gear_ratio_x10 / 10.0f;
-            } else if (current_setting_idx == 2) { // Wheel dia
-                if (pressed_up || pressed_right) { wheel_diameter_mm += 1.0f; needs_update = true; }
-                if (pressed_down || pressed_left) { wheel_diameter_mm -= 1.0f; needs_update = true; }
-                if (wheel_diameter_mm < 10.0f) wheel_diameter_mm = 10.0f;
+            } else {
+                if (current_setting_idx == 0) { // Pole pairs
+                    if (pressed_up || pressed_right) { motor_pole_pairs++; needs_update = true; }
+                    if (pressed_down || pressed_left) { motor_pole_pairs--; needs_update = true; }
+                    if (motor_pole_pairs < 1) motor_pole_pairs = 1;
+                } else if (current_setting_idx == 1) { // Gear ratio
+                    int gear_ratio_x10 = (int)(gear_ratio * 10.0f + 0.5f);
+                    if (pressed_up || pressed_right) { gear_ratio_x10 += 1; needs_update = true; }
+                    if (pressed_down || pressed_left) { gear_ratio_x10 -= 1; needs_update = true; }
+                    if (gear_ratio_x10 < 1) gear_ratio_x10 = 1;
+                    gear_ratio = gear_ratio_x10 / 10.0f;
+                } else if (current_setting_idx == 2) { // Wheel dia
+                    if (pressed_up || pressed_right) { wheel_diameter_mm += 1.0f; needs_update = true; }
+                    if (pressed_down || pressed_left) { wheel_diameter_mm -= 1.0f; needs_update = true; }
+                    if (wheel_diameter_mm < 10.0f) wheel_diameter_mm = 10.0f;
+                }
             }
         }
         
