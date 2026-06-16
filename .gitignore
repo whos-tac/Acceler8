@@ -3,3 +3,10 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+
+# AI Context and Workflows
+.ai_context/
+.superpowers/
+docs/superpowers/
+AI_CAN_WORKFLOW.md
+AI_UI_WORKFLOW.md
