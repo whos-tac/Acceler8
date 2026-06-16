@@ -13,7 +13,6 @@ SemaphoreHandle_t dash_mutex = NULL;
 void setup() {
     Serial.begin(115200);
     delay(100);
-    Serial.println("ESK8 Dashboard Executing...");
 
     dash_mutex = xSemaphoreCreateMutex();
 

@@ -7,6 +7,18 @@
 #ifdef ARDUINO
 #include <Arduino_GFX_Library.h>
 #include <Wire.h>
+#include <TAMC_GT911.h>
+#include "ui_controller.h"
+
+// Touch IC Configuration
+#define TOUCH_SDA  15
+#define TOUCH_SCL  7
+#define TOUCH_INT  -1
+#define TOUCH_RST  -1
+#define TOUCH_WIDTH 480
+#define TOUCH_HEIGHT 480
+
+TAMC_GT911 tp = TAMC_GT911(TOUCH_SDA, TOUCH_SCL, TOUCH_INT, TOUCH_RST, TOUCH_WIDTH, TOUCH_HEIGHT);
 
 // Using ST7701 Waveshare custom profile
 Arduino_DataBus *bus = new Arduino_SWSPI(GFX_NOT_DEFINED /* DC */, 42 /* CS */, 2 /* SCK */, 1 /* MOSI */, GFX_NOT_DEFINED /* MISO */);
@@ -20,7 +32,7 @@ Arduino_ESP32RGBPanel *rgbpanel = new Arduino_ESP32RGBPanel(
   1 /* vsync_poly */, 10, 8, 20);
 
 Arduino_RGB_Display *gfx = new Arduino_RGB_Display(
-  SCREEN_WIDTH, SCREEN_HEIGHT, rgbpanel, 1 /* rotation */, true /* auto_flush */,
+  SCREEN_WIDTH, SCREEN_HEIGHT, rgbpanel, 0 /* rotation */, true /* auto_flush */,
   bus, GFX_NOT_DEFINED /* RST */, st7701_type1_init_operations, sizeof(st7701_type1_init_operations));
 
 static lv_disp_draw_buf_t draw_buf;
@@ -35,6 +47,22 @@ void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color
     gfx->draw16bitRGBBitmap(area->x1, area->y1, (uint16_t *)&color_p->full, w, h);
 #endif
     lv_disp_flush_ready(disp);
+}
+
+static void my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * data) {
+    if (!UIController::touch_enabled) {
+        data->state = LV_INDEV_STATE_REL;
+        return;
+    }
+
+    tp.read();
+    if (tp.isTouched) {
+        data->state = LV_INDEV_STATE_PR;
+        data->point.x = tp.points[0].x;
+        data->point.y = tp.points[0].y;
+    } else {
+        data->state = LV_INDEV_STATE_REL;
+    }
 }
 
 namespace DisplayDriver {
@@ -56,6 +84,15 @@ namespace DisplayDriver {
         disp_drv.flush_cb = my_disp_flush;
         disp_drv.draw_buf = &draw_buf;
         lv_disp_drv_register(&disp_drv);
+
+        tp.begin();
+        tp.setRotation(ROTATION_NORMAL);
+
+        static lv_indev_drv_t indev_drv;
+        lv_indev_drv_init(&indev_drv);
+        indev_drv.type = LV_INDEV_TYPE_POINTER;
+        indev_drv.read_cb = my_touchpad_read;
+        lv_indev_drv_register(&indev_drv);
     }
 
     void tick() {

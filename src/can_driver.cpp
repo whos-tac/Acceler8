@@ -26,6 +26,8 @@ namespace CANDriver {
 #ifdef ARDUINO
         // Initialize ESP32 TWAI (CAN) hardware
         twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT((gpio_num_t)6, (gpio_num_t)0, TWAI_MODE_NORMAL);
+        g_config.rx_queue_len = 1024; // HUGE queue to survive 8000Hz 0x00 spam without dropping telemetry!
+        g_config.alerts_enabled = TWAI_ALERT_BUS_OFF | TWAI_ALERT_BUS_ERROR | TWAI_ALERT_RX_QUEUE_FULL;
         twai_timing_config_t t_config = TWAI_TIMING_CONFIG_1MBITS();
         twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
 
@@ -83,6 +85,10 @@ namespace CANDriver {
         return val;
     }
 
+    static int32_t parseI32(const uint8_t* data) {
+        return (int32_t)((data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3]);
+    }
+
     static int16_t parseI16(const uint8_t* data) {
         return (int16_t)((data[0] << 8) | data[1]);
     }
@@ -92,22 +98,46 @@ namespace CANDriver {
 
 #ifdef ARDUINO
         esp_task_wdt_reset();
+        
+
         // ============================================================
         // FLIPSKY FTESC CAN PROTOCOL (Custom EID format)
         // ============================================================
+        
+        uint32_t alerts;
+        if (twai_read_alerts(&alerts, 0) == ESP_OK) {
+            // Alert logging removed to prevent USB CDC block
+        }
+
         twai_message_t message;
-        int rx_count = 0;
-        while (twai_receive(&message, 0) == ESP_OK && rx_count < 20) {
-            rx_count++;
+        // Drain the queue completely on every loop to prevent overflow
+        while (twai_receive(&message, 0) == ESP_OK) {
             if (message.extd && message.data_length_code >= 6) {
                 uint32_t raw_id = message.identifier;
                 // Flipsky Layout: Bits 8-15 = ESC ID, Bits 0-7 = Command ID
                 uint8_t mcu_id = (raw_id >> 8) & 0xFF;
                 uint8_t cmd_id = raw_id & 0xFF;
 
+                static int master_id = -1;
+                static int slave_id = -1;
+
+                // Software filter: aggressively ignore 0x00 spam to save CPU cycles
+                if (cmd_id == 0x00) continue;
+                
+                
+                // ============================================================
+                // FLIPSKY CUSTOM TELEMETRY PARSING
+                // ID Layout: Bits 8-15 = ESC ID, Bits 0-7 = Command
+                // ============================================================
+                // Only latch onto IDs if they are sending Flipsky telemetry commands
+                if (cmd_id == 0x0B || cmd_id == 0x0C || cmd_id == 0x0D) {
+                    if (master_id == -1) master_id = mcu_id;
+                    else if (slave_id == -1 && mcu_id != master_id) slave_id = mcu_id;
+                }
+
                 EscData* target = nullptr;
-                if (mcu_id == 163) target = &master_esc;
-                else if (mcu_id == 224) target = &slave_esc;
+                if (mcu_id == master_id) target = &master_esc;
+                else if (mcu_id == slave_id) target = &slave_esc;
 
                 if (target) {
                     target->last_update = now;
@@ -117,9 +147,9 @@ namespace CANDriver {
                             target->motor_current = parseI24(&message.data[0]) / 1000.0f;
                             target->battery_current = parseI24(&message.data[3]) / 1000.0f;
                             break;
-                        case 0x0C: // Data 1: ERPM & Duty
-                            target->erpm = fabs((float)parseI24(&message.data[0]));
-                            target->duty = (float)parseI24(&message.data[3]) / 1000.0f;
+                        case 0x0C: // Data 1: ERPM & Duty (Flipsky uses 3-bytes for both!)
+                            target->erpm = fabs((float)parseI24(&message.data[0])); 
+                            target->duty = (float)parseI24(&message.data[3]) / 1000.0f; 
                             break;
                         case 0x0D: // Data 2: Temps & Voltage (scaled by 100)
                             target->mosfet_temp = parseI16(&message.data[0]) / 100.0f;
@@ -136,8 +166,8 @@ namespace CANDriver {
         // ============================================================
         DASH_LOCK();
         
-        bool master_alive = (master_esc.last_update != 0 && now - master_esc.last_update < 500);
-        bool slave_alive = (slave_esc.last_update != 0 && now - slave_esc.last_update < 500);
+        bool master_alive = (master_esc.last_update != 0 && now - master_esc.last_update < 2500);
+        bool slave_alive = (slave_esc.last_update != 0 && now - slave_esc.last_update < 2500);
 
         if (master_alive || slave_alive) {
             g_vehicle_state.can_alive = true;
@@ -148,13 +178,16 @@ namespace CANDriver {
             float max_fet = -100, max_mot = -100;
             int v_count = 0;
 
+            int32_t erpm_m = master_alive ? abs((int32_t)master_esc.erpm) : 0;
+            int32_t erpm_s = slave_alive ? abs((int32_t)slave_esc.erpm) : 0;
+            g_vehicle_state.erpm = (erpm_m > erpm_s) ? erpm_m : erpm_s; // Use highest ERPM for instant response
+
             if (master_alive) {
                 v += master_esc.voltage;
                 batt_amps += master_esc.battery_current;
                 mot_amps += master_esc.motor_current;
                 max_fet = master_esc.mosfet_temp;
                 max_mot = master_esc.motor_temp;
-                g_vehicle_state.erpm = (int32_t)master_esc.erpm;
                 g_vehicle_state.duty_cycle = master_esc.duty;
                 v_count++;
             }
@@ -165,9 +198,9 @@ namespace CANDriver {
                 mot_amps += slave_esc.motor_current;
                 if (slave_esc.mosfet_temp > max_fet) max_fet = slave_esc.mosfet_temp;
                 if (slave_esc.motor_temp > max_mot) max_mot = slave_esc.motor_temp;
-                // If master is dead, use slave erpm for speed
+                
+                // If master is dead, duty cycle falls back to slave
                 if (!master_alive) {
-                    g_vehicle_state.erpm = (int32_t)slave_esc.erpm;
                     g_vehicle_state.duty_cycle = slave_esc.duty;
                 }
                 v_count++;
@@ -180,27 +213,10 @@ namespace CANDriver {
                 g_vehicle_state.mosfet_temp_c = max_fet;
                 g_vehicle_state.motor_temp_c = max_mot;
 
-                // Minimal logging for confidence
-                static uint32_t last_log = 0;
-                if (now - last_log > 1000) {
-                    Serial.printf("Flipsky Active: M_ID=163 (%.1fV, %.1fA) | S_ID=224 (%.1fV, %.1fA) | Sum=%.0fW\n", 
-                        master_esc.voltage, master_esc.battery_current,
-                        slave_esc.voltage, slave_esc.battery_current,
-                        g_vehicle_state.power_w);
-                    last_log = now;
-                }
             }
         } else if (g_vehicle_state.has_received_can) {
-            if (!g_vehicle_state.mock_mode_active) {
-                g_vehicle_state.can_alive = false;
-                g_vehicle_state.speed_kmh = 0.0f;
-                g_vehicle_state.power_w = 0.0f;
-                g_vehicle_state.erpm = 0;
-                g_vehicle_state.battery_current_a = 0.0f;
-                g_vehicle_state.current_a = 0.0f;
-                memset(&master_esc, 0, sizeof(EscData));
-                memset(&slave_esc, 0, sizeof(EscData));
-            }
+            // NEVER TIMEOUT! If the ESC stops talking, keep the last known values!
+            // This prevents "CAN Timeout" flashing when the VESC stops sending telemetry at 0 RPM.
         }
 
 #else
@@ -213,22 +229,30 @@ namespace CANDriver {
         // DERIVED METRICS (computed from raw data)
         // ============================================================
 
-        // --- Power (Watts) ---
-#ifdef ARDUINO
-        if (!g_vehicle_state.mock_mode_active) {
-            g_vehicle_state.power_w = g_vehicle_state.battery_voltage_v * g_vehicle_state.battery_current_a;
-        }
-#endif
-
         // --- Regen flag ---
         g_vehicle_state.regen_active = (g_vehicle_state.battery_current_a < -0.5f);
 
-        // --- Speed for derived calcs ---
+        // --- Speed & Power for derived calcs ---
 #ifdef ARDUINO
         float speed;
+        float raw_power;
+        
         if (!g_vehicle_state.mock_mode_active) {
-            speed = fabs(calculate_speed_kmh(g_vehicle_state.erpm));
-            g_vehicle_state.speed_kmh = speed;
+            float raw_speed = fabs(calculate_speed_kmh(g_vehicle_state.erpm));
+            raw_power = g_vehicle_state.battery_voltage_v * g_vehicle_state.battery_current_a;
+            
+            // Apply Exponential Moving Average (EMA) to smooth out sporadic FTESC telemetry bursts!
+            // If the FTESC drops frames or updates randomly, the UI will glide smoothly instead of jumping.
+            if (g_vehicle_state.speed_kmh == 0 && raw_speed > 0.5f) {
+                g_vehicle_state.speed_kmh = raw_speed; // Instant jump on first start
+            } else {
+                g_vehicle_state.speed_kmh = (g_vehicle_state.speed_kmh * 0.85f) + (raw_speed * 0.15f);
+            }
+            
+            speed = g_vehicle_state.speed_kmh;
+            
+            g_vehicle_state.power_w = (g_vehicle_state.power_w * 0.7f) + (raw_power * 0.3f);
+            g_vehicle_state.current_a = g_vehicle_state.battery_current_a;
         } else {
             speed = fabs(g_vehicle_state.speed_kmh);
         }

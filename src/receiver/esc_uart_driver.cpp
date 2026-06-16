@@ -35,7 +35,7 @@ namespace EscUartDriver {
 #endif
     }
 
-    void send_throttle(uint16_t throttle_val) {
+    void send_throttle(uint16_t throttle_val, uint8_t gear, uint8_t direction, bool horn_active, bool headlight_active, bool brake_light_active) {
 #if defined(ARDUINO) && defined(RECEIVER_DEBUG_MODE)
         Serial.printf("[DEBUG] ESC Throttle Val: %u\n", throttle_val);
 #elif defined(ARDUINO)
@@ -45,12 +45,12 @@ namespace EscUartDriver {
         payload[2] = 0x00;   // D1: Reserved
         payload[3] = (throttle_val >> 8) & 0xFF; // D2: Throttle High
         payload[4] = throttle_val & 0xFF;        // D3: Throttle Low
-        payload[5] = 0x00;   // D4: Enable Direction Switching
-        payload[6] = 0x00;   // D5: Motor Rotation Direction
-        payload[7] = 0x00;   // D6: Speed Limit Gear
-        payload[8] = 0x00;   // D7: Horn
-        payload[9] = 0x00;   // D8: Headlight
-        payload[10] = 0x00;  // D9: Brake Light
+        payload[5] = 0x01;   // D4: Enable Direction Switching (Must be 1 for D5 to work)
+        payload[6] = direction;   // D5: Motor Rotation Direction
+        payload[7] = gear;   // D6: Speed Limit Gear
+        payload[8] = horn_active ? 0x01 : 0x00;        // D7: Horn
+        payload[9] = headlight_active ? 0x01 : 0x00;   // D8: Headlight
+        payload[10] = brake_light_active ? 0x01 : 0x00; // D9: Brake Light
         payload[11] = 0x00;  // D10: Enable Cruise
         payload[12] = 0x00;  // D11: Cruise Mode
         payload[13] = 0x00;  // D12: Enable Multi-mode
@@ -63,8 +63,8 @@ namespace EscUartDriver {
         Serial.write(FTESC_STX);
         Serial.write(15); // payload length (DLEN)
         Serial.write(payload, 15);
-        Serial.write(crc & 0xFF);         // Low byte first
-        Serial.write((crc >> 8) & 0xFF);  // High byte second
+        Serial.write((crc >> 8) & 0xFF);  // High byte first (Big-endian)
+        Serial.write(crc & 0xFF);         // Low byte second
         Serial.write(FTESC_ETX);
 #else
         // Simulation - no UART output
@@ -82,8 +82,8 @@ namespace EscUartDriver {
         Serial.write(FTESC_STX);
         Serial.write(1); // payload length (DLEN)
         Serial.write(payload, 1);
-        Serial.write(crc & 0xFF);         // Low byte first
-        Serial.write((crc >> 8) & 0xFF);  // High byte second
+        Serial.write((crc >> 8) & 0xFF);  // High byte first
+        Serial.write(crc & 0xFF);         // Low byte second
         Serial.write(FTESC_ETX);
 #else
         // Simulation - no UART output

@@ -16,8 +16,8 @@ extern "C" uint32_t millis();
 
 // ── Safety Configuration ──────────────────────────────────────────────
 #define MAX_DRIVE_CURRENT_A   50.0f   // Max forward drive current (Amps)
-#define MAX_BRAKE_CURRENT_A   20.0f   // Max regen brake current (Amps) — gentler than drive
-#define THROTTLE_DEADZONE     3.0f    // ±3% deadzone at center
+#define MAX_BRAKE_CURRENT_A   50.0f   // Max regen brake current (Amps) — same as drive
+#define THROTTLE_DEADZONE     10.0f    // ±10% deadzone at center
 #define RAMP_RATE_PER_SEC     75.0f   // Max throttle change %/sec (0→100% in ~1.3s)
 #define RAMP_DOWN_RATE_PER_SEC 500.0f // Fast decay %/sec when decelerating or braking
 #define FAILSAFE_COAST_RATE   200.0f  // Throttle decay %/sec on signal loss (100→0% in ~0.5s)
@@ -35,6 +35,10 @@ static lv_obj_t* slider_power;
 #endif
 
 void ReceiverApp::init() {
+#ifdef ARDUINO
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, HIGH); // Active LOW on D1 Mini
+#endif
     EscUartDriver::init();
     EspnowReceiver::init();
 
@@ -88,11 +92,16 @@ void ReceiverApp::update() {
     // ── Determine target throttle and ramp rate ──
     uint32_t last_remote_rx_ms;
     float current_throttle;
+    uint8_t btn_state;
 #ifdef ARDUINO
     noInterrupts();
 #endif
     last_remote_rx_ms = EspnowReceiver::get_last_rx_ms();
     current_throttle = EspnowReceiver::get_latest_throttle();
+    btn_state = EspnowReceiver::get_latest_button_state();
+    bool settings_active = EspnowReceiver::is_settings_active();
+    uint8_t current_gear = EspnowReceiver::get_gear();
+    uint8_t current_direction = EspnowReceiver::get_direction();
 #ifdef ARDUINO
     interrupts();
 #endif
@@ -113,6 +122,18 @@ void ReceiverApp::update() {
     bool signal_lost = (!first_packet_received || (now - last_remote_rx_ms > FAILSAFE_TIMEOUT_MS));
     float target;
     
+#ifdef ARDUINO
+    if (signal_lost) {
+        digitalWrite(LED_BUILTIN, HIGH); // LED OFF when disconnected
+    } else {
+        if (std::abs(current_throttle) > THROTTLE_DEADZONE) {
+            digitalWrite(LED_BUILTIN, (now % 50 < 25) ? LOW : HIGH); // 20Hz ultra-fast blink on throttle
+        } else {
+            digitalWrite(LED_BUILTIN, (now % 200 < 100) ? LOW : HIGH); // 5Hz blink when idle connected
+        }
+    }
+#endif
+
     static bool safe_start = false;
     if (signal_lost) {
         safe_start = false;
@@ -121,7 +142,7 @@ void ReceiverApp::update() {
         safe_start = true;
     }
     
-    if (signal_lost || !safe_start) {
+    if (signal_lost || settings_active || !safe_start) {
         target = 0.0f;             // Coast to 0
     } else {
         if (std::abs(current_throttle) <= THROTTLE_DEADZONE) {
@@ -139,7 +160,7 @@ void ReceiverApp::update() {
     float time_left = dt;
     while (time_left > 0.0f && ramped_throttle != target) {
         float current_rate;
-        if (signal_lost || !safe_start) {
+        if (signal_lost || settings_active || !safe_start) {
             current_rate = FAILSAFE_COAST_RATE;
         } else {
             bool accelerating = false;
@@ -200,7 +221,15 @@ void ReceiverApp::update() {
         if (raw_val < 0) raw_val = 0;
         uint16_t throttle_val = (uint16_t)raw_val;
         
-        EscUartDriver::send_throttle(throttle_val);
+        // 0=UP, 1=DOWN, 2=LEFT, 3=RIGHT, 4=CONFIRM
+        bool horn_active = !settings_active && ((btn_state & (1 << 4)) != 0); // CONFIRM for Horn
+        
+        bool headlight_active = EspnowReceiver::is_headlight_active();
+        
+        // Auto brake light when targeting reverse current
+        bool brake_light_active = (target < 0.0f);
+        
+        EscUartDriver::send_throttle(throttle_val, current_gear, current_direction, horn_active, headlight_active, brake_light_active);
 
 #if defined(DEBUG_ESPNOW) && defined(RECEIVER_DEBUG_MODE)
 #ifdef ARDUINO

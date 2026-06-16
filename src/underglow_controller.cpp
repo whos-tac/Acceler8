@@ -1,5 +1,6 @@
 #include "underglow_controller.h"
 #include "can_driver.h"
+#include "settings_screen.h"
 
 #ifdef ARDUINO
 #include <NeoPixelBus.h>
@@ -54,6 +55,16 @@ void update() {
   uint8_t brightness = g_vehicle_state.led_brightness;
   float speed_kmh = g_vehicle_state.speed_kmh;
   DASH_UNLOCK();
+
+  if (SettingsScreen::is_active()) {
+      HsbColor hsb(SettingsScreen::underglow_hue / 360.0f, 1.0f, SettingsScreen::display_brightness / 100.0f);
+      RgbColor rgb(hsb);
+      for (uint16_t i = 0; i < PixelCount; i++) {
+        strip.SetPixelColor(i, rgb);
+      }
+      strip.Show();
+      return;
+  }
 
   if (mode == 0) {
     // OFF

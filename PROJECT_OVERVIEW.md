@@ -59,17 +59,21 @@ pio run -e native -t exec
 ```
 src/
 ├── main.cpp              # Entry point. Calls init() and runs the LVGL tick loop.
-├── can_driver.cpp        # CAN bus polling + data simulation (env-switched)
-├── ui_controller.cpp     # All LVGL widget creation and update logic (main file to edit)
+├── can_driver.cpp        # CAN bus polling + data aggregation
+├── espnow_dash.cpp       # ESP-NOW telemetry broadcasting & remote input
+├── underglow_controller.cpp # WS2815 LED strip effects logic
+├── settings_screen.cpp   # Interactive configuration UI (Gear ratio, Pole pairs, Odometer)
+├── ui_controller.cpp     # Main LVGL dashboard widgets and update logic
 ├── display_driver.cpp    # Low-level SDL2/ST7701 driver init (do not modify)
-├── lv_font_block_24.c    # Custom VT323 pixel font at 24px (generated)
-└── lv_font_block_56.c    # Custom VT323 pixel font at 56px (generated)
+├── odometer.cpp          # Non-volatile distance tracking
+├── espnow_packets.h      # Packet structs for ESP-NOW radio
+└── lv_font_block_*.c     # Custom VT323 pixel fonts (24, 56, 72, 300)
 
 include/
 ├── can_driver.h          # VehicleState struct + g_vehicle_state extern
 ├── mechanical_config.h   # Wheel diameter, gear ratio, battery Wh constants
 ├── lv_conf.h             # LVGL feature flags (fonts, widgets enabled here)
-└── ui_controller.h       # UIController namespace declarations
+└── ...
 
 # Documentation (always keep updated)
 vehicle_config.md         # Battery spec, mechanical config status

@@ -9,6 +9,7 @@
 #ifdef ARDUINO
 #include <WiFi.h>
 #include <esp_now.h>
+#include <esp_wifi.h>
 #include <esp_sleep.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
@@ -37,10 +38,10 @@ static int pot_center = 2048;
 
 // Pin Definitions
 #define PIN_POT 1
-#define PIN_BTN_UP 2
-#define PIN_BTN_DOWN 3
-#define PIN_BTN_LEFT 10
-#define PIN_BTN_RIGHT 11
+#define PIN_BTN_UP 11
+#define PIN_BTN_DOWN 10
+#define PIN_BTN_LEFT 2
+#define PIN_BTN_RIGHT 3
 #define PIN_BTN_CONFIRM 12
 #define PIN_POWER_ON 15
 
@@ -82,6 +83,13 @@ static void check_inactivity_sleep(float throttle) {
         }
     }
 
+    static uint32_t lr_hold_start = 0;
+    if ((current_btn_state & (1 << 2)) && (current_btn_state & (1 << 3))) {
+        if (lr_hold_start == 0) lr_hold_start = millis();
+    } else {
+        lr_hold_start = 0;
+    }
+
     bool activity = false;
     if (current_btn_state != last_btn_state) {
         activity = true;
@@ -96,8 +104,8 @@ static void check_inactivity_sleep(float throttle) {
         last_activity_time = millis();
     }
 
-    if (millis() - last_activity_time > 300000) { // 5 minutes
-        Serial.println("Inactivity timeout. Deep sleep.");
+    if (millis() - last_activity_time > 300000 || (lr_hold_start > 0 && millis() - lr_hold_start > 5000)) { // 5 minutes or 5 sec hold
+        Serial.println("Deep sleep triggered.");
         preferences.putInt("pot_min", pot_min);
         preferences.putInt("pot_max", pot_max);
 #ifdef TFT_BL
@@ -171,6 +179,7 @@ extern "C" void remote_onDataRecv(const uint8_t * mac, const uint8_t *incomingDa
 
 void RemoteApp::init() {
 #ifdef ARDUINO
+    gpio_hold_dis((gpio_num_t)PIN_POWER_ON);
     // Setup Pins
     pinMode(PIN_POWER_ON, OUTPUT);
     digitalWrite(PIN_POWER_ON, HIGH); // Enable battery and screen power!
@@ -185,7 +194,7 @@ void RemoteApp::init() {
     delay(100);
     int center_sum = 0;
     for (int i = 0; i < 10; i++) {
-        center_sum += analogRead(PIN_POT);
+        center_sum += (4095 - analogRead(PIN_POT));
         delay(10);
     }
     pot_center = center_sum / 10;
@@ -212,6 +221,10 @@ void RemoteApp::init() {
 
     WiFi.disconnect(true);
     WiFi.mode(WIFI_STA);
+    esp_wifi_set_promiscuous(true);
+    esp_wifi_set_channel(1, WIFI_SECOND_CHAN_NONE);
+    esp_wifi_set_promiscuous(false);
+
     if (esp_now_init() != ESP_OK) {
         Serial.println("Error initializing ESP-NOW");
     }
@@ -223,7 +236,7 @@ void RemoteApp::init() {
 
     static esp_now_peer_info_t peerInfo;
     memcpy(peerInfo.peer_addr, receiver_mac, 6);
-    peerInfo.channel = 0;  
+    peerInfo.channel = 1;
     peerInfo.encrypt = false;
     if (esp_now_add_peer(&peerInfo) != ESP_OK) {
         Serial.println("Failed to add Receiver peer");
@@ -231,7 +244,7 @@ void RemoteApp::init() {
 
     static esp_now_peer_info_t dashPeerInfo;
     memcpy(dashPeerInfo.peer_addr, dash_mac, 6);
-    dashPeerInfo.channel = 0;  
+    dashPeerInfo.channel = 1;
     dashPeerInfo.encrypt = false;
     if (esp_now_add_peer(&dashPeerInfo) != ESP_OK) {
         Serial.println("Failed to add Dash peer");
@@ -517,7 +530,7 @@ void RemoteApp::update() {
 
     // Read Potentiometer & Remote Battery Volts
 #ifdef ARDUINO
-    int pot_val = analogRead(PIN_POT); // 0-4095
+    int pot_val = 4095 - analogRead(PIN_POT); // 0-4095 (Flipped)
     // LilyGo T-Display S3 battery reading pin (or generic scaling for 3.7V - 4.2V range)
     float rem_volts = (analogRead(4) / 4095.0f) * 3.3f * 2.0f; 
 #else
@@ -584,10 +597,6 @@ void RemoteApp::update() {
         }
     }
     
-    if (pot_val == 0 || pot_val == 4095) {
-        throttle = 0.0f;
-    }
-
     if (throttle > 100.0f) throttle = 100.0f;
     if (throttle < -100.0f) throttle = -100.0f;
 

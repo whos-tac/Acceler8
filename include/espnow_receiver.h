@@ -14,6 +14,17 @@ namespace EspnowReceiver {
     float get_latest_throttle();
 
     /**
+     * @brief Get the latest button state received from remote
+     * @return Button state bitmask
+     */
+    uint8_t get_latest_button_state();
+
+    bool is_settings_active();
+    uint8_t get_gear();
+    uint8_t get_direction();
+    bool is_headlight_active();
+
+    /**
      * @brief Get the timestamp of the last valid control packet received
      * @return Timestamp in ms
      */

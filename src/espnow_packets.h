@@ -27,6 +27,14 @@ typedef struct {
     bool remote_disconnected;
 } __attribute__((packed)) ReceiverStatusPacket;
 
+// Packet sent from Dash to Receiver
+typedef struct {
+    bool settings_active;
+    uint8_t gear; // 0=No gear, 1=Low, 2=Med, 3=High
+    uint8_t direction; // 0=Forward, 1=Reverse
+    bool headlight_active; // Toggled from settings menu
+} __attribute__((packed)) EscConfigPacket;
+
 // MAC Addresses:
 // Dash: 3C:0F:02:C2:D4:CC
 // Remote: D0:CF:13:32:42:3C

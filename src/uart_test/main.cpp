@@ -31,7 +31,7 @@ static uint16_t calculateCrc16(const uint8_t *buf, uint32_t len) {
     return crc;
 }
 
-static void sendFlipskyUartModeCommand(uint16_t throttle_val) {
+static void sendFlipskyUartModeCommand(uint16_t throttle_val, bool horn, bool headlight, bool brake) {
     uint8_t payload[15]; // 1 byte CMD + 14 bytes DATA
     payload[0] = FTESC_CMD_CONTROL; // 0x02
     payload[1] = 0x00;   // D0: Reserved
@@ -89,7 +89,7 @@ void setup() {
 
 void loop() {
     // Send test command every 50ms (20Hz)
-    sendFlipskyUartModeCommand(TEST_THROTTLE);
+    sendFlipskyUartModeCommand(TEST_THROTTLE, false, false, false);
     
     // Send keep-alive command every 200ms (every 4th iteration of the 50ms loop)
     static uint32_t last_keep_alive = 0;

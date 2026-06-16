@@ -161,6 +161,7 @@ namespace UIController {
     // ================================================================
     // INIT
     // ================================================================
+    bool touch_enabled = false;
     bool debug_mode_active = false;
     lv_obj_t* debug_screen;
     lv_obj_t* main_screen;
@@ -321,11 +322,39 @@ uint8_t global_last_btn = 0;
         }
 
         bool pressed_confirm = (curr_btn & (1 << 4)) && !(global_last_btn & (1 << 4));
+        
+        bool holding_up = (curr_btn & (1 << 0));
+        bool holding_down = (curr_btn & (1 << 1));
+        
+        static uint32_t up_down_hold_start = 0;
+        bool open_settings_combo = false;
+        
+        if (holding_up && holding_down) {
+            if (up_down_hold_start == 0) {
+#ifdef ARDUINO
+                up_down_hold_start = millis();
+#else
+                up_down_hold_start = ::millis();
+#endif
+            } else {
+#ifdef ARDUINO
+                if (millis() - up_down_hold_start >= 2000) {
+#else
+                if (::millis() - up_down_hold_start >= 2000) {
+#endif
+                    open_settings_combo = true;
+                    up_down_hold_start = 0; // Reset
+                }
+            }
+        } else {
+            up_down_hold_start = 0;
+        }
+
         global_last_btn = curr_btn;
 
         bool alert_hidden = lv_obj_has_flag(alert_overlay, LV_OBJ_FLAG_HIDDEN);
 
-        if (pressed_confirm && !debug_mode_active && lv_scr_act() == main_screen) {
+        if (open_settings_combo && !debug_mode_active && lv_scr_act() == main_screen) {
             SettingsScreen::enter();
             return;
         }

@@ -11,6 +11,7 @@ namespace UIController {
     void init();
 
     extern uint8_t global_last_btn;
+    extern bool touch_enabled;
 
     /**
      * @brief Updates the labels and UI elements with new values from the global VehicleState.

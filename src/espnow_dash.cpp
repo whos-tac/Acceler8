@@ -1,11 +1,13 @@
 #include "espnow_dash.h"
 #include "espnow_packets.h"
 #include "can_driver.h"
+#include "settings_screen.h"
 #include <cstring>
 
 #ifdef ARDUINO
 #include <WiFi.h>
 #include <esp_now.h>
+#include <esp_wifi.h>
 #else
 typedef uint8_t esp_now_send_status_t;
 #define ESP_NOW_SEND_SUCCESS 0
@@ -80,6 +82,7 @@ extern "C" void dash_onDataRecv(const uint8_t * mac, const uint8_t *incomingData
         memcpy(&pkt, incomingData, sizeof(ControlPacket));
         DASH_LOCK();
         g_vehicle_state.remote_button_state = pkt.button_state;
+        g_vehicle_state.remote_throttle = pkt.throttle_percent;
         DASH_UNLOCK();
     }
 }
@@ -91,6 +94,9 @@ namespace EspNowDash {
         WiFi.disconnect(true);
         // Set WiFi to station mode
         WiFi.mode(WIFI_STA);
+        esp_wifi_set_promiscuous(true);
+        esp_wifi_set_channel(1, WIFI_SECOND_CHAN_NONE);
+        esp_wifi_set_promiscuous(false);
 
         // Initialize ESP-NOW
         if (esp_now_init() != ESP_OK) {
@@ -105,7 +111,7 @@ namespace EspNowDash {
         // Register peer (Remote)
         static esp_now_peer_info_t peerInfo;
         memcpy(peerInfo.peer_addr, remote_mac, 6);
-        peerInfo.channel = 0;  
+        peerInfo.channel = 1;  
         peerInfo.encrypt = false;
         
         if (esp_now_add_peer(&peerInfo) != ESP_OK) {
@@ -116,7 +122,7 @@ namespace EspNowDash {
         // Register peer (Receiver for debug)
         static esp_now_peer_info_t rxPeerInfo;
         memcpy(rxPeerInfo.peer_addr, receiver_mac, 6);
-        rxPeerInfo.channel = 0;
+        rxPeerInfo.channel = 1;
         rxPeerInfo.encrypt = false;
         esp_now_add_peer(&rxPeerInfo);
 #endif
@@ -140,7 +146,19 @@ namespace EspNowDash {
             DASH_UNLOCK();
 
             esp_now_send(remote_mac, (uint8_t *)&packet, sizeof(TelemetryPacket));
+
+            // Also send EscConfigPacket to the receiver!
+            send_esc_config(SettingsScreen::is_active(), SettingsScreen::esc_gear, SettingsScreen::esc_direction, SettingsScreen::headlight_active);
         }
+    }
+
+    void send_esc_config(bool settings_active, uint8_t gear, uint8_t direction, bool headlight_active) {
+        EscConfigPacket packet;
+        packet.settings_active = settings_active;
+        packet.gear = gear;
+        packet.direction = direction;
+        packet.headlight_active = headlight_active;
+        esp_now_send(receiver_mac, (uint8_t *)&packet, sizeof(EscConfigPacket));
     }
 
 }
