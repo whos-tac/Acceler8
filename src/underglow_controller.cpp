@@ -3,19 +3,16 @@
 #include "settings_screen.h"
 
 #ifdef ARDUINO
-#include <NeoPixelBus.h>
+#include <Adafruit_NeoPixel.h>
 
-// Configuration
-const uint16_t PixelCount = 120; // Default for 2x 1m strips (60 LED/m)
-const uint8_t PixelPin = 4;      // MISO pin on SD card port
+const uint16_t PixelCount = 180; // Default for 3m strips (60 LED/m)
+const uint8_t PixelPin = 16; // Using Terminal Pin 8 (GIO) instead of fried IO4
 
-// WS2815 requires a >250us reset pulse (unlike WS2812), so we must use the
-// WS2813 method.
-NeoPixelBus<NeoGrbFeature, NeoWs2813Method> strip(PixelCount, PixelPin);
+Adafruit_NeoPixel strip(PixelCount, PixelPin, NEO_GRB + NEO_KHZ800);
 
 // ACCELER8 Color Palette
-RgbColor colorPurple(195, 177, 225); // 0xC3B1E1
-RgbColor colorCyan(0, 204, 204);     // 0x00CCCC
+const uint8_t colorPurpleR = 195, colorPurpleG = 177, colorPurpleB = 225; // 0xC3B1E1
+const uint8_t colorCyanR = 0, colorCyanG = 204, colorCyanB = 204;     // 0x00CCCC
 
 #endif
 
@@ -30,10 +27,14 @@ void init() {
   g_vehicle_state.led_mode = 2; // Default to "Breathing"
 
 #ifdef ARDUINO
-  strip.Begin();
-  strip.Show();
+  strip.begin();
 
-  pinMode(PixelPin, OUTPUT); // Diagnostic: Force pin mode
+  // Diagnostic boot flash (Solid White for 500ms)
+  for (uint16_t i = 0; i < PixelCount; i++) {
+    strip.setPixelColor(i, strip.Color(255, 255, 255));
+  }
+  strip.show();
+  delay(500);
 #endif
 }
 
@@ -57,13 +58,15 @@ void update() {
   DASH_UNLOCK();
 
   if (SettingsScreen::is_active()) {
-      HsbColor hsb(SettingsScreen::underglow_hue / 360.0f, 1.0f, SettingsScreen::display_brightness / 100.0f);
-      RgbColor rgb(hsb);
-      for (uint16_t i = 0; i < PixelCount; i++) {
-        strip.SetPixelColor(i, rgb);
-      }
-      strip.Show();
-      return;
+    uint16_t hue = (uint16_t)((SettingsScreen::underglow_hue / 360.0f) * 65535.0f);
+    uint8_t val = (uint8_t)((SettingsScreen::display_brightness / 100.0f) * 255.0f);
+    uint32_t rgb = strip.ColorHSV(hue, 255, val);
+    
+    for (uint16_t i = 0; i < PixelCount; i++) {
+      strip.setPixelColor(i, rgb);
+    }
+    strip.show();
+    return;
   }
 
   if (mode == 0) {
@@ -72,7 +75,8 @@ void update() {
   } else if (mode == 1) {
     // SOLID
     float brightness_f = brightness / 255.0f;
-    set_all((uint8_t)(r * brightness_f), (uint8_t)(g * brightness_f), (uint8_t)(b * brightness_f));
+    set_all((uint8_t)(r * brightness_f), (uint8_t)(g * brightness_f),
+            (uint8_t)(b * brightness_f));
   } else if (mode == 2) {
     // BREATHING EFFECT (Purple -> Cyan)
     static float angle = 0;
@@ -82,16 +86,22 @@ void update() {
 
     float intensity = (sin(angle) + 1.0f) / 2.0f; // 0.0 to 1.0
 
-    RgbColor blended = RgbColor::LinearBlend(colorPurple, colorCyan, intensity);
+    uint8_t r_blend = colorPurpleR + (colorCyanR - colorPurpleR) * intensity;
+    uint8_t g_blend = colorPurpleG + (colorCyanG - colorPurpleG) * intensity;
+    uint8_t b_blend = colorPurpleB + (colorCyanB - colorPurpleB) * intensity;
 
     // Apply brightness global scale
     float brightness_f = brightness / 255.0f;
-    blended = blended.Dim((uint8_t)(brightness_f * 255));
+    r_blend = (uint8_t)(r_blend * brightness_f);
+    g_blend = (uint8_t)(g_blend * brightness_f);
+    b_blend = (uint8_t)(b_blend * brightness_f);
+
+    uint32_t blendedColor = strip.Color(r_blend, g_blend, b_blend);
 
     for (uint16_t i = 0; i < PixelCount; i++) {
-      strip.SetPixelColor(i, blended);
+      strip.setPixelColor(i, blendedColor);
     }
-    strip.Show();
+    strip.show();
   } else if (mode == 3) {
     // SPEED REACTIVE
     // Color shifts from Cyan (Slow) to Purple (Fast)
@@ -99,27 +109,32 @@ void update() {
     if (speed_factor > 1.0f)
       speed_factor = 1.0f;
 
-    RgbColor speed_color =
-        RgbColor::LinearBlend(colorCyan, colorPurple, speed_factor);
+    uint8_t r_blend = colorCyanR + (colorPurpleR - colorCyanR) * speed_factor;
+    uint8_t g_blend = colorCyanG + (colorPurpleG - colorCyanG) * speed_factor;
+    uint8_t b_blend = colorCyanB + (colorPurpleB - colorCyanB) * speed_factor;
 
     float brightness_f = brightness / 255.0f;
-    speed_color = speed_color.Dim((uint8_t)(brightness_f * 255));
+    r_blend = (uint8_t)(r_blend * brightness_f);
+    g_blend = (uint8_t)(g_blend * brightness_f);
+    b_blend = (uint8_t)(b_blend * brightness_f);
+
+    uint32_t speed_color = strip.Color(r_blend, g_blend, b_blend);
 
     for (uint16_t i = 0; i < PixelCount; i++) {
-      strip.SetPixelColor(i, speed_color);
+      strip.setPixelColor(i, speed_color);
     }
-    strip.Show();
+    strip.show();
   }
 #endif
 }
 
 void set_all(uint8_t r, uint8_t g, uint8_t b) {
 #ifdef ARDUINO
-  RgbColor color(r, g, b);
+  uint32_t color = strip.Color(r, g, b);
   for (uint16_t i = 0; i < PixelCount; i++) {
-    strip.SetPixelColor(i, color);
+    strip.setPixelColor(i, color);
   }
-  strip.Show();
+  strip.show();
 #endif
 }
 } // namespace UnderglowController

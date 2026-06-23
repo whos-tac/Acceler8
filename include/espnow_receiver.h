@@ -41,6 +41,7 @@ namespace EspnowReceiver {
      * @param speed Simulated speed
      * @param battery_v Simulated battery
      * @param power_w Simulated power
+     * @param current_a Simulated battery current
      */
-    void send_mock_telemetry(float speed, float battery_v, float power_w);
+    void send_mock_telemetry(float speed, float battery_v, float power_w, float current_a);
 }

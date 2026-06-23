@@ -110,17 +110,14 @@ namespace EspnowReceiver {
 #endif
     }
 
-    void send_mock_telemetry(float speed, float battery_v, float power_w) {
+    void send_mock_telemetry(float speed, float battery_v, float power_w, float current_a) {
         TelemetryPacket mock_pkt = {0};
         mock_pkt.speed_kmh = speed;
         mock_pkt.battery_voltage_v = battery_v;
+        mock_pkt.battery_current_a = current_a;
         mock_pkt.power_w = power_w;
         mock_pkt.can_alive = true;
         
-#ifdef ARDUINO
         esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
-#else
-        esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
-#endif
     }
 }

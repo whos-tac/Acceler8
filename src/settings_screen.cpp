@@ -10,6 +10,8 @@
 
 #ifdef ARDUINO
 #include <Arduino.h>
+#else
+extern "C" uint32_t millis();
 #endif
 
 LV_FONT_DECLARE(lv_font_unscii_16);

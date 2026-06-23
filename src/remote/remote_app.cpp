@@ -4,6 +4,7 @@
 #endif
 #include "../espnow_packets.h"
 #include <cstdio>
+#include <cmath>
 #include <lvgl.h>
 
 #ifdef ARDUINO
@@ -602,7 +603,7 @@ void RemoteApp::update() {
 
     if (arc_throttle) {
         static int last_throttle_val = -1;
-        int throttle_val = (int)abs(throttle);
+        int throttle_val = (int)std::abs(throttle);
         if (throttle_val != last_throttle_val) {
             last_throttle_val = throttle_val;
             lv_arc_set_value(arc_throttle, throttle_val);
@@ -621,7 +622,8 @@ void RemoteApp::update() {
 #ifdef ARDUINO
         pkt.button_state = last_btn_state;
 #else
-        pkt.button_state = 0;
+        extern uint8_t sim_remote_btn_state;
+        pkt.button_state = sim_remote_btn_state;
 #endif
         esp_now_send(receiver_mac, (uint8_t *)&pkt, sizeof(ControlPacket));
         delay(1);
