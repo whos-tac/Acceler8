@@ -67,13 +67,14 @@ static void my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * da
 
 namespace DisplayDriver {
     void init() {
-        // Wait for power supply to stabilize on cold start
-        delay(100);
+        // Wait for power supply and capacitors to stabilize on cold start.
+        // 100ms is too short for a hard power cycle; use 500ms.
+        delay(500);
 
         Wire.begin(15, 7);
 
-        // ponytail: Probe address 0x24 up to 15 times to wait for CH32V003 coprocessor to boot
-        int retry = 15;
+        // ponytail: Probe address 0x24 up to 50 times (500ms) to wait for IO Expander to boot
+        int retry = 50;
         bool expander_ready = false;
         while (retry > 0) {
             Wire.beginTransmission(0x24);
