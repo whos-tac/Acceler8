@@ -100,8 +100,8 @@ namespace DisplayDriver {
             // ponytail: Set Configuration register to 0x30 to configure Pins 0-3 as outputs for power and reset control
             Wire.beginTransmission(0x24); Wire.write(0x03); Wire.write(0x30); Wire.endTransmission();
 
-            // Hold resets LOW for 20ms to stabilize power rails and reset display/touch controllers
-            delay(20);
+            // Hold resets LOW for 250ms to stabilize power rails and reset display/touch controllers
+            delay(250);
 
             // Release resets:
             // Pin 0 (VBAT_5V Enable) = LOW (remain ON)
@@ -111,8 +111,8 @@ namespace DisplayDriver {
             // Output register value: binary 0000 1010 = 0x0a
             Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0x0a); Wire.endTransmission();
 
-            // Wait 120ms to allow ST7701 and GT911 internal calibration to finish
-            delay(120);
+            // Wait 250ms to allow ST7701 and GT911 internal calibration to finish
+            delay(250);
 
             // ponytail: Restore original vendor pin direction configuration (0x3a) to return resets to inputs
             Wire.beginTransmission(0x24); Wire.write(0x03); Wire.write(0x3a); Wire.endTransmission();
