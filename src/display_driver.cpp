@@ -90,25 +90,28 @@ namespace DisplayDriver {
             // Set polarity inversion register (Register 0x02)
             Wire.beginTransmission(0x24); Wire.write(0x02); Wire.write(0xff); Wire.endTransmission();
 
-            // Drive all outputs LOW:
-            // Pin 0 (VBAT_5V Enable) = LOW (enables Q4 MOSFET to power 5V subsystems/backlight)
-            // Pin 1 (TP_RST) = LOW (assert touch reset)
-            // Pin 2 (TP_INT) = LOW (holds touch INT low for GT911 address selection)
-            // Pin 3 (LCD_RST) = LOW (assert LCD reset)
-            Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0x00); Wire.endTransmission();
-
-            // ponytail: Set Configuration register to 0x30 to configure Pins 0-3 as outputs for power and reset control
+            // STEP 1: Turn ON 5V rail but keep resets HIGH (inactive)
+            // Pin 0 (VBAT_5V Enable) = LOW (ON)
+            // Pin 1 (TP_RST) = HIGH (Inactive)
+            // Pin 2 (TP_INT) = LOW (GT911 requirement)
+            // Pin 3 (LCD_RST) = HIGH (Inactive)
+            Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0x0a); Wire.endTransmission();
+            
+            // Set Configuration register to 0x30 to configure Pins 0-3 as outputs
             Wire.beginTransmission(0x24); Wire.write(0x03); Wire.write(0x30); Wire.endTransmission();
 
-            // Hold resets LOW for 250ms to stabilize power rails and reset display/touch controllers
+            // Wait 500ms for the 5V boost converter to fully turn on and LCD logic to power up
+            delay(500);
+
+            // STEP 2: Assert resets LOW
+            // Pin 0 remains LOW (5V ON), Pins 1 & 3 go LOW (Reset asserted)
+            Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0x00); Wire.endTransmission();
+
+            // Hold resets LOW for 250ms to ensure a clean hardware reset
             delay(250);
 
-            // Release resets:
-            // Pin 0 (VBAT_5V Enable) = LOW (remain ON)
-            // Pin 1 (TP_RST) = HIGH (release touch reset)
-            // Pin 2 (TP_INT) = LOW (GT911 requires INT to be held low during reset release)
-            // Pin 3 (LCD_RST) = HIGH (release LCD reset)
-            // Output register value: binary 0000 1010 = 0x0a
+            // STEP 3: Release resets HIGH
+            // Pin 0 remains LOW (5V ON), Pins 1 & 3 go HIGH (Reset released)
             Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0x0a); Wire.endTransmission();
 
             // Wait 250ms to allow ST7701 and GT911 internal calibration to finish
