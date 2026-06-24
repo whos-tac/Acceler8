@@ -77,13 +77,12 @@ namespace DisplayDriver {
         pinMode(1, OUTPUT);
         digitalWrite(1, LOW);   // MOSI
 
-        // Wait for power supply and capacitors to stabilize on cold start.
-        // Tripled to 1500ms to guarantee stabilization on cold boot.
+        // Wait for power supply to stabilize on cold start
         delay(1500);
 
         Wire.begin(15, 7);
 
-        // ponytail: Probe address 0x24 up to 150 times (1500ms) to wait for IO Expander to boot
+        // ponytail: Probe address 0x24 up to 150 times to wait for CH32V003 coprocessor to boot
         int retry = 150;
         bool expander_ready = false;
         while (retry > 0) {
@@ -100,36 +99,32 @@ namespace DisplayDriver {
             // Set polarity inversion register (Register 0x02)
             Wire.beginTransmission(0x24); Wire.write(0x02); Wire.write(0xff); Wire.endTransmission();
 
-            // STEP 1: Turn ON 5V rail but keep resets HIGH (inactive)
-            // Pin 0 (VBAT_5V Enable) = LOW (ON)
-            // Pin 1 (TP_RST) = HIGH (Inactive)
-            // Pin 2 (TP_INT) = LOW (GT911 requirement)
-            // Pin 3 (LCD_RST) = HIGH (Inactive)
-            Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0x0a); Wire.endTransmission();
-            
-            // Set Configuration register to 0x30 to configure Pins 0-3 as outputs
-            Wire.beginTransmission(0x24); Wire.write(0x03); Wire.write(0x30); Wire.endTransmission();
-
-            // Wait 500ms for the 5V boost converter to fully turn on and LCD logic to power up
-            delay(500);
-
-            // STEP 2: Assert resets LOW
-            // Pin 0 remains LOW (5V ON), Pins 1 & 3 go LOW (Reset asserted)
+            // Drive all outputs LOW:
+            // Pin 0 (VBAT_5V Enable) = LOW (enables Q4 MOSFET to power 5V subsystems/backlight)
+            // Pin 1 (TP_RST) = LOW (assert touch reset)
+            // Pin 2 (TP_INT) = LOW (holds touch INT low for GT911 address selection)
+            // Pin 3 (LCD_RST) = LOW (assert LCD reset)
             Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0x00); Wire.endTransmission();
 
-            // Hold resets LOW for 250ms to ensure a clean hardware reset
-            delay(250);
+            // ponytail: Set Configuration register to 0x30 to configure Pins 0-3 as outputs for power and reset control
+            Wire.beginTransmission(0x24); Wire.write(0x03); Wire.write(0x30); Wire.endTransmission();
 
-            // STEP 3: Release resets HIGH
-            // Pin 0 remains LOW (5V ON), Pins 1 & 3 go HIGH (Reset released)
+            // Hold resets LOW for 20ms to stabilize power rails and reset display/touch controllers
+            delay(20);
+
+            // Release resets:
+            // Pin 0 (VBAT_5V Enable) = LOW (remain ON)
+            // Pin 1 (TP_RST) = HIGH (release touch reset)
+            // Pin 2 (TP_INT) = LOW (GT911 requires INT to be held low during reset release)
+            // Pin 3 (LCD_RST) = HIGH (release LCD reset)
+            // Output register value: binary 0000 1010 = 0x0a
             Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0x0a); Wire.endTransmission();
 
-            // Wait 250ms to allow ST7701 and GT911 internal calibration to finish
-            delay(250);
+            // Wait 120ms to allow ST7701 and GT911 internal calibration to finish
+            delay(120);
 
-            // We intentionally leave the IO Expander configuration at 0x30 
-            // so that LCD_RST and TP_RST remain actively driven HIGH.
-            // If they are returned to inputs (0x3a), they float and cause intermittent boot failures.
+            // ponytail: Restore original vendor pin direction configuration (0x3a) to return resets to inputs
+            Wire.beginTransmission(0x24); Wire.write(0x03); Wire.write(0x3a); Wire.endTransmission();
         } else {
             Serial.println("Warning: TCA9554 IO Expander at 0x24 not responding!");
         }
