@@ -114,8 +114,9 @@ namespace DisplayDriver {
             // Wait 250ms to allow ST7701 and GT911 internal calibration to finish
             delay(250);
 
-            // ponytail: Restore original vendor pin direction configuration (0x3a) to return resets to inputs
-            Wire.beginTransmission(0x24); Wire.write(0x03); Wire.write(0x3a); Wire.endTransmission();
+            // We intentionally leave the IO Expander configuration at 0x30 
+            // so that LCD_RST and TP_RST remain actively driven HIGH.
+            // If they are returned to inputs (0x3a), they float and cause intermittent boot failures.
         } else {
             Serial.println("Warning: TCA9554 IO Expander at 0x24 not responding!");
         }
