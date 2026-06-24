@@ -67,9 +67,57 @@ static void my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * da
 
 namespace DisplayDriver {
     void init() {
+        // Wait for power supply to stabilize on cold start
+        delay(100);
+
         Wire.begin(15, 7);
-        Wire.beginTransmission(0x24); Wire.write(0x02); Wire.write(0xff); Wire.endTransmission();
-        Wire.beginTransmission(0x24); Wire.write(0x03); Wire.write(0x3a); Wire.endTransmission();
+
+        // ponytail: Probe address 0x24 up to 15 times to wait for CH32V003 coprocessor to boot
+        int retry = 15;
+        bool expander_ready = false;
+        while (retry > 0) {
+            Wire.beginTransmission(0x24);
+            if (Wire.endTransmission() == 0) {
+                expander_ready = true;
+                break;
+            }
+            delay(10);
+            retry--;
+        }
+
+        if (expander_ready) {
+            // Set polarity inversion register (Register 0x02)
+            Wire.beginTransmission(0x24); Wire.write(0x02); Wire.write(0xff); Wire.endTransmission();
+
+            // Drive all outputs LOW:
+            // Pin 0 (VBAT_5V Enable) = LOW (enables Q4 MOSFET to power 5V subsystems/backlight)
+            // Pin 1 (TP_RST) = LOW (assert touch reset)
+            // Pin 2 (TP_INT) = LOW (holds touch INT low for GT911 address selection)
+            // Pin 3 (LCD_RST) = LOW (assert LCD reset)
+            Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0x00); Wire.endTransmission();
+
+            // ponytail: Set Configuration register to 0x30 to configure Pins 0-3 as outputs for power and reset control
+            Wire.beginTransmission(0x24); Wire.write(0x03); Wire.write(0x30); Wire.endTransmission();
+
+            // Hold resets LOW for 20ms to stabilize power rails and reset display/touch controllers
+            delay(20);
+
+            // Release resets:
+            // Pin 0 (VBAT_5V Enable) = LOW (remain ON)
+            // Pin 1 (TP_RST) = HIGH (release touch reset)
+            // Pin 2 (TP_INT) = LOW (GT911 requires INT to be held low during reset release)
+            // Pin 3 (LCD_RST) = HIGH (release LCD reset)
+            // Output register value: binary 0000 1010 = 0x0a
+            Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0x0a); Wire.endTransmission();
+
+            // Wait 120ms to allow ST7701 and GT911 internal calibration to finish
+            delay(120);
+
+            // ponytail: Restore original vendor pin direction configuration (0x3a) to return resets to inputs
+            Wire.beginTransmission(0x24); Wire.write(0x03); Wire.write(0x3a); Wire.endTransmission();
+        } else {
+            Serial.println("Warning: TCA9554 IO Expander at 0x24 not responding!");
+        }
 
         gfx->begin();
         lv_init();

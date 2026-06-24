@@ -35,6 +35,12 @@ namespace CANDriver {
             twai_start();
         }
         esp_task_wdt_add(NULL);
+        
+        // Wait for ESC to finish its own boot sequence before latching IDs.
+        // Without this, the dashboard grabs garbage IDs from ESC init frames.
+        delay(1500);
+        twai_message_t flush_msg;
+        while (twai_receive(&flush_msg, 0) == ESP_OK) {} // drain queue
 #endif
 
         // Simulator/Default Initialization: Base values
@@ -114,52 +120,48 @@ namespace CANDriver {
         while (twai_receive(&message, 0) == ESP_OK) {
             if (message.extd && message.data_length_code >= 6) {
                 uint32_t raw_id = message.identifier;
-                // Flipsky Layout: Bits 8-15 = ESC ID, Bits 0-7 = Command ID
-                uint8_t mcu_id = (raw_id >> 8) & 0xFF;
-                uint8_t cmd_id = raw_id & 0xFF;
+                // FLIPSKY FTESC EID Layout: Bits 0-7 = Command ID, Bits 8-15 = MCU ID (ESC ID)
+                uint8_t command_id   = raw_id & 0xFF;
+                uint8_t controller_id = (raw_id >> 8) & 0xFF;
 
-                static int master_id = -1;
+                static int master_id = -1; // ponytail: latched on first valid Flipsky telemetry frame
                 static int slave_id = -1;
 
-                // Software filter: aggressively ignore 0x00 spam to save CPU cycles
-                if (cmd_id == 0x00) continue;
-                
-                
-                // ============================================================
-                // FLIPSKY CUSTOM TELEMETRY PARSING
-                // ID Layout: Bits 8-15 = ESC ID, Bits 0-7 = Command
-                // ============================================================
-                // Only latch onto IDs if they are sending Flipsky telemetry commands
-                if (cmd_id == 0x0B || cmd_id == 0x0C || cmd_id == 0x0D) {
-                    if (master_id == -1) master_id = mcu_id;
-                    else if (slave_id == -1 && mcu_id != master_id) slave_id = mcu_id;
+                // Latch ESC IDs from the telemetry frames
+                if (command_id == 0x0B || command_id == 0x0C || command_id == 0x0D) {
+                    if (master_id == -1) {
+                        master_id = controller_id;
+                    } else if (slave_id == -1 && controller_id != master_id) {
+                        slave_id = controller_id;
+                    }
                 }
 
                 EscData* target = nullptr;
-                if (mcu_id == master_id) target = &master_esc;
-                else if (mcu_id == slave_id) target = &slave_esc;
+                if (controller_id == master_id) target = &master_esc;
+                else if (controller_id == slave_id) target = &slave_esc;
 
                 if (target) {
                     target->last_update = now;
 
-                    switch (cmd_id) {
-                        case 0x0B: // Data 0: Currents (scaled by 1000)
-                            target->motor_current = parseI24(&message.data[0]) / 1000.0f;
-                            target->battery_current = parseI24(&message.data[3]) / 1000.0f;
+                    switch (command_id) {
+                        case 0x0B: // CAN_ESC_REALTIME_DATA_0: motor current*1000 (D0-D2), battery current*1000 (D3-D5), CRC (D6-D7)
+                            target->motor_current   = (float)parseI24(&message.data[0]) / 1000.0f;
+                            target->battery_current = (float)parseI24(&message.data[3]) / 1000.0f;
                             break;
-                        case 0x0C: // Data 1: ERPM & Duty (Flipsky uses 3-bytes for both!)
-                            target->erpm = fabs((float)parseI24(&message.data[0])); 
-                            target->duty = (float)parseI24(&message.data[3]) / 1000.0f; 
+                        case 0x0C: // CAN_ESC_REALTIME_DATA_1: ERPM (D0-D2), duty*1000 (D3-D5), CRC (D6-D7)
+                            target->erpm  = fabs((float)parseI24(&message.data[0]));
+                            target->duty  = (float)parseI24(&message.data[3]) / 1000.0f;
                             break;
-                        case 0x0D: // Data 2: Temps & Voltage (scaled by 100)
-                            target->mosfet_temp = parseI16(&message.data[0]) / 100.0f;
-                            target->motor_temp = parseI16(&message.data[2]) / 100.0f;
-                            target->voltage = parseI16(&message.data[4]) / 100.0f;
+                        case 0x0D: // CAN_ESC_REALTIME_DATA_2: mosfet_temp*100 (D0-D1), motor_temp*100 (D2-D3), voltage*100 (D4-D5), CRC (D6-D7)
+                            target->mosfet_temp = (float)parseI16(&message.data[0]) / 100.0f;
+                            target->motor_temp  = (float)parseI16(&message.data[2]) / 100.0f;
+                            target->voltage     = (float)parseI16(&message.data[4]) / 100.0f;
                             break;
                     }
                 }
             }
         }
+
 
         // ============================================================
         // DUAL ESC AGGREGATION Logic
