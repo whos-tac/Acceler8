@@ -67,6 +67,16 @@ static void my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * da
 
 namespace DisplayDriver {
     void init() {
+        // Explicitly stabilize SPI pins BEFORE resetting the ST7701
+        // If CS (42) is floating during a cold boot reset, the ST7701 
+        // might enter an undefined state and ignore initialization commands.
+        pinMode(42, OUTPUT);
+        digitalWrite(42, HIGH); // CS MUST be HIGH during reset
+        pinMode(2, OUTPUT);
+        digitalWrite(2, LOW);   // SCK
+        pinMode(1, OUTPUT);
+        digitalWrite(1, LOW);   // MOSI
+
         // Wait for power supply and capacitors to stabilize on cold start.
         // Tripled to 1500ms to guarantee stabilization on cold boot.
         delay(1500);
