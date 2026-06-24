@@ -6,7 +6,7 @@
 #include <Adafruit_NeoPixel.h>
 
 const uint16_t PixelCount = 180; // Default for 3m strips (60 LED/m)
-const uint8_t PixelPin = 16; // Using Terminal Pin 8 (GIO) instead of fried IO4
+const uint8_t PixelPin = 4; // Default MISO pin
 
 Adafruit_NeoPixel strip(PixelCount, PixelPin, NEO_GRB + NEO_KHZ800);
 

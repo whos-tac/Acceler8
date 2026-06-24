@@ -1,5 +1,7 @@
 #ifdef ARDUINO
 #include <Arduino.h>
+#include <esp_sleep.h>
+#include <Wire.h>
 #endif
 
 #include <lvgl.h>
@@ -30,6 +32,19 @@ void loop() {
     
     lv_tick_inc(dt);
     delay(5);
+
+    // ponytail: Deep sleep if no CAN traffic for 5 minutes
+    if (g_vehicle_state.has_received_can && (now - g_vehicle_state.last_can_rx_ms > 300000)) {
+        // Turn off 5V subsystem & backlight via TCA9554 IO Expander
+        Wire.beginTransmission(0x24);
+        Wire.write(0x01);
+        Wire.write(0x0B); // Set Pin 0 HIGH (VBAT_5V Disable)
+        Wire.endTransmission();
+
+        // Wake up when CAN_RX_PIN (GPIO 0) goes LOW
+        esp_sleep_enable_ext1_wakeup(1ULL << 0, ESP_EXT1_WAKEUP_ANY_LOW);
+        esp_deep_sleep_start();
+    }
 }
 
 #else

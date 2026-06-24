@@ -1,0 +1,3185 @@
+﻿==========================================================
+Step 31 (VIEW_FILE)
+==========================================================
+1: #include <Arduino.h>
+2: #include "../espnow_packets.h"
+3: 
+4: #ifdef ARDUINO
+5: #include <WiFi.h>
+6: #include <esp_now.h>
+7: #include <TFT_eSPI.h>
+8: 
+9: TFT_eSPI tft = TFT_eSPI();
+10: 
+11: // MAC Addresses
+12: // Receiver: EC:64:C9:CC:D8:54
+13: static uint8_t receiver_mac[] = {0xEC, 0x64, 0xC9, 0xCC, 0xD8, 0x54};
+14: 
+15: // Dash: 3C:0F:02:C2:D4:CC
+16: static uint8_t dash_mac[] = {0x3C, 0x0F, 0x02, 0xC2, 0xD4, 0xCC};
+17: 
+18: static esp_now_peer_info_t peerInfo;
+19: 
+20: // Telemetry State
+21: static TelemetryPacket current_telemetry = {0};
+22: 
+23: // Pin Definitions
+24: #define PIN_POT 1
+25: #define PIN_BTN_UP 2
+26: #define PIN_BTN_DOWN 3
+27: #define PIN_BTN_LEFT 10
+28: #define PIN_BTN_RIGHT 11
+29: #define PIN_BTN_CONFIRM 12
+30: 
+31: // Send callback
+32: void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+33: #ifdef DEBUG_ESPNOW
+34:     if (status != ESP_NOW_SEND_SUCCESS) {
+35:         Serial.println("[ESP-NOW] TX Remote -> Receiver FAILED");
+36:     }
+37: #endif
+38: }
+39: 
+40: // Receive callback
+41: void onDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
+42:     if (len == sizeof(TelemetryPacket)) {
+43:         memcpy(&current_telemetry, incomingData, sizeof(TelemetryPacket));
+44: #ifdef DEBUG_ESPNOW
+45:         Serial.printf("[ESP-NOW] RX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Power: %.0fW\n", 
+46:                       current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+47: #endif
+48:         // Update display
+49:         tft.fillScreen(TFT_BLACK);
+50:         tft.s
+<truncated 750 bytes>
+itializing ESP-NOW");
+73:         return;
+74:     }
+75: 
+76:     esp_now_register_send_cb(onDataSent);
+77:     esp_now_register_recv_cb(onDataRecv);
+78: 
+79:     // Register Receiver peer
+80:     memcpy(peerInfo.peer_addr, receiver_mac, 6);
+81:     peerInfo.channel = 0;  
+82:     peerInfo.encrypt = false;
+83:     if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+84:         Serial.println("Failed to add Receiver peer");
+85:         return;
+86:     }
+87:     
+88:     // Setup UI
+89:     tft.init();
+90:     tft.setRotation(1);
+91:     tft.fillScreen(TFT_BLACK);
+92:     tft.setTextColor(TFT_WHITE, TFT_BLACK);
+93:     tft.setTextSize(2);
+94:     tft.setCursor(0, 0);
+95:     tft.println("Remote Init...");
+96: 
+97:     // Init Backlight
+98:     pinMode(38, OUTPUT);
+99:     digitalWrite(38, HIGH);
+100: 
+101:     Serial.println("Remote initialized.");
+102: }
+103: 
+104: void loop() {
+105:     static uint32_t last_send = 0;
+106:     
+107:     // Read Potentiometer
+108:     int pot_val = analogRead(PIN_POT); // 0-4095
+109:     
+110:     // Map to -100 to 100
+111:     // Assume 2048 is neutral.
+
+==========================================================
+Step 44 (CODE_ACTION)
+==========================================================
+## User Review Required
+-
+-> [!IMPORTANT]
+-> The current code has the Remote sending `ControlPacket` to the Receiver, and the Dash sending `TelemetryPacket` to the Remote.
+Is it okay to modify the ESP-NOW topology so the Receiver can send data to the Dashboard?
++(None at this time - please approve if the revised plan below aligns with your vision!)
+ 
+ ## Proposed Changes
+ 
+@@ -48,11 +48,13 @@
+ 
+ ### Hardware Debugging Mode
+ 
++Since the physical build relies on the ESC as the central hub (Dash via CAN, Receiver via UART), we will implement a *debug-only* ESP-NOW link between the Receiver and Dash to satisfy the request for a Debug UI screen on the physical Dashboard without needing the ESC.
+- When defined, `sendVescUartDuty()` will print human-readable text (e.g.
+`[DEBUG] ESC Duty: 0.45`) to USB Serial instead of VESC binary UART.
+- The `update()` method will read from USB Serial (e.g., parsing `telemetry speed 25` from the user) to generate a mock `TelemetryPacket`.
+-- Setup ESP-NOW to send this mock `TelemetryPacket` to the Dash's MAC address.
++- **Debug-Only Feature**: The Receiver will send this mock `TelemetryPacket` (along with its own debug state) to the Dash's MAC address via ESP-NOW.
+- Open Serial Monitor, type `telemetry speed 20`, and ensure it replies with mocked ESC updates.
+-- Flash `waveshare_dash_debug` and verify the Debug UI displays the mocked speed from the receiver.
++- Flash `waveshare_dash_debug` and verify the Debug UI displays the mocked speed from the receiver when accessing it via the triple-tap in the top right corner.
+
+==========================================================
+Step 74 (CODE_ACTION)
+==========================================================
+[diff_block_start]
+@@ -1,5 +1,5 @@
+ #include <Arduino.h>
+-#include "../espnow_packets.h"
++#include "remote_app.h"
+ 
+ #ifdef ARDUINO
+ #include <WiFi.h>
+@@ -7,132 +7,15 @@
+ 
+ TFT_eSPI tft = TFT_eSPI();
+ 
+-// MAC Addresses
+-// Receiver: EC:64:C9:CC:D8:54
+-static uint8_t receiver_mac[] = {0xEC, 0x64, 0xC9, 0xCC, 0xD8, 0x54};
+-
+-// Dash: 3C:0F:02:C2:D4:CC
+-static uint8_t dash_mac[] = {0x3C, 0x0F, 0x02, 0xC2, 0xD4, 0xCC};
+-
+-static esp_now_peer_info_t peerInfo;
+-
+-// Telemetry State
+-static TelemetryPacket current_telemetry = {0};
+-
+-// Pin Definitions
+-#define PIN_POT 1
+-#define PIN_BTN_UP 2
+-#define PIN_BTN_DOWN 3
+-#define PIN_BTN_LEFT 10
+-#define PIN_BTN_RIGHT 11
+-#define PIN_BTN_CONFIRM 12
+-
+-// Send callback
+-void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+-#ifdef DEBUG_ESPNOW
+-    if (status != ESP_NOW_SEND_SUCCESS) {
+-        Serial.println("[ESP-NOW] TX Remote -> Receiver FAILED");
+-    }
+-#endif
+-}
+-
+-// Receive callback
+-void onDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
+-    if (len == sizeof(TelemetryPacket)) {
+-        memcpy(&current_telemetry, incomingData, sizeof(TelemetryPacket));
+-#ifdef DEBUG_ESPNOW
+-        Serial.printf("[ESP-NOW] RX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Power: %.0fW\n", 
+-                      current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+-#endif
+-        // Update display
+-        tft.fillScreen(TFT_BLACK);
+-        tft.setCursor(0, 0);
+-        tft.printf("Speed: %.1f km/h\n", current_telemetry.speed_kmh);
+-        tft.printf("Batt: %.1fV\n", current_telemetry.battery_voltage_v);
+-        tft.printf("Power: %.0fW\n", current_telemetry.power_w);
+-    }
+-}
+-
+ void set
+<truncated 405 bytes>
+     Serial.println("Error initializing ESP-NOW");
+-        return;
+-    }
+-
+-    esp_now_register_send_cb(onDataSent);
+-    esp_now_register_recv_cb(onDataRecv);
+-
+-    // Register Receiver peer
+-    memcpy(peerInfo.peer_addr, receiver_mac, 6);
+-    peerInfo.channel = 0;  
+-    peerInfo.encrypt = false;
+-    if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+-        Serial.println("Failed to add Receiver peer");
+-        return;
+-    }
+-    
+-    // Setup UI
+-    tft.init();
+-    tft.setRotation(1);
+-    tft.fillScreen(TFT_BLACK);
+-    tft.setTextColor(TFT_WHITE, TFT_BLACK);
+-    tft.setTextSize(2);
+-    tft.setCursor(0, 0);
+-    tft.println("Remote Init...");
+-
+-    // Init Backlight
+-    pinMode(38, OUTPUT);
+-    digitalWrite(38, HIGH);
+-
+-    Serial.println("Remote initialized.");
++    RemoteApp::init();
+ }
+ 
+ void loop() {
+-    static uint32_t last_send = 0;
+-    
+-    // Read Potentiometer
+-    int pot_val = analogRead(PIN_POT); // 0-4095
+-    
+-    // Map to -100 to 100
+-    // Assume 2048 is neutral.
+
+==========================================================
+Step 95 (VIEW_FILE)
+==========================================================
+1: #include "espnow_dash.h"
+2: #include "espnow_packets.h"
+3: #include "can_driver.h"
+4: 
+5: #ifdef ARDUINO
+6: #include <WiFi.h>
+7: #include <esp_now.h>
+8: 
+9: // Remote MAC Address: D0:CF:13:32:42:3C
+10: static uint8_t remote_mac[] = {0xD0, 0xCF, 0x13, 0x32, 0x42, 0x3C};
+11: static esp_now_peer_info_t peerInfo;
+12: static uint32_t last_send_time = 0;
+13: 
+14: void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+15: #ifdef DEBUG_ESPNOW
+16:     if (status != ESP_NOW_SEND_SUCCESS) {
+17:         Serial.println("[ESP-NOW] TX Dash -> Remote FAILED");
+18:     }
+19: #endif
+20: }
+21: #endif
+22: 
+23: namespace EspNowDash {
+24: 
+25:     void init() {
+26: #ifdef ARDUINO
+27:         // Set WiFi to station mode
+28:         WiFi.mode(WIFI_STA);
+29: 
+30:         // Initialize ESP-NOW
+31:         if (esp_now_init() != ESP_OK) {
+32:             Serial.println("Error initializing ESP-NOW");
+33:             return;
+34:         }
+35: 
+36:         // Register send callback
+37:         esp_now_register_send_cb(onDataSent);
+38: 
+39:         // Register peer
+40:         memcpy(peerInfo.peer_addr, remote_mac, 6);
+41:         peerInfo.channel = 0;  
+42:         peerInfo.encrypt = false;
+43:         
+44:         if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+45:             Serial.println("Failed to add peer");
+46:             return;
+47:         }
+48: #endif
+49:     }
+50: 
+51:     void poll() {
+52: #ifdef ARDUINO
+53:         // Send telemetry every 100ms (10Hz)
+54:         if (millis() - last_send_time > 100) {
+55:             last_send_time = millis();
+56: 
+57:             TelemetryPacket packet;
+58:             packet.speed_kmh = g_vehicle_state.speed_kmh;
+59:             packet.battery_voltage_v = g_vehicle_state.battery_voltage_v;
+60:             packet.battery_current_a = g_vehicle_state.battery_current_a;
+61:             packet.power_w = g_vehicle_state.power_w;
+62:             packet.motor_temp_c = g_vehicle_state.motor_temp_c;
+63:             packet.mosfet_temp_c = g_vehicle_state.mosfet_temp_c;
+64:             packet.range_km = g_vehicle_state.range_km;
+65:             packet.can_alive = g_vehicle_state.can_alive;
+66: 
+67:             esp_now_send(remote_mac, (uint8_t *)&packet, sizeof(TelemetryPacket));
+68: 
+69: #ifdef DEBUG_ESPNOW
+70:             Serial.printf("[ESP-NOW] TX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Curr: %.1fA | Power: %.0fW | CAN: %d\n",
+71:                           packet.speed_kmh, packet.battery_voltage_v, packet.battery_current_a, packet.power_w, packet.can_alive);
+72: #endif
+73:         }
+74: #endif
+75:     }
+76: 
+77: }
+78: 
+The above content shows the entire, complete file contents of the requested file.
+
+==========================================================
+Step 101 (CODE_ACTION)
+==========================================================
+[diff_block_start]
+@@ -1,6 +1,7 @@
+ #include "espnow_dash.h"
+ #include "espnow_packets.h"
+ #include "can_driver.h"
++#include <cstring>
+ 
+ #ifdef ARDUINO
+ #include <WiFi.h>
+@@ -7,17 +7,54 @@
++#else
++typedef uint8_t esp_now_send_status_t;
++#define ESP_NOW_SEND_SUCCESS 0
++extern "C" uint32_t millis();
++extern "C" void esp_now_send(const uint8_t *peer_addr, const uint8_t *data, size_t len);
++#endif
+ 
+ // Remote MAC Address: D0:CF:13:32:42:3C
+ static uint8_t remote_mac[] = {0xD0, 0xCF, 0x13, 0x32, 0x42, 0x3C};
+-static esp_now_peer_info_t peerInfo;
++// Receiver MAC Address (for debug): EC:64:C9:CC:D8:54
++static uint8_t receiver_mac[] = {0xEC, 0x64, 0xC9, 0xCC, 0xD8, 0x54};
++
+ static uint32_t last_send_time = 0;
+-
+-void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+-#ifdef DEBUG_ESPNOW
++// Global for Debug UI screen
++extern bool debug_mode_active;
++
++static void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
++#ifdef DEBUG_ESPNOW
++#ifdef ARDUINO
+     if (status != ESP_NOW_SEND_SUCCESS) {
+         Serial.println("[ESP-NOW] TX Dash -> Remote FAILED");
+     }
+-#endif
+-}
+-#endif
++#else
++    if (status != ESP_NOW_SEND_SUCCESS) {
++        printf("[ESP-NOW] TX Dash -> Remote FAILED\n");
++    }
++#endif
++#endif
++}
++
++extern "C" void dash_onDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
++    if (len == sizeof(TelemetryPacket)) {
++        TelemetryPacket pkt;
++        memcpy(&pkt, incomingData, sizeof(TelemetryPacket));
++        
++        // When receiving telemetry over ESP-NOW, it's debug data from Receiver mock.
++        g_vehicle_state.speed_kmh = pkt.speed_kmh;
++        g_vehicle_state.battery_voltage_v = p
+<truncated 270 bytes>
++        printf("[ESP-NOW] RX Receiver -> Dash | Speed: %.1f km/h\n", pkt.speed_kmh);
++#endif
++#endif
++    }
++}
+ 
+ namespace EspNowDash {
+ 
+@@ -31,10 +31,12 @@
+             return;
+         }
+ 
+-        // Register send callback
++        // Register callbacks
+         esp_now_register_send_cb(onDataSent);
+-
+-        // Register peer
++        esp_now_register_recv_cb((esp_now_recv_cb_t)dash_onDataRecv);
++
++        // Register peer (Remote)
++        static esp_now_peer_info_t peerInfo;
+         memcpy(peerInfo.peer_addr, remote_mac, 6);
+         peerInfo.channel = 0;  
+         peerInfo.encrypt = false;
+@@ -41,7 +41,14 @@
+         if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+-            Serial.println("Failed to add peer");
+-            return;
+-        }
++            Serial.println("Failed to add Remote peer");
++            return;
++        }
++
++        // Register peer (Receiver for debug)
++        static esp_now_peer_info_t rxPeerInfo;
++        memcpy(rxPeerInfo.peer_addr, receiver_mac, 6);
++        rxPeerInfo.channel = 0;
++        rxPeerInfo.encrypt = false;
++        esp_now_add_peer(&rxPeerInfo);
+ #endif
+     }
+ 
+@@ -48,4 +48,3 @@
+-#ifdef ARDUINO
+         // Send telemetry every 100ms (10Hz)
+         if (millis() - last_send_time > 100) {
+             last_send_time = millis();
+@@ -60,13 +60,7 @@
+             packet.can_alive = g_vehicle_state.can_alive;
+ 
+             esp_now_send(remote_mac, (uint8_t *)&packet, sizeof(TelemetryPacket));
+-
+-#ifdef DEBUG_ESPNOW
+-            Serial.printf("[ESP-NOW] TX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Curr: %.1fA | Power: %.0fW | CAN: %d\n",
+-                          packet.speed_kmh, packet.battery_voltage_v, packet.battery_current_a, packet.power_w, packet.can_alive);
+-#endif
+-        }
+-#endif
++        }
+     }
+ 
+ }
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change.
+
+==========================================================
+Step 109 (VIEW_FILE)
+==========================================================
+1: #include "ui_controller.h"
+2: #include <lvgl.h>
+3: #include "can_driver.h"
+4: #include "mechanical_config.h"
+5: #include <stdio.h>
+6: #include <math.h>
+7: 
+8: LV_FONT_DECLARE(lv_font_block_300);
+9: LV_FONT_DECLARE(lv_font_block_72);
+10: LV_FONT_DECLARE(lv_font_block_56);
+11: LV_FONT_DECLARE(lv_font_block_24);
+12: 
+13: namespace UIController {
+14: 
+15:     // ================================================================
+16:     // GLOBALS
+17:     // ================================================================
+18:     lv_obj_t * label_speed_val;
+19:     lv_obj_t * label_pwr_val;
+20:     lv_obj_t * label_temp_esc_val;
+21:     lv_obj_t * label_trip_val;
+22:     lv_obj_t * label_range_val;
+23:     lv_obj_t * label_whkm_val;
+24: 
+25:     lv_obj_t * batt_bars[10];
+26:     lv_color_t bar_colors[10];
+27:     lv_obj_t * label_footer;
+28:     lv_obj_t * label_can_status;
+29: 
+30:     // ================================================================
+31:     // Colors
+32:     // ================================================================
+33:     lv_color_t color_purple  = lv_color_hex(0xC3B1E1);
+34:     lv_color_t color_white   = lv_color_hex(0xFFFFFF);
+35:     lv_color_t color_grey    = lv_color_hex(0x222222);
+36:     lv_color_t color_accent  = lv_color_hex(0xFF3300);
+37:     lv_color_t color_green   = lv_color_hex(0x00FF88);
+38:     lv_color_t color_cyan    = lv_color_hex(0x00CCCC);
+39:     lv_color_t color_dim     = lv_color_hex(0x555555);
+40: 
+41:     // ================================================================
+42:     // Layout geometry (480x480)
+43:
+<truncated 12004 bytes>
+xt_color(label_pwr_val, color_cyan, 0);
+246: 
+247:         // TRIP
+248:         float trip_km = tach / 100000.0f;
+249:         snprintf(buf, sizeof(buf), "%.1f", trip_km);
+250:         lv_label_set_text(label_trip_val, buf);
+251: 
+252:         // RANGE
+253:         if (range < 10.0f) snprintf(buf, sizeof(buf), "%.1f", range);
+254:         else               snprintf(buf, sizeof(buf), "%.0f", range);
+255:         lv_label_set_text(label_range_val, buf);
+256: 
+257:         // WH/KM
+258:         snprintf(buf, sizeof(buf), "%.1f", whkm);
+259:         lv_label_set_text(label_whkm_val, buf);
+260: 
+261:         // ESC TEMP
+262:         snprintf(buf, sizeof(buf), "%.0f C", t_esc);
+263:         lv_label_set_text(label_temp_esc_val, buf);
+264:         if (t_esc > 70)
+265:             lv_obj_set_style_text_color(label_temp_esc_val, color_accent, 0);
+266:         else
+267:             lv_obj_set_style_text_color(label_temp_esc_val, color_purple, 0);
+268: 
+269:         // BATTERY STRIP
+270:         float pct = ((v - 32.0f) / 10.0f) * 100.0f;
+271:         if (pct < 0) pct = 0;
+272:         if (pct > 100) pct = 100;
+273:         int active_bars = (int)(pct / 10.0f);
+274:         for (int i = 0; i < BAR_COUNT; i++) {
+275:             if (i < active_bars) {
+276:                 lv_obj_set_style_bg_color(batt_bars[i], bar_colors[i], 0);
+277:                 lv_obj_set_style_bg_opa(batt_bars[i], LV_OPA_COVER, 0);
+278:             } else {
+279:                 lv_obj_set_style_bg_opa(batt_bars[i], LV_OPA_TRANSP, 0);
+280:             }
+281:         }
+282: 
+283:         // CAN STATUS
+284:         if (can_ok) {
+285:             lv_label_set_text(label_can_status, "CAN OK");
+286:             lv_obj_set_style_text_color(label_can_status, color_green, 0);
+287:         } else {
+288:             lv_label_set_text(label_can_status, "CAN !!");
+289:             lv_obj_set_style_text_color(label_can_status, color_accent, 0);
+290:         }
+291:     }
+292: }
+293: 
+The above content shows the entire, complete file contents of the requested file.
+
+==========================================================
+Step 115 (CODE_ACTION)
+==========================================================
+[diff_block_start]
+@@ -281,10 +281,19 @@
+         float range  = g_vehicle_state.range_km;
+         float whkm   = g_vehicle_state.wh_per_km;
+         bool can_ok  = g_vehicle_state.can_alive;
++        float pwr    = g_vehicle_state.power_w;
++        float speed  = calculate_speed_kmh(erpm);
++
++        if (debug_mode_active) {
++            char debug_buf[128];
++            snprintf(debug_buf, sizeof(debug_buf), "DEBUG MODE\nSpeed: %.1f\nBatt: %.1f\nPwr: %.0f\nCAN: %d", speed, v, pwr, can_ok);
++            lv_label_set_text(debug_label, debug_buf);
++            return;
++        }
++
+         char buf[16];
+ 
+         // SPEED
+-        float speed = calculate_speed_kmh(erpm);
+         snprintf(buf, sizeof(buf), "%02.0f", speed);
+         lv_label_set_text(label_speed_val, buf);
+ 
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change.
+
+==========================================================
+Step 178 (PLANNER_RESPONSE)
+==========================================================
+For the Receiver simulation window, should we add interactive sliders to mock the ESC telemetry (Speed, Battery, Power) being sent back to the Dash, replacing the serial-text-based mocking?
+
+==========================================================
+Step 194 (CODE_ACTION)
+==========================================================
+[diff_block_start]
+@@ -4,6 +4,7 @@
+ #endif
+ #include "../espnow_packets.h"
+ #include <cstdio>
++#include <lvgl.h>
+ 
+ #ifdef ARDUINO
+ #include <WiFi.h>
+@@ -10,6 +10,3 @@
+-#include <TFT_eSPI.h>
+-
+-extern TFT_eSPI tft;
+ #else
+ // Mock ESP-NOW
+ #include <cstring>
+@@ -34,7 +34,10 @@
+ #define PIN_BTN_RIGHT 11
+ #define PIN_BTN_CONFIRM 12
+ 
+-#ifndef ARDUINO
++// LVGL UI elements
++static lv_obj_t * lbl_remote_telemetry;
++#ifndef ARDUINO
++static lv_obj_t * slider_pot;
+ static int sim_pot_val = 2048;
+ void RemoteApp::set_sim_pot_val(int val) {
+     sim_pot_val = val;
+@@ -65,13 +65,12 @@
+ #endif
+ #endif
+         // Update display
+-#ifdef ARDUINO
+-        tft.fillScreen(TFT_BLACK);
+-        tft.setCursor(0, 0);
+-        tft.printf("Speed: %.1f km/h\n", current_telemetry.speed_kmh);
+-        tft.printf("Batt: %.1fV\n", current_telemetry.battery_voltage_v);
+-        tft.printf("Power: %.0fW\n", current_telemetry.power_w);
+-#endif
++        char buf[128];
++        snprintf(buf, sizeof(buf), "Speed: %.1f\nBatt: %.1f\nPwr: %.0f", 
++                 current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
++        if (lbl_remote_telemetry) {
++            lv_label_set_text(lbl_remote_telemetry, buf);
++        }
+     }
+ }
+ 
+@@ -102,20 +102,29 @@
+         Serial.println("Failed to add Receiver peer");
+         return;
+     }
+-    
++#endif
++
+     // Setup UI
+-    tft.init();
+-    tft.setRotation(1);
+-    tft.fillScreen(TFT_BLACK);
+-    tft.setTextColor(TFT_WHITE, TFT_BLACK);
+-    tft.setTextSize(2);
+-    tft.setCursor(0, 0);
+-    tft.println("Remote Init...");
+-
+-    // Init Backlight
+-    pinMode(38, OUTPUT);
+-    digitalWrite(38, HIGH);
+-
++    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x000000), 0);
++    lbl_remote_telemetry = lv_label_create(lv_scr_act());
++    lv_obj_set_style_text_color(lbl_remote_telemetry, lv_color_hex(0xFFFFFF), 0);
++    lv_label_set_text(lbl_remote_telemetry, "Remote Init...");
++    lv_obj_align(lbl_remote_telemetry, LV_ALIGN_TOP_LEFT, 10, 10);
++
++#ifndef ARDUINO
++    slider_pot = lv_slider_create(lv_scr_act());
++    lv_slider_set_range(slider_pot, 0, 4095);
++    lv_slider_set_value(slider_pot, 2048, LV_ANIM_OFF);
++    lv_obj_set_size(slider_pot, 30, 200);
++    lv_obj_align(slider_pot, LV_ALIGN_CENTER, 0, 20);
++    
++    lv_obj_t* lbl_pot = lv_label_create(lv_scr_act());
++    lv_obj_set_style_text_color(lbl_pot, lv_color_hex(0xAAAAAA), 0);
++    lv_label_set_text(lbl_pot, "Throttle");
++    lv_obj_align_to(lbl_pot, slider_pot, LV_ALIGN_OUT_TOP_MID, 0, -10);
++#endif
++
++#ifdef ARDUINO
+     Serial.println("Remote initialized.");
+ #endif
+ }
+@@ -126,6 +126,7 @@
+ #ifdef ARDUINO
+     int pot_val = analogRead(PIN_POT); // 0-4095
+ #else
++    if (slider_pot) sim_pot_val = lv_slider_get_value(slider_pot);
+     int pot_val = sim_pot_val;
+ #endif
+     
+@@ -148,7 +148,7 @@
+ #ifdef ARDUINO
+         Serial.printf("[ESP-NOW] TX Remote -> Receiver | Throttle: %.1f%%\n", throttle);
+ #else
+-        printf("[ESP-NOW] TX Remote -> Receiver | Throttle: %.1f%%\n", throttle);
++        // printf("[ESP-NOW] TX Remote -> Receiver | Throttle: %.1f%%\n", throttle);
+ #endif
+ #endif
+     }
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change.
+
+==========================================================
+Step 198 (VIEW_FILE)
+==========================================================
+1: #include "receiver_app.h"
+2: #ifdef ARDUINO
+3: #include <Arduino.h>
+4: #endif
+5: #include "../espnow_packets.h"
+6: #include <cstring>
+7: #include <cstdio>
+8: 
+9: #ifdef ARDUINO
+10: #include <ESP8266WiFi.h>
+11: #include <espnow.h>
+12: #else
+13: // Mock ESP-NOW & Serial
+14: extern "C" uint32_t millis();
+15: extern "C" void esp_now_send(const uint8_t *peer_addr, const uint8_t *data, size_t len);
+16: #endif
+17: 
+18: // MAC Addresses
+19: static uint8_t remote_mac[] = {0xD0, 0xCF, 0x13, 0x32, 0x42, 0x3C};
+20: static uint8_t dash_mac[]   = {0x3C, 0x0F, 0x02, 0xC2, 0xD4, 0xCC};
+21: 
+22: static float current_throttle = 0.0f;
+23: static uint32_t last_packet_ms = 0;
+24: 
+25: // UART logic
+26: static void sendVescUartDuty(float dutyCycle) {
+27: #if defined(ARDUINO) && defined(RECEIVER_DEBUG_MODE)
+28:     Serial.printf("[DEBUG] ESC Duty: %.3f\n", dutyCycle);
+29: #elif defined(ARDUINO)
+30:     // Basic VESC UART Payload for COMM_SET_DUTY
+31:     int32_t val = (int32_t)(dutyCycle * 100000.0f);
+32:     
+33:     uint8_t payload[5];
+34:     payload[0] = 5; // COMM_SET_DUTY
+35:     payload[1] = (val >> 24) & 0xFF;
+36:     payload[2] = (val >> 16) & 0xFF;
+37:     payload[3] = (val >> 8) & 0xFF;
+38:     payload[4] = val & 0xFF;
+39:     
+40:     // Calculate CRC (CRC-16-CCITT)
+41:     uint16_t crc = 0;
+42:     for (int i = 0; i < 5; i++) {
+43:         crc = crc ^ (payload[i] << 8);
+44:         for (int j = 0; j < 8; j++) {
+45:             if (crc & 0x8000) crc = (crc << 1) ^ 0x1021;
+46:             else crc <<= 1;
+47:         }
+48:     }
+49:     
+50:     // Send
+51:     Serial.
+<truncated 1301 bytes>
+  esp_now_register_recv_cb(receiver_onDataRecv);
+94: 
+95: #ifdef RECEIVER_DEBUG_MODE
+96:     // Add Dashboard as a peer so we can send debug telemetry back
+97:     esp_now_add_peer(dash_mac, ESP_NOW_ROLE_COMBO, 0, NULL, 0);
+98:     Serial.println("Receiver DEBUG MODE initialized.
+Enter 'telemetry speed <val>' to mock ESC.");
+99: #endif
+100: 
+101: #endif
+102: }
+103: 
+104: void ReceiverApp::update() {
+105:     // Failsafe
+106:     if (millis() - last_packet_ms > 500) {
+107:         current_throttle = 0.0f; // Neutral
+108:     }
+109:     
+110:     // Map throttle (-100 to 100) to Duty Cycle (-0.95 to 0.95)
+111:     float duty = current_throttle / 100.0f * 0.95f;
+112:     
+113:     // Send to ESC every 50ms
+114:     static uint32_t last_uart = 0;
+115:     if (millis() - last_uart > 50) {
+116:         last_uart = millis();
+117:         sendVescUartDuty(duty);
+118: #if defined(DEBUG_ESPNOW) && !defined(RECEIVER_DEBUG_MODE)
+119: #ifdef ARDUINO
+120:         Serial.printf("[UART] TX Receiver -> ESC | VESC COMM_SET_DUTY: %.3f\n", duty);
+121: #else
+122:         printf("[UART] TX Receiver -> ESC | VESC COMM_SET_DUTY: %.3f\n", duty);
+123: #endif
+124: #endif
+125:     }
+126: 
+127: #if defined(ARDUINO) && defined(RECEIVER_DEBUG_MODE)
+128:     // Read from Serial to generate mock telemetry packet to Dashboard
+129:     if (Serial.available()) {
+130:         String line = Serial.readStringUntil('\n');
+131:         line.trim();
+132:         if (line.startsWith("telemetry speed ")) {
+133:             float speed = line.substring(16).toFloat();
+134:             TelemetryPacket mock_pkt;
+135:             mock_pkt.speed_kmh = speed;
+136:             mock_pkt.battery_voltage_v = 42.0f;
+137:             mock_pkt.power_w = 150.0f;
+138:             
+139:             esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
+140:             Serial.printf("Sent mock telemetry: Speed %.1f\n", speed);
+141:         }
+142:     }
+143: #endif
+144: }
+145: 
+The above content shows the entire, complete file contents of the requested file.
+
+==========================================================
+Step 202 (CODE_ACTION)
+==========================================================
+[diff_block_start]
+@@ -5,6 +5,7 @@
+ #include "../espnow_packets.h"
+ #include <cstring>
+ #include <cstdio>
++#include <lvgl.h>
+ 
+ #ifdef ARDUINO
+ #include <ESP8266WiFi.h>
+@@ -21,6 +21,13 @@
+ static float current_throttle = 0.0f;
+ static uint32_t last_packet_ms = 0;
+ 
++#ifndef ARDUINO
++static lv_obj_t* lbl_receiver_throttle;
++static lv_obj_t* slider_speed;
++static lv_obj_t* slider_battery;
++static lv_obj_t* slider_power;
++#endif
++
+ // UART logic
+ static void sendVescUartDuty(float dutyCycle) {
+ #if defined(ARDUINO) && defined(RECEIVER_DEBUG_MODE)
+@@ -53,7 +53,7 @@
+     Serial.write(crc & 0xFF);
+     Serial.write(0x03);
+ #else
+-    printf("[SIM Receiver] ESC Duty set to: %.3f\n", dutyCycle);
++    // printf("[SIM Receiver] ESC Duty set to: %.3f\n", dutyCycle);
+ #endif
+ }
+ 
+@@ -67,7 +67,7 @@
+ #ifdef ARDUINO
+         Serial.printf("[ESP-NOW] RX Remote -> Receiver | Throttle: %.1f%%\n", current_throttle);
+ #else
+-        printf("[ESP-NOW] RX Remote -> Receiver | Throttle: %.1f%%\n", current_throttle);
++        // printf("[ESP-NOW] RX Remote -> Receiver | Throttle: %.1f%%\n", current_throttle);
+ #endif
+ #endif
+     }
+@@ -94,6 +94,44 @@
+     Serial.println("Receiver DEBUG MODE initialized.
+Enter 'telemetry speed <val>' to mock ESC.");
+ #endif
+ 
++#else
++    // Native LVGL setup
++    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x000000), 0);
++    
++    lbl_receiver_throttle = lv_label_create(lv_scr_act());
++    lv_obj_set_style_text_color(lbl_receiver_throttle, lv_color_hex(0xFFFFFF), 0);
++    lv_label_set_text(lbl_receiver_throttle, "RX Throttle: 0.0%");
++    lv_obj_align(lbl_receiver_throttle, LV_ALIGN_TOP_LEFT, 10, 10);
++
++    slider_speed = lv_slider_create(lv_scr_act());
++    lv_slider_set_range(s
+<truncated 1265 bytes>
+cr_act());
++    lv_obj_set_style_text_color(lbl_pwr, lv_color_hex(0xAAAAAA), 0);
++    lv_label_set_text(lbl_pwr, "Power W");
++    lv_obj_align_to(lbl_pwr, slider_power, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
+ #endif
+ }
+ 
+@@ -114,7 +114,7 @@
+ #ifdef ARDUINO
+         Serial.printf("[UART] TX Receiver -> ESC | VESC COMM_SET_DUTY: %.3f\n", duty);
+ #else
+-        printf("[UART] TX Receiver -> ESC | VESC COMM_SET_DUTY: %.3f\n", duty);
++        // printf("[UART] TX Receiver -> ESC | VESC COMM_SET_DUTY: %.3f\n", duty);
+ #endif
+ #endif
+     }
+@@ -125,7 +125,7 @@
+         line.trim();
+         if (line.startsWith("telemetry speed ")) {
+             float speed = line.substring(16).toFloat();
+-            TelemetryPacket mock_pkt;
++            TelemetryPacket mock_pkt = {0};
+             mock_pkt.speed_kmh = speed;
+             mock_pkt.battery_voltage_v = 42.0f;
+             mock_pkt.power_w = 150.0f;
+@@ -133,6 +133,24 @@
+             Serial.printf("Sent mock telemetry: Speed %.1f\n", speed);
+         }
+     }
++#elif !defined(ARDUINO)
++    if (lbl_receiver_throttle) {
++        char buf[32];
++        snprintf(buf, sizeof(buf), "RX Throttle: %.1f%%", current_throttle);
++        lv_label_set_text(lbl_receiver_throttle, buf);
++    }
++    
++    static uint32_t last_telemetry = 0;
++    if (millis() - last_telemetry > 100) {
++        last_telemetry = millis();
++        TelemetryPacket mock_pkt = {0};
++        if (slider_speed) mock_pkt.speed_kmh = lv_slider_get_value(slider_speed);
++        if (slider_battery) mock_pkt.battery_voltage_v = lv_slider_get_value(slider_battery);
++        if (slider_power) mock_pkt.power_w = lv_slider_get_value(slider_power);
++        mock_pkt.can_alive = true;
++        
++        esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
++    }
+ #endif
+ }
+ 
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change.
+
+==========================================================
+Step 238 (PLANNER_RESPONSE)
+==========================================================
+The `ReceiverApp` now has its own LVGL window in simulation with sliders to mock ESC telemetry (Speed, Battery, Power).
+
+==========================================================
+Step 282 (VIEW_FILE)
+==========================================================
+Created At: 2026-05-26T06:54:23Z
+Completed At: 2026-05-26T06:54:24Z
+File Path: `file:///c:/Users/thatw/Documents/Apollo-8/DashBoard/src/can_driver.cpp`
+Total Lines: 284
+Total Bytes: 11586
+Showing lines 1 to 284
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>.
+1: #include "can_driver.h"
+2: #include "mechanical_config.h"
+3: #include <math.h>
+4: #include <stdint.h>
+5: #include <string.h>
+6: 
+7: #ifdef ARDUINO
+8: #include <Arduino.h>
+9: #include <driver/twai.h>
+10: #else
+11: #include <SDL2/SDL.h>
+12: static uint32_t millis() {
+13:     return SDL_GetTicks();
+14: }
+15: #endif
+16: 
+17: VehicleState g_vehicle_state;
+18: 
+19: namespace CANDriver {
+20: 
+21:     void init() {
+22:         memset(&g_vehicle_state, 0, sizeof(VehicleState));
+23: 
+24: #ifdef ARDUINO
+25:         // Initialize ESP32 TWAI (CAN) hardware
+26:         twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT((gpio_num_t)6, (gpio_num_t)0, TWAI_MODE_NORMAL);
+27:         twai_timing_config_t t_config = TWAI_TIMING_CONFIG_1MBITS();
+28:         twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
+29: 
+30:         if (twai_driver_install(&g_config, &t_config, &f_config) == ESP_OK) {
+31:             twai_start();
+32:         }
+33: #endif
+34: 
+35:         // Simulator/Default Initialization: Base values
+36:         g_vehicle_state.battery_voltage_v = 42.0f;
+37:         g_vehicle_state.mosfet_temp_c = 25.0f;
+38:         g_vehicle_state.motor_temp_c = 25.0f;
+39:         g_vehicle_state.erpm = 0;
+40:         g_vehicle_state.battery_current_a = 0.0f;
+41:         g_vehicle_state.current_a = 0.0f;
+42:         g_vehicle_state.tachometer = 0;
+43:         g_vehicle_state.duty_cycle = 0.0f;
+44: 
+45:         // Derived init
+46:         g_vehicle_state.power_w = 0.0f;
+47:         g_vehicle_state.wh_consumed = 0.0f;
+48:         g_vehicle_state.top_speed_kmh = 0.0f;
+49
+<truncated 9338 bytes>
+over time) ---
+248:         uint32_t dt_ms = now - g_vehicle_state.last_wh_update_ms;
+249:         if (dt_ms > 0 && dt_ms < 1000) {  // Sanity guard
+250:             float dt_h = (float)dt_ms / 3600000.0f;  // ms â†’ hours
+251:             float power = g_vehicle_state.power_w;
+252:             // Only count positive power consumption (not regen recovery for simplicity)
+253:             if (power > 0.0f) {
+254:                 g_vehicle_state.wh_consumed += power * dt_h;
+255:             }
+256:         }
+257:         g_vehicle_state.last_wh_update_ms = now;
+258: 
+259:         // --- Wh/km efficiency ---
+260:         float trip_km = ((float)g_vehicle_state.tachometer / 100000.0f);
+261:         if (trip_km > 0.01f) {
+262:             g_vehicle_state.wh_per_km = g_vehicle_state.wh_consumed / trip_km;
+263:         }
+264: 
+265:         // --- Estimated range ---
+266:         if (g_vehicle_state.wh_per_km > 1.0f && trip_km > 0.5f) {
+267:             float batt_pct = ((g_vehicle_state.battery_voltage_v - 32.0f) / (42.0f - 32.0f));
+268:             if (batt_pct < 0.0f) batt_pct = 0.0f;
+269:             if (batt_pct > 1.0f) batt_pct = 1.0f;
+270:             float remaining_wh = BATTERY_TOTAL_WH * batt_pct;
+271:             g_vehicle_state.range_km = remaining_wh / g_vehicle_state.wh_per_km;
+272:             if (g_vehicle_state.range_km > 99.0f) g_vehicle_state.range_km = 99.0f;
+273:         } else {
+274:             // Not enough data yet, estimate from battery % and a conservative Wh/km
+275:             float batt_pct = ((g_vehicle_state.battery_voltage_v - 32.0f) / (42.0f - 32.0f));
+276:             if (batt_pct < 0.0f) batt_pct = 0.0f;
+277:             if (batt_pct > 1.0f) batt_pct = 1.0f;
+278:             g_vehicle_state.range_km = (BATTERY_TOTAL_WH * batt_pct) / 25.0f;  // Assume ~25 Wh/km (conservative)
+279:             if (g_vehicle_state.range_km > 99.0f) g_vehicle_state.range_km = 99.0f;
+280:         }
+281:     }
+282: 
+283: }
+284: 
+The above content shows the entire, complete file contents of the requested file.
+
+==========================================================
+Step 286 (VIEW_FILE)
+==========================================================
+1: #include "espnow_dash.h"
+2: #include "espnow_packets.h"
+3: #include "can_driver.h"
+4: #include <cstring>
+5: 
+6: #ifdef ARDUINO
+7: #include <WiFi.h>
+8: #include <esp_now.h>
+9: #else
+10: typedef uint8_t esp_now_send_status_t;
+11: #define ESP_NOW_SEND_SUCCESS 0
+12: extern "C" uint32_t millis();
+13: extern "C" void esp_now_send(const uint8_t *peer_addr, const uint8_t *data, size_t len);
+14: #endif
+15: 
+16: // Remote MAC Address: D0:CF:13:32:42:3C
+17: static uint8_t remote_mac[] = {0xD0, 0xCF, 0x13, 0x32, 0x42, 0x3C};
+18: // Receiver MAC Address (for debug): EC:64:C9:CC:D8:54
+19: static uint8_t receiver_mac[] = {0xEC, 0x64, 0xC9, 0xCC, 0xD8, 0x54};
+20: 
+21: static uint32_t last_send_time = 0;
+22: // Global for Debug UI screen
+23: extern bool debug_mode_active;
+24: 
+25: static void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+26: #ifdef DEBUG_ESPNOW
+27: #ifdef ARDUINO
+28:     if (status != ESP_NOW_SEND_SUCCESS) {
+29:         Serial.println("[ESP-NOW] TX Dash -> Remote FAILED");
+30:     }
+31: #else
+32:     if (status != ESP_NOW_SEND_SUCCESS) {
+33:         printf("[ESP-NOW] TX Dash -> Remote FAILED\n");
+34:     }
+35: #endif
+36: #endif
+37: }
+38: 
+39: extern "C" void dash_onDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
+40:     if (len == sizeof(TelemetryPacket)) {
+41:         TelemetryPacket pkt;
+42:         memcpy(&pkt, incomingData, sizeof(TelemetryPacket));
+43:         
+44:         // When receiving telemetry over ESP-NOW, it's debug data from Receiver mock.
+46:         g_
+<truncated 636 bytes>
+  WiFi.mode(WIFI_STA);
+67: 
+68:         // Initialize ESP-NOW
+69:         if (esp_now_init() != ESP_OK) {
+70:             Serial.println("Error initializing ESP-NOW");
+71:             return;
+72:         }
+73: 
+74:         // Register callbacks
+75:         esp_now_register_send_cb(onDataSent);
+76:         esp_now_register_recv_cb((esp_now_recv_cb_t)dash_onDataRecv);
+77: 
+78:         // Register peer (Remote)
+79:         static esp_now_peer_info_t peerInfo;
+80:         memcpy(peerInfo.peer_addr, remote_mac, 6);
+81:         peerInfo.channel = 0;  
+82:         peerInfo.encrypt = false;
+83:         
+84:         if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+85:             Serial.println("Failed to add Remote peer");
+86:             return;
+87:         }
+88: 
+89:         // Register peer (Receiver for debug)
+90:         static esp_now_peer_info_t rxPeerInfo;
+91:         memcpy(rxPeerInfo.peer_addr, receiver_mac, 6);
+92:         rxPeerInfo.channel = 0;
+93:         rxPeerInfo.encrypt = false;
+94:         esp_now_add_peer(&rxPeerInfo);
+95: #endif
+96:     }
+97: 
+98:     void poll() {
+99:         // Send telemetry every 100ms (10Hz)
+100:         if (millis() - last_send_time > 100) {
+101:             last_send_time = millis();
+102: 
+103:             TelemetryPacket packet;
+104:             packet.speed_kmh = g_vehicle_state.speed_kmh;
+105:             packet.battery_voltage_v = g_vehicle_state.battery_voltage_v;
+106:             packet.battery_current_a = g_vehicle_state.battery_current_a;
+107:             packet.power_w = g_vehicle_state.power_w;
+108:             packet.motor_temp_c = g_vehicle_state.motor_temp_c;
+109:             packet.mosfet_temp_c = g_vehicle_state.mosfet_temp_c;
+110:             packet.range_km = g_vehicle_state.range_km;
+111:             packet.can_alive = g_vehicle_state.can_alive;
+112: 
+113:             esp_now_send(remote_mac, (uint8_t *)&packet, sizeof(TelemetryPacket));
+114:         }
+115:     }
+116: 
+117: }
+118: 
+The above content shows the entire, complete file contents of the requested file.
+
+==========================================================
+Step 292 (CODE_ACTION)
+==========================================================
+Created At: 2026-05-26T06:54:54Z
+Completed At: 2026-05-26T06:54:54Z
+The following changes were made by the replace_file_content tool to: c:\Users\thatw\Documents\Apollo-8\DashBoard\src\can_driver.cpp.
+[diff_block_start]
+@@ -198,7 +198,9 @@
+         // ============================================================
+ 
+         // --- Power (Watts) ---
++#ifdef ARDUINO
+         g_vehicle_state.power_w = g_vehicle_state.battery_voltage_v * g_vehicle_state.battery_current_a;
++#endif
+ 
+         // --- Regen flag ---
+         g_vehicle_state.regen_active = (g_vehicle_state.battery_current_a < -0.5f);
+@@ -205,6 +205,10 @@
+         // --- Speed for derived calcs ---
++#ifdef ARDUINO
+         float speed = calculate_speed_kmh(g_vehicle_state.erpm);
+         g_vehicle_state.speed_kmh = speed;
++#else
++        float speed = g_vehicle_state.speed_kmh;
++#endif
+ 
+         // --- Top speed (session max) ---
+         if (speed > g_vehicle_state.top_speed_kmh) {
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change.
+
+==========================================================
+Step 307 (VIEW_FILE)
+==========================================================
+Created At: 2026-05-26T06:56:24Z
+Completed At: 2026-05-26T06:56:24Z
+File Path: `file:///c:/Users/thatw/Documents/Apollo-8/DashBoard/src/can_driver.cpp`
+Total Lines: 273
+Total Bytes: 10897
+Showing lines 170 to 210
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>.
+170:                 g_vehicle_state.mosfet_temp_c = max_fet;
+171:                 g_vehicle_state.motor_temp_c = max_mot;
+172:                 g_vehicle_state.tachometer += (g_vehicle_state.erpm / 100); 
+173: 
+174:                 // Minimal logging for confidence
+175:                 static uint32_t last_log = 0;
+176:                 if (now - last_log > 1000) {
+177:                     Serial.printf("Flipsky Active: M_ID=163 (%.1fV, %.1fA) | S_ID=224 (%.1fV, %.1fA) | Sum=%.0fW\n", 
+178:                         master_esc.voltage, master_esc.battery_current,
+179:                         slave_esc.voltage, slave_esc.battery_current,
+180:                         g_vehicle_state.power_w);
+181:                     last_log = now;
+182:                 }
+183:             }
+184:         } else {
+185:             g_vehicle_state.can_alive = false;
+186:         }
+187: 
+188: #else
+189: #else
+190:         // In Native Simulation, we now rely on the ReceiverApp sending mock TelemetryPackets
+191:         // via esp_now_send which dash_onDataRecv will parse and write into g_vehicle_state.
+193: #endif
+194: #endif
+195: 
+196:         // ============================================================
+197:         // DERIVED METRICS (computed from raw data)
+198:         // ============================================================
+199: 
+200:         // --- Power (Watts) ---
+201: #ifdef ARDUINO
+202:         g_vehicle_state.power_w = g_vehicle_state.battery_voltage_v * g_vehicle_state.battery_current_a;
+203: #endif
+204: 
+205:         // --- Regen flag ---
+206:         g_vehicle_state.regen_active = (g_vehicle_state.battery_current_a < -0.5f);
+207: 
+208:         // --- Speed for derived calcs ---
+209: #ifdef ARDUINO
+210:         float speed = calculate_speed_kmh(g_vehicle_state.erpm);
+The above content does NOT show the entire file contents.
+
+==========================================================
+Step 324 (CHECKPOINT)
+==========================================================
+[Artifact comment on file:///c%3A/Users/thatw/.gemini/antigravity/brain/5cf1497a-ae31-4b1b-9fcd-ac294acc2dd0/implementation_plan.md]: should be acessible when pressing the top right corner thrice
+[Artifact comment on file:///c%3A/Users/thatw/.gemini/antigravity/brain/5cf1497a-ae31-4b1b-9fcd-ac294acc2dd0/implementation_plan.md]: in the physical build the dashboard is connected to the esc via can, and the receiver connected via uart.
+on the native full stack amke it so that it opens 3 windows with reciever etc etc so I can see the display of the remove and dashboard, and then what the receiver is receiving as a basic UI.
+on the native full stack amke it so that it opens 3 windows with reciever etc etc so I can see the display of the remove and dashboard, and then what the receiver is receiving as a basic UI.
+and so that I can simulate the potentiometer and buttons ont he remote
+6.
+I cant move the sliders, also now that we have sliders and what not the dashboard can show actual true values instead of random stuff
+9.
+- Previous
+<truncated 1233 bytes>
+l:** Based on `receiver_app.cpp` (`sendVescUartDuty`), the receiver maps the remote's throttle percentage (-100 to 100) to a duty cycle (-0.95 to +0.95) and sends a standard VESC UART packet using `COMM_SET_DUTY` (Command ID: 5) scaled by 100,000.
+**Next Steps**
+   - **Priority 1:** Respond to the user's question by analyzing `receiver_app.cpp` (specifically `sendVescUartDuty`) and `can_driver.cpp`.
+- Explain that it currently sends a VESC UART packet for `COMM_SET_DUTY` (Command 0x05) to control motor speed based on the remote's throttle position.
+
+==========================================================
+Step 333 (VIEW_FILE)
+==========================================================
+1: #include "receiver_app.h"
+2: #ifdef ARDUINO
+3: #include <Arduino.h>
+4: #endif
+5: #include "../espnow_packets.h"
+6: #include <cstring>
+7: #include <cstdio>
+8: #include <lvgl.h>
+9: 
+10: #ifdef ARDUINO
+11: #include <ESP8266WiFi.h>
+12: #include <espnow.h>
+13: #else
+14: // Mock ESP-NOW & Serial
+15: extern "C" uint32_t millis();
+16: extern "C" void esp_now_send(const uint8_t *peer_addr, const uint8_t *data, size_t len);
+17: #endif
+18: 
+19: // MAC Addresses
+20: static uint8_t remote_mac[] = {0xD0, 0xCF, 0x13, 0x32, 0x42, 0x3C};
+21: static uint8_t dash_mac[]   = {0x3C, 0x0F, 0x02, 0xC2, 0xD4, 0xCC};
+22: 
+23: static float current_throttle = 0.0f;
+24: static uint32_t last_packet_ms = 0;
+25: 
+26: #ifndef ARDUINO
+27: static lv_obj_t* lbl_receiver_throttle;
+28: static lv_obj_t* slider_speed;
+29: static lv_obj_t* slider_battery;
+30: static lv_obj_t* slider_power;
+31: #endif
+32: 
+33: // UART logic
+34: static void sendVescUartDuty(float dutyCycle) {
+35: #if defined(ARDUINO) && defined(RECEIVER_DEBUG_MODE)
+36:     Serial.printf("[DEBUG] ESC Duty: %.3f\n", dutyCycle);
+37: #elif defined(ARDUINO)
+38:     // Basic VESC UART Payload for COMM_SET_DUTY
+39:     int32_t val = (int32_t)(dutyCycle * 100000.0f);
+40:     
+41:     uint8_t payload[5];
+42:     payload[0] = 5; // COMM_SET_DUTY
+43:     payload[1] = (val >> 24) & 0xFF;
+44:     payload[2] = (val >> 16) & 0xFF;
+45:     payload[3] = (val >> 8) & 0xFF;
+46:     payload[4] = val & 0xFF;
+47:     
+48:     // Calculate CRC (CRC-16-CCITT)
+49:     uint16_t crc = 0;
+50:     for (int i = 0; i < 5; i++) {
+51:         crc = crc ^ (payload[
+<truncated 4478 bytes>
+y);
+164: #if defined(DEBUG_ESPNOW) && !defined(RECEIVER_DEBUG_MODE)
+165: #ifdef ARDUINO
+166:         Serial.printf("[UART] TX Receiver -> ESC | VESC COMM_SET_DUTY: %.3f\n", duty);
+167: #else
+168:         // printf("[UART] TX Receiver -> ESC | VESC COMM_SET_DUTY: %.3f\n", duty);
+169: #endif
+170: #endif
+171:     }
+172: 
+173: #if defined(ARDUINO) && defined(RECEIVER_DEBUG_MODE)
+174:     // Read from Serial to generate mock telemetry packet to Dashboard
+175:     if (Serial.available()) {
+176:         String line = Serial.readStringUntil('\n');
+177:         line.trim();
+178:         if (line.startsWith("telemetry speed ")) {
+179:             float speed = line.substring(16).toFloat();
+180:             TelemetryPacket mock_pkt = {0};
+181:             mock_pkt.speed_kmh = speed;
+182:             mock_pkt.battery_voltage_v = 42.0f;
+183:             mock_pkt.power_w = 150.0f;
+184:             
+185:             esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
+186:             Serial.printf("Sent mock telemetry: Speed %.1f\n", speed);
+187:         }
+188:     }
+189: #elif !defined(ARDUINO)
+190:     if (lbl_receiver_throttle) {
+191:         char buf[32];
+192:         snprintf(buf, sizeof(buf), "RX Throttle: %.1f%%", current_throttle);
+193:         lv_label_set_text(lbl_receiver_throttle, buf);
+194:     }
+195:     
+196:     static uint32_t last_telemetry = 0;
+197:     if (millis() - last_telemetry > 100) {
+198:         last_telemetry = millis();
+199:         TelemetryPacket mock_pkt = {0};
+200:         if (slider_speed) mock_pkt.speed_kmh = lv_slider_get_value(slider_speed);
+201:         if (slider_battery) mock_pkt.battery_voltage_v = lv_slider_get_value(slider_battery);
+202:         if (slider_power) mock_pkt.power_w = lv_slider_get_value(slider_power);
+203:         mock_pkt.can_alive = true;
+204:         
+205:         esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
+206:     }
+207: #endif
+208: }
+209: 
+The above content shows the entire, complete file contents of the requested file.
+
+==========================================================
+Step 344 (PLANNER_RESPONSE)
+==========================================================
+Standard Operation: Commands Sent
+Under normal operation, the receiver sends only **one** binary command to the VESC ESC to control the motor speed:
+
+#### **`COMM_SET_DUTY` (Command ID: `5`)**
+* **Purpose:** Sets the target duty cycle (motor speed/power percentage) of the ESC.
+Scales the floating-point duty cycle to a 32-bit signed big-endian integer by multiplying by `100,000`:
+     $$\text{val} = \text{duty} \times 100000$$
+     *(e.g., maximum forward throttle $+100\%$ maps to a payload value of $+95,000$)*
+
+#### **UART Packet Structure (Standard VESC Framing):**
+The packet is transmitted as a sequential stream of 9 bytes:
+
+| Byte Index | Field Name | Hex / Formula | Description |
+| :--- | :--- | :--- | :--- |
+| **0** | **Start Byte** | `0x02` | VESC start frame marker for payload size $\le 256$ bytes |
+| **1** | **Payload Length** | `0x05` | Payload length is exactly 5 bytes |
+| **2** | **Command ID** | `0x05` | `COMM_SET_DUTY` VESC command |
+| **3** | **Data MSB** | `(val >> 24) & 0xFF` | Most significant byte of the 32-bit duty cycle integer |
+| **4** | **Data Byte 2** | `(val >> 16) & 0xFF` | Second byte |
+| **5** | **Data Byte 3** | `(val >> 8) & 0xFF` | Third byte |
+| **6** | **Data LSB** | `val & 0xFF` | Least significant byte |
+| **7** | **CRC MSB** | `(crc >> 8) & 0xFF` | CRC-16-CCITT (polynomial `0x1021`, initial `0`) calculated over bytes 2â€“6 |
+| **8** | **CRC LSB** | `crc & 0xFF` | LSB of the calculated CRC-16 |
+| **9** | **End Byte** | `0x03` | VESC end frame marker |
+
+---
+
+### 3.
+**UART RX Commands (Console Mocking):**
+   The receiver listens on its serial interface for incoming text commands from a PC to mock the ESC telemetry:
+   * **Command:** `telemetry speed <float_value>`
+   * **Action:** Parses the value, generates a `TelemetryPacket`, and transmits it wirelessly via ESP-NOW to the Dashboard (`dash_mac`).
+
+==========================================================
+Step 350 (PLANNER_RESPONSE)
+==========================================================
+**Telemetry Display:** A single raw text label in the top-left corner displaying numeric values:
+   ```text
+   Speed: <speed>
+   Batt: <voltage>
+   Pwr: <watts>
+   ```
+3.
+---
+
+### What a "Proper" LilyGo ($320 \times 170$) UI should have:
+To match high-end electric skateboard remotes (like the Flipsky or Hoyt St), it needs:
+* **Circular Speed Gauge / Arc:** Visual indication of current speed.
+
+==========================================================
+Step 353 (VIEW_FILE)
+==========================================================
+1: #include "ui_controller.h"
+2: #include <lvgl.h>
+3: #include "can_driver.h"
+4: #include "mechanical_config.h"
+5: #include <stdio.h>
+6: #include <math.h>
+7: 
+8: LV_FONT_DECLARE(lv_font_block_300);
+9: LV_FONT_DECLARE(lv_font_block_72);
+10: LV_FONT_DECLARE(lv_font_block_56);
+11: LV_FONT_DECLARE(lv_font_block_24);
+12: 
+13: namespace UIController {
+14: 
+15:     // ================================================================
+16:     // GLOBALS
+17:     // ================================================================
+18:     lv_obj_t * label_speed_val;
+19:     lv_obj_t * label_pwr_val;
+20:     lv_obj_t * label_temp_esc_val;
+21:     lv_obj_t * label_trip_val;
+22:     lv_obj_t * label_range_val;
+23:     lv_obj_t * label_whkm_val;
+24: 
+25:     lv_obj_t * batt_bars[10];
+26:     lv_color_t bar_colors[10];
+27:     lv_obj_t * label_footer;
+28:     lv_obj_t * label_can_status;
+29: 
+30:     // ================================================================
+31:     // Colors
+32:     // ================================================================
+33:     lv_color_t color_purple  = lv_color_hex(0xC3B1E1);
+34:     lv_color_t color_white   = lv_color_hex(0xFFFFFF);
+35:     lv_color_t color_grey    = lv_color_hex(0x222222);
+36:     lv_color_t color_accent  = lv_color_hex(0xFF3300);
+37:     lv_color_t color_green   = lv_color_hex(0x00FF88);
+38:     lv_color_t color_cyan    = lv_color_hex(0x00CCCC);
+39:     lv_color_t color_dim     = lv_color_hex(0x555555);
+40: 
+41:     // ================================================================
+42:     // Layout geometry (480x480)
+43:
+<truncated 14671 bytes>
+xt_color(label_pwr_val, color_cyan, 0);
+305: 
+306:         // TRIP
+307:         float trip_km = tach / 100000.0f;
+308:         snprintf(buf, sizeof(buf), "%.1f", trip_km);
+309:         lv_label_set_text(label_trip_val, buf);
+310: 
+311:         // RANGE
+312:         if (range < 10.0f) snprintf(buf, sizeof(buf), "%.1f", range);
+313:         else               snprintf(buf, sizeof(buf), "%.0f", range);
+314:         lv_label_set_text(label_range_val, buf);
+315: 
+316:         // WH/KM
+317:         snprintf(buf, sizeof(buf), "%.1f", whkm);
+318:         lv_label_set_text(label_whkm_val, buf);
+319: 
+320:         // ESC TEMP
+321:         snprintf(buf, sizeof(buf), "%.0f C", t_esc);
+322:         lv_label_set_text(label_temp_esc_val, buf);
+323:         if (t_esc > 70)
+324:             lv_obj_set_style_text_color(label_temp_esc_val, color_accent, 0);
+325:         else
+326:             lv_obj_set_style_text_color(label_temp_esc_val, color_purple, 0);
+327: 
+328:         // BATTERY STRIP
+329:         float pct = ((v - 32.0f) / 10.0f) * 100.0f;
+330:         if (pct < 0) pct = 0;
+331:         if (pct > 100) pct = 100;
+332:         int active_bars = (int)(pct / 10.0f);
+333:         for (int i = 0; i < BAR_COUNT; i++) {
+334:             if (i < active_bars) {
+335:                 lv_obj_set_style_bg_color(batt_bars[i], bar_colors[i], 0);
+336:                 lv_obj_set_style_bg_opa(batt_bars[i], LV_OPA_COVER, 0);
+337:             } else {
+338:                 lv_obj_set_style_bg_opa(batt_bars[i], LV_OPA_TRANSP, 0);
+339:             }
+340:         }
+341: 
+342:         // CAN STATUS
+343:         if (can_ok) {
+344:             lv_label_set_text(label_can_status, "CAN OK");
+345:             lv_obj_set_style_text_color(label_can_status, color_green, 0);
+346:         } else {
+347:             lv_label_set_text(label_can_status, "CAN !!");
+348:             lv_obj_set_style_text_color(label_can_status, color_accent, 0);
+349:         }
+350:     }
+351: }
+352: 
+The above content shows the entire, complete file contents of the requested file.
+
+==========================================================
+Step 392 (PLANNER_RESPONSE)
+==========================================================
+Made 2 fresh custom vertical mockups:
+
+**[http://localhost:58863](http://localhost:58863)**
+
+Pick vertical HUD layout:
+* **Option A (Symmetrical Stack):** 
+  * Top: Status line (`SIG: [#][#][#][-] | CAN: OK`).
+* Center: Large circular Speed Dial.
+* Speed Dial is centered.
+
+==========================================================
+Step 412 (SYSTEM_MESSAGE)
+==========================================================
+<SYSTEM_MESSAGE>
+[Message] timestamp=2026-05-26T07:56:37Z sender=5cf1497a-ae31-4b1b-9fcd-ac294acc2dd0/task-369 priority=MESSAGE_PRIORITY_LOW content=Task id "5cf1497a-ae31-4b1b-9fcd-ac294acc2dd0/task-369" was canceled with result:
+Step was canceled: context canceled by manage_task
+			The following output was generated before the cancellation.
+Output:
+				Set-PSReadLineOption : The predictive suggestion feature cannot be enabled because the console output doesn't support 
+virtual terminal processing or it's redirected.
+At C:\Users\thatw\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1:3 char:1
++ Set-PSReadLineOption -PredictionSource History
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [Set-PSReadLineOption], ArgumentException
+    + FullyQualifiedErrorId : System.ArgumentException,Microsoft.PowerShell.SetPSReadLineOption
+ 
+{"type":"server-started","port":58863,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:58863","screen_dir":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content","state_dir":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\state"}
+{"type":"screen-added","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\remote-layout.html"}
+{"type":"screen-updated","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\remote-layout.html"}
+{"type":"screen-updated","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\remote-layout.html"}
+{"source":"user-event","type":"click","text":"B\n    \n      The Centered Cockpit HUD\n      Centering the speed digits inside a stylized progress arc.
+Focuses on speed-centri
+<truncated 1093 bytes>
+tent\\remote-hud-vertical-link.html"}
+{"type":"screen-updated","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\remote-hud-vertical-link.html"}
+{"type":"screen-added","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\remote-hud-vertical-screen.html"}
+{"type":"screen-updated","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\remote-hud-vertical-screen.html"}
+{"type":"screen-updated","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\remote-hud-vertical-screen.html"}
+{"type":"screen-added","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\remote-hud-battery-values.html"}
+{"type":"screen-updated","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\remote-hud-battery-values.html"}
+{"type":"screen-updated","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\remote-hud-battery-values.html"}
+{"type":"screen-added","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\remote-hud-wide-bars.html"}
+{"type":"screen-updated","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\remote-hud-wide-bars.html"}
+{"type":"screen-updated","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\remote-hud-wide-bars.html"}
+{"type":"screen-added","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\waiting.html"}
+{"type":"screen-updated","file":"c:\\Users\\thatw\\Documents\\Apollo-8\\DashBoard\\.superpowers\\brainstorm\\session\\content\\waiting.html"}
+
+
+Log: file:///C:/Users/thatw/.gemini/antigravity/brain/5cf1497a-ae31-4b1b-9fcd-ac294acc2dd0/.system_generated/tasks/task-369.log
+</SYSTEM_MESSAGE>
+
+==========================================================
+Step 427 (VIEW_FILE)
+==========================================================
+Do you also want interactive sliders on the Receiver's simulation window to easily mock the ESC telemetry (Speed, Battery, Power) being sent back to the Dash, replacing the current serial-text-based mocking?
+A slider to mock ESC Speed (km/h).
+51: - **Logic**: `update()` will read the values from these sliders and use them to populate the mock `TelemetryPacket` sent back to the Dash, replacing the USB Serial parsing.
+62: - Drag the Speed/Battery sliders on the Receiver window and verify the Dashboard UI updates accordingly.
+
+==========================================================
+Step 441 (CODE_ACTION)
+==========================================================
+[diff_block_start]
+@@ -1,4 +1,4 @@
+-- [ ] Task 1: Symmetrical Vertical Screen Settings (Hardware & Simulation)
++- [/] Task 1: Symmetrical Vertical Screen Settings (Hardware & Simulation)
+ - [ ] Task 2: Create Symmetrical HUD Layout Components in `remote_app.cpp`
+ - [ ] Task 3: Implement Dynamic Telemetry Updates & Calculations (Speed Dial, Battery Volts, ASCII strength)
+ - [ ] Task 4: Compile & Verify UI functionality in Native simulation
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change.
+
+==========================================================
+Step 447 (CODE_ACTION)
+==========================================================
+[diff_block_start]
+@@ -1,5 +1,5 @@
+-- [/] Task 1: Symmetrical Vertical Screen Settings (Hardware & Simulation)
+-- [ ] Task 2: Create Symmetrical HUD Layout Components in `remote_app.cpp`
++- [x] Task 1: Symmetrical Vertical Screen Settings (Hardware & Simulation)
++- [/] Task 2: Create Symmetrical HUD Layout Components in `remote_app.cpp`
+ - [ ] Task 3: Implement Dynamic Telemetry Updates & Calculations (Speed Dial, Battery Volts, ASCII strength)
+ - [ ] Task 4: Compile & Verify UI functionality in Native simulation
+ 
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change.
+
+==========================================================
+Step 451 (CODE_ACTION)
+==========================================================
+[diff_block_start]
+@@ -53,7 +53,14 @@
+ #endif
+ 
+ // LVGL UI elements
+-static lv_obj_t * lbl_remote_telemetry;
++static lv_obj_t * lbl_status;
++static lv_obj_t * arc_speed;
++static lv_obj_t * lbl_speed;
++static lv_obj_t * bar_board;
++static lv_obj_t * bar_remote;
++static lv_obj_t * lbl_board_volts;
++static lv_obj_t * lbl_remote_volts;
++static lv_obj_t * lbl_power;
+ #ifndef ARDUINO
+ static lv_obj_t * slider_pot;
+ static int sim_pot_val = 2048;
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change.
+
+==========================================================
+Step 453 (VIEW_FILE)
+==========================================================
+99:                  current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+100:         if (lbl_remote_telemetry) {
+101:             lv_label_set_text(lbl_remote_telemetry, buf);
+102:         }
+103:     }
+104: }
+105: 
+106: void RemoteApp::init() {
+107: #ifdef ARDUINO
+108:     // Setup Pins
+109:     pinMode(PIN_POT, INPUT);
+110:     pinMode(PIN_BTN_UP, INPUT_PULLUP);
+111:     pinMode(PIN_BTN_DOWN, INPUT_PULLUP);
+112:     pinMode(PIN_BTN_LEFT, INPUT_PULLUP);
+113:     pinMode(PIN_BTN_RIGHT, INPUT_PULLUP);
+114:     pinMode(PIN_BTN_CONFIRM, INPUT_PULLUP);
+115: 
+116:     // Setup ESP-NOW
+117:     WiFi.mode(WIFI_STA);
+118:     if (esp_now_init() != ESP_OK) {
+119:         Serial.println("Error initializing ESP-NOW");
+120:         return;
+121:     }
+122: 
+123:     esp_now_register_send_cb(onDataSent);
+124:     esp_now_register_recv_cb(remote_onDataRecv);
+125: 
+126:     static esp_now_peer_info_t peerInfo;
+127:     memcpy(peerInfo.peer_addr, receiver_mac, 6);
+128:     peerInfo.channel = 0;  
+129:     peerInfo.encrypt = false;
+130:     if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+131:         Serial.println("Failed to add Receiver peer");
+132:         return;
+133:     }
+134: #endif
+135: 
+136:     // Setup UI
+137: #ifdef ARDUINO
+138:     tft.init();
+139:     tft.setRotation(0); // Symmetrical vertical orientation
+140:     
+141:     lv_init();
+142:     lv_disp_draw_buf_init(&draw_buf, buf, NULL, 170 * 320 / 10);
+143:     
+144:     static lv_disp_drv_t disp_drv;
+145:     lv_disp_drv_init(&disp_drv);
+146:     disp_drv.hor_res = 170;
+147:     disp_drv.ver_res = 320;
+148:     disp_drv.flush_cb = my_disp_flush;
+149:     disp_drv.draw_buf = &draw_buf;
+150:     lv_disp_drv_register(&disp_drv);
+151: #endif
+152: 
+153:     lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x000000), 0);
+154:     lbl_remote_telemetry = lv_label_create(lv_scr_act());
+155:     lv_obj_set_style_text_color(lbl_remote_telemetry, lv_color_hex(0xFFFFFF), 0);
+156:     lv_label_set_text(lbl_remote_telemetry, "Remote Init...");
+157:     lv_obj_align(lbl_remote_telemetry, LV_ALIGN_TOP_LEFT, 10, 10);
+158: 
+159: #ifndef ARDUINO
+160:     slider_pot = lv_slider_create(lv_scr_act());
+161:     lv_slider_set_range(slider_pot, 0, 4095);
+162:     lv_slider_set_value(slider_pot, 2048, LV_ANIM_OFF);
+163:     lv_obj_set_size(slider_pot, 30, 200);
+164:     lv_obj_align(slider_pot, LV_ALIGN_CENTER, 0, 20);
+165:     
+166:     lv_obj_t* lbl_pot = lv_label_create(lv_scr_act());
+167:     lv_obj_set_style_text_color(lbl_pot, lv_color_hex(0xAAAAAA), 0);
+168:     lv_label_set_text(lbl_pot, "Throttle");
+169:     lv_obj_align_to(lbl_pot, slider_pot, LV_ALIGN_OUT_TOP_MID, 0, -10);
+170: #endif
+171: 
+172: #ifdef ARDUINO
+173:     Serial.println("Remote initialized.");
+174: #endif
+175: }
+The above content does NOT show the entire file contents.
+
+==========================================================
+Step 459 (CODE_ACTION)
+==========================================================
+[diff_block_start]
+@@ -151,22 +151,98 @@
+ #endif
+ 
+     lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x000000), 0);
+-    lbl_remote_telemetry = lv_label_create(lv_scr_act());
+-    lv_obj_set_style_text_color(lbl_remote_telemetry, lv_color_hex(0xFFFFFF), 0);
+-    lv_label_set_text(lbl_remote_telemetry, "Remote Init...");
+-    lv_obj_align(lbl_remote_telemetry, LV_ALIGN_TOP_LEFT, 10, 10);
+-
+-#ifndef ARDUINO
++
++    // 1.
+Connection Header Line
++    lbl_status = lv_label_create(lv_scr_act());
++    lv_obj_set_style_text_color(lbl_status, lv_color_hex(0x00FF88), 0);
++    lv_obj_set_style_text_font(lbl_status, &lv_font_unscii_16, 0);
++    lv_label_set_text(lbl_status, "SIG: [----] | CAN: !!");
++    lv_obj_align(lbl_status, LV_ALIGN_TOP_MID, 0, 8);
++
++    // 2.
+Circular Speed Dial (Speed gauge)
++    arc_speed = lv_arc_create(lv_scr_act());
++    lv_obj_set_size(arc_speed, 110, 110);
++    lv_arc_set_rotation(arc_speed, 135);
++    lv_arc_set_bg_angles(arc_speed, 0, 270);
++    lv_arc_set_value(arc_speed, 0);
++    lv_obj_align(arc_speed, LV_ALIGN_TOP_MID, 0, 32);
++    lv_obj_set_style_arc_color(arc_speed, lv_color_hex(0x222222), LV_PART_MAIN); // bg
++    lv_obj_set_style_arc_color(arc_speed, lv_color_hex(0xC3B1E1), LV_PART_INDICATOR); // active purple
++    lv_obj_remove_style(arc_speed, NULL, LV_PART_KNOB); // hide knob
++
++    lbl_speed = lv_label_create(lv_scr_act());
++    lv_obj_set_style_text_color(lbl_speed, lv_color_hex(0xFFFFFF), 0);
++    lv_obj_set_style_text_font(lbl_speed, &lv_font_montserrat_36, 0); // Bold digits
++    lv_label_set_text(lbl_speed, "0");
++    lv_obj_align(lbl_speed, LV_ALIGN_TOP_MID, 0, 64);
++
++    lv_obj_t* lbl_speed_unit = lv_label_create(lv_scr_act());
++    lv_obj_set_style_text_
+<truncated 1939 bytes>
+j_set_style_radius(bar_remote, 0, 0);
++    lv_obj_clear_flag(bar_remote, LV_OBJ_FLAG_SCROLLABLE);
++
++    lv_obj_t* lbl_rem_title = lv_label_create(lv_scr_act());
++    lv_obj_set_style_text_color(lbl_rem_title, lv_color_hex(0x555555), 0);
++    lv_obj_set_style_text_font(lbl_rem_title, &lv_font_unscii_16, 0);
++    lv_label_set_text(lbl_rem_title, "REMOTE");
++    lv_obj_align(lbl_rem_title, LV_ALIGN_TOP_RIGHT, -12, 215);
++
++    lbl_remote_volts = lv_label_create(lv_scr_act());
++    lv_obj_set_style_text_color(lbl_remote_volts, lv_color_hex(0x00CCCC), 0);
++    lv_obj_set_style_text_font(lbl_remote_volts, &lv_font_unscii_16, 0);
++    lv_label_set_text(lbl_remote_volts, "3.70V");
++    lv_obj_align(lbl_remote_volts, LV_ALIGN_TOP_RIGHT, -16, 230);
++
++    // 4.
+
+==========================================================
+Step 463 (CODE_ACTION)
+==========================================================
+[diff_block_start]
+@@ -1,5 +1,5 @@
+ - [x] Task 1: Symmetrical Vertical Screen Settings (Hardware & Simulation)
+-- [/] Task 2: Create Symmetrical HUD Layout Components in `remote_app.cpp`
+-- [ ] Task 3: Implement Dynamic Telemetry Updates & Calculations (Speed Dial, Battery Volts, ASCII strength)
++- [x] Task 2: Create Symmetrical HUD Layout Components in `remote_app.cpp`
++- [/] Task 3: Implement Dynamic Telemetry Updates & Calculations (Speed Dial, Battery Volts, ASCII strength)
+ - [ ] Task 4: Compile & Verify UI functionality in Native simulation
+ 
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change.
+
+==========================================================
+Step 465 (VIEW_FILE)
+==========================================================
+70: #endif
+71: 
+72: static void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+73: #ifdef DEBUG_ESPNOW
+74: #ifdef ARDUINO
+75:     if (status != ESP_NOW_SEND_SUCCESS) {
+76:         Serial.println("[ESP-NOW] TX Remote -> Receiver FAILED");
+77:     }
+78: #else
+79:     printf("[ESP-NOW] TX Remote -> Receiver status: %d\n", status);
+80: #endif
+81: #endif
+82: }
+83: 
+84: extern "C" void remote_onDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
+85:     if (len == sizeof(TelemetryPacket)) {
+86:         memcpy(&current_telemetry, incomingData, sizeof(TelemetryPacket));
+87: #ifdef DEBUG_ESPNOW
+88: #ifdef ARDUINO
+89:         Serial.printf("[ESP-NOW] RX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Power: %.0fW\n", 
+90:                       current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+91: #else
+92:         printf("[ESP-NOW] RX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Power: %.0fW\n", 
+93:                       current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+94: #endif
+95: #endif
+96:         // Update display
+97:         char buf[128];
+98:         snprintf(buf, sizeof(buf), "Speed: %.1f\nBatt: %.1f\nPwr: %.0f", 
+99:                  current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+100:         if (lbl_remote_telemetry) {
+101:             lv_label_set_text(lbl_remote_telemetry, buf);
+102:         }
+103:     }
+104: }
+105: 
+106: void RemoteApp::init() {
+107: #ifdef ARDUINO
+108:     // Setup Pins
+109:     pinMode(PIN_POT, INPUT);
+110:     pinMode(PIN_BTN_UP, INPUT_PULLUP);
+The above content does NOT show the entire file contents.
+
+==========================================================
+Step 469 (CODE_ACTION)
+==========================================================
+[diff_block_start]
+@@ -93,12 +93,54 @@
+                       current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+ #endif
+ #endif
+-        // Update display
+-        char buf[128];
+-        snprintf(buf, sizeof(buf), "Speed: %.1f\nBatt: %.1f\nPwr: %.0f", 
+-                 current_telemetry.speed_kmh, current_telemetry.battery_voltage_v, current_telemetry.power_w);
+-        if (lbl_remote_telemetry) {
+-            lv_label_set_text(lbl_remote_telemetry, buf);
++        // 1.
+Update Speed dial and label
++        if (lbl_speed) {
++            char spd_buf[16];
++            snprintf(spd_buf, sizeof(spd_buf), "%.0f", current_telemetry.speed_kmh);
++            lv_label_set_text(lbl_speed, spd_buf);
++        }
++        if (arc_speed) {
++            lv_arc_set_value(arc_speed, (int)current_telemetry.speed_kmh);
++        }
++
++        // 2.
+Update Board Battery
++        if (lbl_board_volts) {
++            char v_buf[16];
++            snprintf(v_buf, sizeof(v_buf), "%.1fV", current_telemetry.battery_voltage_v);
++            lv_label_set_text(lbl_board_volts, v_buf);
++        }
++        if (bar_board) {
++            float pct = ((current_telemetry.battery_voltage_v - 32.0f) / 10.0f) * 100.0f;
++            if (pct < 0) pct = 0; if (pct > 100) pct = 100;
++            int bar_h = (int)(pct * 0.5f); // Map 100% to 50px height
++            lv_obj_set_height(bar_board, bar_h);
++            lv_obj_align(bar_board, LV_ALIGN_TOP_LEFT, 24, 160 + (50 - bar_h));
++        }
++
++        // 3.
+Update Power readout
++        if (lbl_power) {
++            char pwr_buf[32];
++            snprintf(pwr_buf, sizeof(pwr_buf), "POWER: %.0fW", current_telemetry.power_w);
++            lv_label_set_text(lbl_power, pwr_buf);
++            if (current_telemetry.power_w < 0) {
++                lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00FF88), 0); // regen green
++            } else {
++                lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00CCCC), 0); // normal cyan
++            }
++        }
++
++        // 4.
+Update Header status
++        if (lbl_status) {
++            const char* sig = "[#][#][#][-]";
++            const char* can = current_telemetry.can_alive ?
+"OK" : "!!";
++            char stat_buf[64];
++            snprintf(stat_buf, sizeof(stat_buf), "SIG: %s | CAN: %s", sig, can);
++            lv_label_set_text(lbl_status, stat_buf);
++            if (current_telemetry.can_alive) {
++                lv_obj_set_style_text_color(lbl_status, lv_color_hex(0x00FF88), 0);
++            } else {
++                lv_obj_set_style_text_color(lbl_status, lv_color_hex(0xFF3300), 0);
++            }
+         }
+     }
+ }
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change.
+
+==========================================================
+Step 479 (CODE_ACTION)
+==========================================================
+[diff_block_start]
+@@ -1,5 +1,5 @@
+ - [x] Task 1: Symmetrical Vertical Screen Settings (Hardware & Simulation)
+ - [x] Task 2: Create Symmetrical HUD Layout Components in `remote_app.cpp`
+-- [/] Task 3: Implement Dynamic Telemetry Updates & Calculations (Speed Dial, Battery Volts, ASCII strength)
+-- [ ] Task 4: Compile & Verify UI functionality in Native simulation
++- [x] Task 3: Implement Dynamic Telemetry Updates & Calculations (Speed Dial, Battery Volts, ASCII strength)
++- [/] Task 4: Compile & Verify UI functionality in Native simulation
+ 
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change.
+
+==========================================================
+Step 490 (CODE_ACTION)
+==========================================================
+[diff_block_start]
+@@ -1,5 +1,5 @@
+ - [x] Task 1: Symmetrical Vertical Screen Settings (Hardware & Simulation)
+ - [x] Task 2: Create Symmetrical HUD Layout Components in `remote_app.cpp`
+ - [x] Task 3: Implement Dynamic Telemetry Updates & Calculations (Speed Dial, Battery Volts, ASCII strength)
+-- [/] Task 4: Compile & Verify UI functionality in Native simulation
++- [x] Task 4: Compile & Verify UI functionality in Native simulation
+ 
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change.
+
+==========================================================
+Step 492 (VIEW_FILE)
+==========================================================
+This significantly improves aesthetics on the physical board and unifies the UI framework.
+You can drag it to set the throttle!
+15:     - Added three interactive LVGL sliders (Speed, Battery, Power) to mock the ESC telemetry being sent back to the Dash, replacing the old text-based serial mock.
+31:     - **Receiver Window:** Watch the throttle update, and drag the Speed/Batt/Power sliders to send ESC telemetry back to the dashboard.
+32:     - **Dash Window:** Watch the gauges react to your mock ESC telemetry.
+
+==========================================================
+Step 495 (PLANNER_RESPONSE)
+==========================================================
+**Symmetrical Cyberpunk HUD:** Constructed standard brutalist-cyberpunk layout:
+   * **Top:** ASCII-only link signal strength indicator (`SIG: [#][#][#][-] | CAN: OK`).
+* **Center:** Symmetrical circular Speed Dial showing large speed digits and arc gauge.
+* **Middle-Bottom:** Twin 32px wide vertical battery bars showing live Board (`42.0V`) and Remote cell (`3.85V`, range `3.7V` - `4.2V`) voltages below.
+**Responsive Telemetry Binding:** Set up dynamic updates inside `remote_onDataRecv` and `RemoteApp::update()` to dynamically adjust battery bar heights, values, signal bars, and dial indicators.
+
+==========================================================
+Step 546 (VIEW_FILE)
+==========================================================
+Connection Header Line
+202:     lbl_status = lv_label_create(lv_scr_act());
+203:     lv_obj_set_style_text_color(lbl_status, lv_color_hex(0x00FF88), 0);
+204:     lv_obj_set_style_text_font(lbl_status, &lv_font_unscii_16, 0);
+205:     lv_label_set_text(lbl_status, "SIG: [----] | CAN: !!");
+206:     lv_obj_align(lbl_status, LV_ALIGN_TOP_MID, 0, 8);
+207: 
+208:     // 2.
+Circular Speed Dial (Speed gauge)
+209:     arc_speed = lv_arc_create(lv_scr_act());
+210:     lv_obj_set_size(arc_speed, 110, 110);
+211:     lv_arc_set_rotation(arc_speed, 135);
+212:     lv_arc_set_bg_angles(arc_speed, 0, 270);
+213:     lv_arc_set_value(arc_speed, 0);
+214:     lv_obj_align(arc_speed, LV_ALIGN_TOP_MID, 0, 32);
+215:     lv_obj_set_style_arc_color(arc_speed, lv_color_hex(0x222222), LV_PART_MAIN); // bg
+216:     lv_obj_set_style_arc_color(arc_speed, lv_color_hex(0xC3B1E1), LV_PART_INDICATOR); // active purple
+217:     lv_obj_remove_style(arc_speed, NULL, LV_PART_KNOB); // hide knob
+218: 
+219:     lbl_speed = lv_label_create(lv_scr_act());
+220:     lv_obj_set_style_text_color(lbl_speed, lv_color_hex(0xFFFFFF), 0);
+221:     lv_obj_set_style_text_font(lbl_speed, &lv_font_montserrat_36, 0); // Bold digits
+222:     lv_label_set_text(lbl_speed, "0");
+223:     lv_obj_align(lbl_speed, LV_ALIGN_TOP_MID, 0, 64);
+224: 
+225:     lv_obj_t* lbl_speed_unit = lv_label_create(lv_scr_act());
+226:     lv_obj_s
+<truncated 1867 bytes>
+0CCCC), 0); // Cyan
+260:     lv_obj_set_style_bg_opa(bar_remote, LV_OPA_COVER, 0);
+261:     lv_obj_set_style_border_color(bar_remote, lv_color_hex(0x555555), 0);
+262:     lv_obj_set_style_border_width(bar_remote, 1, 0);
+263:     lv_obj_set_style_radius(bar_remote, 0, 0);
+264:     lv_obj_clear_flag(bar_remote, LV_OBJ_FLAG_SCROLLABLE);
+265: 
+266:     lv_obj_t* lbl_rem_title = lv_label_create(lv_scr_act());
+267:     lv_obj_set_style_text_color(lbl_rem_title, lv_color_hex(0x555555), 0);
+268:     lv_obj_set_style_text_font(lbl_rem_title, &lv_font_unscii_16, 0);
+269:     lv_label_set_text(lbl_rem_title, "REMOTE");
+270:     lv_obj_align(lbl_rem_title, LV_ALIGN_TOP_RIGHT, -12, 215);
+271: 
+272:     lbl_remote_volts = lv_label_create(lv_scr_act());
+273:     lv_obj_set_style_text_color(lbl_remote_volts, lv_color_hex(0x00CCCC), 0);
+274:     lv_obj_set_style_text_font(lbl_remote_volts, &lv_font_unscii_16, 0);
+275:     lv_label_set_text(lbl_remote_volts, "3.70V");
+276:     lv_obj_align(lbl_remote_volts, LV_ALIGN_TOP_RIGHT, -16, 230);
+277: 
+278:     // 4.
+
+==========================================================
+Step 548 (CODE_ACTION)
+==========================================================
+Connection Header Line
+     lbl_status = lv_label_create(lv_scr_act());
+     lv_obj_set_style_text_color(lbl_status, lv_color_hex(0x00FF88), 0);
+-    lv_obj_set_style_text_font(lbl_status, &lv_font_unscii_16, 0);
+-    lv_label_set_text(lbl_status, "SIG: [----] | CAN: !!");
+-    lv_obj_align(lbl_status, LV_ALIGN_TOP_MID, 0, 8);
++    lv_obj_set_style_text_font(lbl_status, &lv_font_unscii_8, 0); // Sharp, tiny unscii 8
++    lv_label_set_text(lbl_status, "SIG: [----] CAN: !!");
++    lv_obj_align(lbl_status, LV_ALIGN_TOP_MID, 0, 6);
+ 
+     // 2.
+Circular Speed Dial (Speed gauge)
+     arc_speed = lv_arc_create(lv_scr_act());
+@@ -210,7 +210,7 @@
+     lv_arc_set_rotation(arc_speed, 135);
+     lv_arc_set_bg_angles(arc_speed, 0, 270);
+     lv_arc_set_value(arc_speed, 0);
+-    lv_obj_align(arc_speed, LV_ALIGN_TOP_MID, 0, 32);
++    lv_obj_align(arc_speed, LV_ALIGN_TOP_MID, 0, 22);
+     lv_obj_set_style_arc_color(arc_speed, lv_color_hex(0x222222), LV_PART_MAIN); // bg
+     lv_obj_set_style_arc_color(arc_speed, lv_color_hex(0xC3B1E1), LV_PART_INDICATOR); // active purple
+     lv_obj_remove_style(arc_speed, NULL, LV_PART_KNOB); // hide knob
+@@ -218,7 +218,7 @@
+     lv_obj_set_style_text_color(lbl_speed, lv_color_hex(0xFFFFFF), 0);
+     lv_obj_set_style_text_font(lbl_speed, &lv_font_montserrat_36, 0); // Bold digits
+     lv_label_set_text(lbl_speed, "0");
+-    lv_obj_align(lbl_speed, LV_ALIGN_TOP_MID, 0, 64);
++    lv_obj_align(lbl_speed, LV_ALIGN_TOP_MID, 0, 54);
+ 
+     lv_obj_t* lbl_speed_unit = lv_label_create(lv_scr_act());
+     lv_obj_set_style_text_color(lbl_speed_unit, lv_color_hex(0x555555), 0);
+@@ -225,15 +225,25 @@
+     lv_label_set_text(lbl_speed_unit, "KM/H")
+<truncated 3226 bytes>
+te(bar_remote_bg);
++    lv_obj_set_size(bar_remote, 30, 0); // Initial 0 height
++    lv_obj_align(bar_remote, LV_ALIGN_BOTTOM_MID, 0, 0);
+     lv_obj_set_style_bg_color(bar_remote, lv_color_hex(0x00CCCC), 0); // Cyan
+     lv_obj_set_style_bg_opa(bar_remote, LV_OPA_COVER, 0);
+-    lv_obj_set_style_border_color(bar_remote, lv_color_hex(0x555555), 0);
+-    lv_obj_set_style_border_width(bar_remote, 1, 0);
++    lv_obj_set_style_border_width(bar_remote, 0, 0);
+     lv_obj_set_style_radius(bar_remote, 0, 0);
+     lv_obj_clear_flag(bar_remote, LV_OBJ_FLAG_SCROLLABLE);
+ 
+@@ -261,7 +261,7 @@
+     lv_obj_set_style_text_color(lbl_rem_title, lv_color_hex(0x555555), 0);
+     lv_obj_set_style_text_font(lbl_rem_title, &lv_font_unscii_16, 0);
+-    lv_label_set_text(lbl_rem_title, "REMOTE");
+-    lv_obj_align(lbl_rem_title, LV_ALIGN_TOP_RIGHT, -12, 215);
++    lv_label_set_text(lbl_rem_title, "REM"); // Short title fits beautifully
++    lv_obj_align_to(lbl_rem_title, bar_remote_bg, LV_ALIGN_OUT_BOTTOM_MID, 0, 4);
+ 
+     lbl_remote_volts = lv_label_create(lv_scr_act());
+     lv_obj_set_style_text_color(lbl_remote_volts, lv_color_hex(0x00CCCC), 0);
+@@ -268,5 +268,5 @@
+     lv_label_set_text(lbl_remote_volts, "3.70V");
+-    lv_obj_align(lbl_remote_volts, LV_ALIGN_TOP_RIGHT, -16, 230);
++    lv_obj_align_to(lbl_remote_volts, lbl_rem_title, LV_ALIGN_OUT_BOTTOM_MID, 0, 2);
+ 
+     // 4.
+
+==========================================================
+Step 550 (VIEW_FILE)
+==========================================================
+100:             snprintf(spd_buf, sizeof(spd_buf), "%.0f", current_telemetry.speed_kmh);
+101:             lv_label_set_text(lbl_speed, spd_buf);
+102:         }
+103:         if (arc_speed) {
+104:             lv_arc_set_value(arc_speed, (int)current_telemetry.speed_kmh);
+105:         }
+106: 
+107:         // 2.
+Update Board Battery
+108:         if (lbl_board_volts) {
+109:             char v_buf[16];
+110:             snprintf(v_buf, sizeof(v_buf), "%.1fV", current_telemetry.battery_voltage_v);
+111:             lv_label_set_text(lbl_board_volts, v_buf);
+112:         }
+113:         if (bar_board) {
+114:             float pct = ((current_telemetry.battery_voltage_v - 32.0f) / 10.0f) * 100.0f;
+115:             if (pct < 0) pct = 0; if (pct > 100) pct = 100;
+116:             int bar_h = (int)(pct * 0.5f); // Map 100% to 50px height
+117:             lv_obj_set_height(bar_board, bar_h);
+118:             lv_obj_align(bar_board, LV_ALIGN_TOP_LEFT, 24, 160 + (50 - bar_h));
+119:         }
+120: 
+121:         // 3.
+Update Power readout
+122:         if (lbl_power) {
+123:             char pwr_buf[32];
+124:             snprintf(pwr_buf, sizeof(pwr_buf), "POWER: %.0fW", current_telemetry.power_w);
+125:             lv_label_set_text(lbl_power, pwr_buf);
+126:             if (current_telemetry.power_w < 0) {
+127:                 lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00FF88), 0); // regen green
+128:             } else {
+129:                 lv_obj_set_style_text_color(lbl_power, lv_color_hex(0x00CCCC), 0); // normal cyan
+130:             }
+131:         }
+132: 
+133:         // 4.
+Update Header status
+134:         if (lbl_status) {
+135:             const char* sig = "[#][#][#][-]";
+136:             const char* can = current_telemetry.can_alive ?
+"OK" : "!!";
+137:             char stat_buf[64];
+138:             snprintf(stat_buf, sizeof(stat_buf), "SIG: %s | CAN: %s", sig, can);
+139:             lv_label_set_text(lbl_status, stat_buf);
+140:             if (current_telemetry.can_alive) {
+141:                 lv_obj_set_style_text_color(lbl_status, lv_color_hex(0x00FF88), 0);
+142:             } else {
+143:                 lv_obj_set_style_text_color(lbl_status, lv_color_hex(0xFF3300), 0);
+144:             }
+145:         }
+The above content does NOT show the entire file contents.
+
+==========================================================
+Step 597 (VIEW_FILE)
+==========================================================
+1: #include "receiver_app.h"
+2: #ifdef ARDUINO
+3: #include <Arduino.h>
+4: #endif
+5: #include "../espnow_packets.h"
+6: #include <cstring>
+7: #include <cstdio>
+8: #include <lvgl.h>
+9: 
+10: #ifdef ARDUINO
+11: #include <ESP8266WiFi.h>
+12: #include <espnow.h>
+13: #else
+14: // Mock ESP-NOW & Serial
+15: extern "C" uint32_t millis();
+16: extern "C" void esp_now_send(const uint8_t *peer_addr, const uint8_t *data, size_t len);
+17: #endif
+18: 
+19: // MAC Addresses
+20: static uint8_t remote_mac[] = {0xD0, 0xCF, 0x13, 0x32, 0x42, 0x3C};
+21: static uint8_t dash_mac[]   = {0x3C, 0x0F, 0x02, 0xC2, 0xD4, 0xCC};
+22: 
+23: static float current_throttle = 0.0f;
+24: static uint32_t last_packet_ms = 0;
+25: 
+26: #ifndef ARDUINO
+27: static lv_obj_t* lbl_receiver_throttle;
+28: static lv_obj_t* slider_speed;
+29: static lv_obj_t* slider_battery;
+30: static lv_obj_t* slider_power;
+31: #endif
+32: 
+33: // UART logic
+34: static void sendVescUartDuty(float dutyCycle) {
+35: #if defined(ARDUINO) && defined(RECEIVER_DEBUG_MODE)
+36:     Serial.printf("[DEBUG] ESC Duty: %.3f\n", dutyCycle);
+37: #elif defined(ARDUINO)
+38:     // Basic VESC UART Payload for COMM_SET_DUTY
+39:     int32_t val = (int32_t)(dutyCycle * 100000.0f);
+40:     
+41:     uint8_t payload[5];
+42:     payload[0] = 5; // COMM_SET_DUTY
+43:     payload[1] = (val >> 24) & 0xFF;
+44:     payload[2] = (val >> 16) & 0xFF;
+45:     payload[3] = (val >> 8) & 0xFF;
+46:     payload[4] = val & 0xFF;
+47:     
+48:     // Calculate CRC (CRC-16-CCITT)
+49:     uint16_t crc = 0;
+50:     for (int i = 0; i < 5; i++) {
+51:         crc = crc ^ (payload[
+<truncated 4478 bytes>
+y);
+164: #if defined(DEBUG_ESPNOW) && !defined(RECEIVER_DEBUG_MODE)
+165: #ifdef ARDUINO
+166:         Serial.printf("[UART] TX Receiver -> ESC | VESC COMM_SET_DUTY: %.3f\n", duty);
+167: #else
+168:         // printf("[UART] TX Receiver -> ESC | VESC COMM_SET_DUTY: %.3f\n", duty);
+169: #endif
+170: #endif
+171:     }
+172: 
+173: #if defined(ARDUINO) && defined(RECEIVER_DEBUG_MODE)
+174:     // Read from Serial to generate mock telemetry packet to Dashboard
+175:     if (Serial.available()) {
+176:         String line = Serial.readStringUntil('\n');
+177:         line.trim();
+178:         if (line.startsWith("telemetry speed ")) {
+179:             float speed = line.substring(16).toFloat();
+180:             TelemetryPacket mock_pkt = {0};
+181:             mock_pkt.speed_kmh = speed;
+182:             mock_pkt.battery_voltage_v = 42.0f;
+183:             mock_pkt.power_w = 150.0f;
+184:             
+185:             esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
+186:             Serial.printf("Sent mock telemetry: Speed %.1f\n", speed);
+187:         }
+188:     }
+189: #elif !defined(ARDUINO)
+190:     if (lbl_receiver_throttle) {
+191:         char buf[32];
+192:         snprintf(buf, sizeof(buf), "RX Throttle: %.1f%%", current_throttle);
+193:         lv_label_set_text(lbl_receiver_throttle, buf);
+194:     }
+195:     
+196:     static uint32_t last_telemetry = 0;
+197:     if (millis() - last_telemetry > 100) {
+198:         last_telemetry = millis();
+199:         TelemetryPacket mock_pkt = {0};
+200:         if (slider_speed) mock_pkt.speed_kmh = lv_slider_get_value(slider_speed);
+201:         if (slider_battery) mock_pkt.battery_voltage_v = lv_slider_get_value(slider_battery);
+202:         if (slider_power) mock_pkt.power_w = lv_slider_get_value(slider_power);
+203:         mock_pkt.can_alive = true;
+204:         
+205:         esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
+206:     }
+207: #endif
+208: }
+209: 
+The above content shows the entire, complete file contents of the requested file.
+
+==========================================================
+Step 615 (PLANNER_RESPONSE)
+==========================================================
+The VESC would clamp it, but you should **never** rely on the ESC for input safety.
+At speed, instant reverse = instant lock-up.
+
+==========================================================
+Step 619 (VIEW_FILE)
+==========================================================
+70: extern "C" void receiver_onDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
+71:     if (len == sizeof(ControlPacket)) {
+72:         ControlPacket pkt;
+73:         memcpy(&pkt, incomingData, sizeof(ControlPacket));
+74:         current_throttle = pkt.throttle_percent;
+75:         last_packet_ms = millis();
+76: 
+77: #ifdef DEBUG_ESPNOW
+78: #ifdef ARDUINO
+79:         Serial.printf("[ESP-NOW] RX Remote -> Receiver | Throttle: %.1f%%\n", current_throttle);
+80: #else
+81:         // printf("[ESP-NOW] RX Remote -> Receiver | Throttle: %.1f%%\n", current_throttle);
+82: #endif
+83: #endif
+84:     }
+85: }
+86: 
+87: void ReceiverApp::init() {
+88: #ifdef ARDUINO
+89:     // Serial connected to ESC (or PC if in DEBUG_MODE)
+90:     Serial.begin(115200);
+91: 
+92:     WiFi.mode(WIFI_STA);
+93:     if (esp_now_init() != 0) {
+94:         return;
+95:     }
+96: #ifdef RECEIVER_DEBUG_MODE
+97:     esp_now_set_self_role(ESP_NOW_ROLE_COMBO);
+98: #else
+99:     esp_now_set_self_role(ESP_NOW_ROLE_SLAVE);
+100: #endif
+101:     esp_now_register_recv_cb(receiver_onDataRecv);
+102: 
+103: #ifdef RECEIVER_DEBUG_MODE
+104:     // Add Dashboard as a peer so we can send debug telemetry back
+105:     esp_now_add_peer(dash_mac, ESP_NOW_ROLE_COMBO, 0, NULL, 0);
+106:     Serial.println("Receiver DEBUG MODE initialized.
+Enter 'telemetry speed <val>' to mock ESC.");
+107: #endif
+108: 
+109: #else
+110:     // Native LVGL setup
+The above content does NOT show the entire file contents.
+
+==========================================================
+Step 622 (VIEW_FILE)
+==========================================================
+1: #pragma once
+2: #include <stdint.h>
+3: 
+4: // Shared ESP-NOW packets
+5: 
+6: // Packet sent from Dash to Remote
+7: typedef struct {
+8:     float speed_kmh;
+9:     float battery_voltage_v;
+10:     float battery_current_a;
+11:     float power_w;
+12:     float motor_temp_c;
+13:     float mosfet_temp_c;
+14:     float range_km;
+15:     bool can_alive;
+16: } TelemetryPacket;
+17: 
+18: // Packet sent from Remote to Receiver
+19: typedef struct {
+20:     float throttle_percent; // -100.0 (full brake) to 100.0 (full throttle)
+21: } ControlPacket;
+22: 
+23: // MAC Addresses:
+24: // Dash: 3C:0F:02:C2:D4:CC
+25: // Remote: D0:CF:13:32:42:3C
+26: // Receiver: EC:64:C9:CC:D8:54
+27: 
+The above content shows the entire, complete file contents of the requested file.
+
+==========================================================
+Step 631 (VIEW_FILE)
+==========================================================
+1: #include "receiver_app.h"
+2: #ifdef ARDUINO
+3: #include <Arduino.h>
+4: #endif
+5: #include "../espnow_packets.h"
+6: #include <cstring>
+7: #include <cstdio>
+8: #include <lvgl.h>
+9: 
+10: #ifdef ARDUINO
+11: #include <ESP8266WiFi.h>
+12: #include <espnow.h>
+13: #else
+14: // Mock ESP-NOW & Serial
+15: extern "C" uint32_t millis();
+16: extern "C" void esp_now_send(const uint8_t *peer_addr, const uint8_t *data, size_t len);
+17: #endif
+18: 
+19: // MAC Addresses
+20: static uint8_t remote_mac[] = {0xD0, 0xCF, 0x13, 0x32, 0x42, 0x3C};
+21: static uint8_t dash_mac[]   = {0x3C, 0x0F, 0x02, 0xC2, 0xD4, 0xCC};
+22: 
+23: static float current_throttle = 0.0f;
+24: static uint32_t last_packet_ms = 0;
+25: 
+26: #ifndef ARDUINO
+27: static lv_obj_t* lbl_receiver_throttle;
+28: static lv_obj_t* slider_speed;
+29: static lv_obj_t* slider_battery;
+30: static lv_obj_t* slider_power;
+31: #endif
+32: 
+33: // UART logic
+34: static void sendVescUartDuty(float dutyCycle) {
+35: #if defined(ARDUINO) && defined(RECEIVER_DEBUG_MODE)
+36:     Serial.printf("[DEBUG] ESC Duty: %.3f\n", dutyCycle);
+37: #elif defined(ARDUINO)
+38:     // Basic VESC UART Payload for COMM_SET_DUTY
+39:     int32_t val = (int32_t)(dutyCycle * 100000.0f);
+40:     
+41:     uint8_t payload[5];
+42:     payload[0] = 5; // COMM_SET_DUTY
+43:     payload[1] = (val >> 24) & 0xFF;
+44:     payload[2] = (val >> 16) & 0xFF;
+45:     payload[3] = (val >> 8) & 0xFF;
+46:     payload[4] = val & 0xFF;
+47:     
+48:     // Calculate CRC (CRC-16-CCITT)
+49:     uint16_t crc = 0;
+50:     for (int i = 0; i < 5; i++) {
+51:         crc = crc ^ (payload[
+<truncated 4478 bytes>
+y);
+164: #if defined(DEBUG_ESPNOW) && !defined(RECEIVER_DEBUG_MODE)
+165: #ifdef ARDUINO
+166:         Serial.printf("[UART] TX Receiver -> ESC | VESC COMM_SET_DUTY: %.3f\n", duty);
+167: #else
+168:         // printf("[UART] TX Receiver -> ESC | VESC COMM_SET_DUTY: %.3f\n", duty);
+169: #endif
+170: #endif
+171:     }
+172: 
+173: #if defined(ARDUINO) && defined(RECEIVER_DEBUG_MODE)
+174:     // Read from Serial to generate mock telemetry packet to Dashboard
+175:     if (Serial.available()) {
+176:         String line = Serial.readStringUntil('\n');
+177:         line.trim();
+178:         if (line.startsWith("telemetry speed ")) {
+179:             float speed = line.substring(16).toFloat();
+180:             TelemetryPacket mock_pkt = {0};
+181:             mock_pkt.speed_kmh = speed;
+182:             mock_pkt.battery_voltage_v = 42.0f;
+183:             mock_pkt.power_w = 150.0f;
+184:             
+185:             esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
+186:             Serial.printf("Sent mock telemetry: Speed %.1f\n", speed);
+187:         }
+188:     }
+189: #elif !defined(ARDUINO)
+190:     if (lbl_receiver_throttle) {
+191:         char buf[32];
+192:         snprintf(buf, sizeof(buf), "RX Throttle: %.1f%%", current_throttle);
+193:         lv_label_set_text(lbl_receiver_throttle, buf);
+194:     }
+195:     
+196:     static uint32_t last_telemetry = 0;
+197:     if (millis() - last_telemetry > 100) {
+198:         last_telemetry = millis();
+199:         TelemetryPacket mock_pkt = {0};
+200:         if (slider_speed) mock_pkt.speed_kmh = lv_slider_get_value(slider_speed);
+201:         if (slider_battery) mock_pkt.battery_voltage_v = lv_slider_get_value(slider_battery);
+202:         if (slider_power) mock_pkt.power_w = lv_slider_get_value(slider_power);
+203:         mock_pkt.can_alive = true;
+204:         
+205:         esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
+206:     }
+207: #endif
+208: }
+209: 
+The above content shows the entire, complete file contents of the requested file.
+
+==========================================================
+Step 661 (VIEW_FILE)
+==========================================================
+70: }
+71: #endif
+72: 
+73: static void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+74: #ifdef DEBUG_ESPNOW
+75: #ifdef ARDUINO
+76:     if (status != ESP_NOW_SEND_SUCCESS) {
+77:         Serial.println("[ESP-NOW] TX Remote -> Receiver FAILED");
+78:     }
+79: #else
+80:     printf("[ESP-NOW] TX Remote -> Receiver status: %d\n", status);
+81: #endif
+82: #endif
+83: }
+84: 
+85: extern "C" void remote_onDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
+86:     if (len == sizeof(TelemetryPacket)) {
+87:         memcpy(&current_telemetry, incomingData, sizeof(TelemetryPacket));
+88: #ifdef DEBUG_ESPNOW
+89: #ifdef ARDUINO
+90:         Serial.printf("[ESP-NOW] RX Dash -> Remote | Speed: %.1f km/h | Batt: %.1fV | Power: %.0fW\n", 
+The above content does NOT show the entire file contents.
+
+==========================================================
+Step 715 (VIEW_FILE)
+==========================================================
+1: #include "receiver_app.h"
+2: #ifdef ARDUINO
+3: #include <Arduino.h>
+4: #endif
+5: #include "../espnow_packets.h"
+6: #include <cstring>
+7: #include <cstdio>
+8: #include <lvgl.h>
+9: 
+10: #ifdef ARDUINO
+11: #include <ESP8266WiFi.h>
+12: #include <espnow.h>
+13: #else
+14: // Mock ESP-NOW & Serial
+15: extern "C" uint32_t millis();
+16: extern "C" void esp_now_send(const uint8_t *peer_addr, const uint8_t *data, size_t len);
+17: #endif
+18: 
+19: // â”€â”€ Safety Configuration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+20: #define MAX_DRIVE_CURRENT_A   50.0f   // Max forward drive current (Amps)
+21: #define MAX_BRAKE_CURRENT_A   20.0f   // Max regen brake current (Amps) â€” gentler than drive
+22: #define THROTTLE_DEADZONE     3.0f    // Â±3% deadzone at center
+23: #define RAMP_RATE_PER_SEC     75.0f   // Max throttle change %/sec (0â†’100% in ~1.3s)
+24: #define FAILSAFE_COAST_RATE   60.0f   // Throttle decay %/sec on signal loss (100â†’0% in ~1.7s)
+25: #define FAILSAFE_TIMEOUT_MS   500     // ms before connection is considered lost
+26: #define UART_UPDATE_MS        50      // UART command send interval (20Hz)
+27: 
+28: // VESC UART Command IDs
+29: #define VESC_COMM_SET_CURRENT       6
+30: #define VESC_COMM_SET_CURRENT_BRAKE 7
+31: 
+32: // MAC Addresses
+33: static uint8_t remote_mac[] = {0xD0, 0xCF, 0x13, 0x32, 0x42, 0x3C};
+34: static uint8_t dash_mac[]   = {0x3C, 0x0F, 0x02, 0xC2, 0xD4, 0xCC};
+35: 
+36: // Throttle state
+37: static float current_throttle = 0.0f;   // Raw input
+<truncated 8825 bytes>
+rim();
+238:         if (line.startsWith("telemetry speed ")) {
+239:             float speed = line.substring(16).toFloat();
+240:             TelemetryPacket mock_pkt = {0};
+241:             mock_pkt.speed_kmh = speed;
+242:             mock_pkt.battery_voltage_v = 42.0f;
+243:             mock_pkt.power_w = 150.0f;
+244:             
+245:             esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
+246:             Serial.printf("Sent mock telemetry: Speed %.1f\n", speed);
+247:         }
+248:     }
+249: #elif !defined(ARDUINO)
+250:     if (lbl_receiver_throttle) {
+251:         char buf[64];
+252:         if (output > 0.0f) {
+253:             int32_t mA = (int32_t)(output / 100.0f * MAX_DRIVE_CURRENT_A * 1000.0f);
+254:             snprintf(buf, sizeof(buf), "RX: %.1f%% -> %ld mA DRIVE", ramped_throttle, (long)mA);
+255:         } else if (output < 0.0f) {
+256:             int32_t mA = (int32_t)((-output) / 100.0f * MAX_BRAKE_CURRENT_A * 1000.0f);
+257:             snprintf(buf, sizeof(buf), "RX: %.1f%% -> %ld mA BRAKE", ramped_throttle, (long)mA);
+258:         } else {
+259:             snprintf(buf, sizeof(buf), "RX: %.1f%% -> COAST%s",
+260:                      ramped_throttle, signal_lost ?
+" [NO SIGNAL]" : "");
+261:         }
+262:         lv_label_set_text(lbl_receiver_throttle, buf);
+263:     }
+264:     
+265:     static uint32_t last_telemetry = 0;
+266:     if (millis() - last_telemetry > 100) {
+267:         last_telemetry = millis();
+268:         TelemetryPacket mock_pkt = {0};
+269:         if (slider_speed) mock_pkt.speed_kmh = lv_slider_get_value(slider_speed);
+270:         if (slider_battery) mock_pkt.battery_voltage_v = lv_slider_get_value(slider_battery);
+271:         if (slider_power) mock_pkt.power_w = lv_slider_get_value(slider_power);
+272:         mock_pkt.can_alive = true;
+273:         
+274:         esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
+275:     }
+276: #endif
+277: }
+278: 
+The above content shows the entire, complete file contents of the requested file.
+
+==========================================================
+Step 755 (CODE_ACTION)
+==========================================================
+[diff_block_start]
+@@ -25,9 +25,11 @@
+ #define FAILSAFE_TIMEOUT_MS   500     // ms before connection is considered lost
+ #define UART_UPDATE_MS        50      // UART command send interval (20Hz)
+ 
+-// VESC UART Command IDs
+-#define VESC_COMM_SET_CURRENT       6
+-#define VESC_COMM_SET_CURRENT_BRAKE 7
++// Flipsky FTESC UART Protocol V1.6 Constants
++#define FTESC_STX                     0xAA
++#define FTESC_ETX                     0xDD
++#define FTESC_CMD_SET_CURRENT         4
++#define FTESC_CMD_SET_BRAKE_CURRENT   6
+ 
+ // MAC Addresses
+ static uint8_t remote_mac[] = {0xD0, 0xCF, 0x13, 0x32, 0x42, 0x3C};
+@@ -44,16 +44,32 @@
+ static lv_obj_t* slider_power;
+ #endif
+ 
+-// â”€â”€ Generic VESC UART Command Sender â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-// Sends a standard VESC UART packet: [0x02] [len] [cmd_id + value] [CRC16] [0x03]
+-// Used for COMM_SET_CURRENT (ID 6) and COMM_SET_CURRENT_BRAKE (ID 7)
+-static void sendVescUartCommand(uint8_t cmd_id, int32_t value) {
+-#if defined(ARDUINO) && defined(RECEIVER_DEBUG_MODE)
+-    if (cmd_id == VESC_COMM_SET_CURRENT && value == 0) {
++// Standard Modbus CRC-16 for Flipsky FTESC
++static uint16_t calculateCrc16(const uint8_t *buf, uint32_t len) {
++    uint16_t crc = 0xFFFF;
++    for (uint32_t i = 0; i < len; i++) {
++        crc ^= buf[i];
++        for (int j = 0; j < 8; j++) {
++            if (crc & 1) {
++                crc = (crc >> 1) ^ 0xA001;
++            } else {
++                crc >>= 1;
++            }
++        }
++    }
++    return crc;
++}
++
++// â”€â”€ Generic FTESC UART Command Sender â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
++
+<truncated 1364 bytes>
+STX);
++    Serial.write(5); // payload length (DLEN)
+     Serial.write(payload, 5);
+     Serial.write((crc >> 8) & 0xFF);
+     Serial.write(crc & 0xFF);
+-    Serial.write(0x03);
++    Serial.write(FTESC_ETX);
+ #else
+     // Simulation â€” no UART output
+     (void)cmd_id;
+@@ -128,7 +128,7 @@
+ #ifdef RECEIVER_DEBUG_MODE
+     // Add Dashboard as a peer so we can send debug telemetry back
+     esp_now_add_peer(dash_mac, ESP_NOW_ROLE_COMBO, 0, NULL, 0);
+-    Serial.println("Receiver SAFE MODE initialized (COMM_SET_CURRENT).");
++    Serial.println("Receiver SAFE MODE initialized (FTESC UART_SET_CURRENT).");
+     Serial.printf("  Drive max: %.0fA | Brake max: %.0fA | Ramp: %.0f%%/s\n",
+                   MAX_DRIVE_CURRENT_A, MAX_BRAKE_CURRENT_A, RAMP_RATE_PER_SEC);
+     Serial.println("Enter 'telemetry speed <val>' to mock ESC.");
+@@ -204,7 +204,7 @@
+         if (output > 0.0f) {
+             // Drive forward: map 0-100% to 0-MAX_DRIVE_CURRENT in milliamps
+             int32_t current_mA = (int32_t)(output / 100.0f * MAX_DRIVE_CURRENT_A * 1000.0f);
+-            sendVescUartCommand(VESC_COMM_SET_CURRENT, current_mA);
++            sendFlipskyUartCommand(FTESC_CMD_SET_CURRENT, current_mA);
+         } else if (output < 0.0f) {
+             // Regen brake: map 0-100% to 0-MAX_BRAKE_CURRENT in milliamps
+             float abs_output = -output;
+@@ -211,7 +211,7 @@
+-            sendVescUartCommand(VESC_COMM_SET_CURRENT_BRAKE, brake_mA);
++            sendFlipskyUartCommand(FTESC_CMD_SET_BRAKE_CURRENT, brake_mA);
+         } else {
+             // Coast: zero current = motor free-spins (NO braking)
+-            sendVescUartCommand(VESC_COMM_SET_CURRENT, 0);
++            sendFlipskyUartCommand(FTESC_CMD_SET_CURRENT, 0);
+         }
+ 
+ #if defined(DEBUG_ESPNOW) && !defined(RECEIVER_DEBUG_MODE)
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change.
+
+==========================================================
+Step 781 (VIEW_FILE)
+==========================================================
+9:    - Initialized global layout components using LVGL v8 widgets:
+10:      - **Header status:** ASCII signal strength indicator (`SIG: [#][#][#][-] | CAN: OK`) using monospaced `lv_font_unscii_16`.
+11:      - **Speed Dial:** Symmetrical circular `lv_arc` speed gauge with large central Montserrat digits showing speed in km/h.
+12:      - **Wide Symmetrical Battery Bars:** Twin 32px wide vertical blocks showing exact voltages beneath: pack voltage for the board (`42.0V`) and cell voltage for the remote (`3.85V`, range 3.7V - 4.2V).
+**Responsive Telemetry Data Binding:**
+15:    - Bound incoming telemetry packet callbacks (`remote_onDataRecv`) to dynamically scale battery bar heights, colors (green/cyan, red on alarm), and text values.
+16:    - Implemented real-time simulation of remote cell voltage discharge tied to potentiometer level.
+27: - Throttle commands and ESC telemetry sliders update the vertical HUD widgets dynamically in real-time.
+
+==========================================================
+Step 783 (VIEW_FILE)
+==========================================================
+1: - [x] Task 1: Symmetrical Vertical Screen Settings (Hardware & Simulation)
+2: - [x] Task 2: Create Symmetrical HUD Layout Components in `remote_app.cpp`
+3: - [x] Task 3: Implement Dynamic Telemetry Updates & Calculations (Speed Dial, Battery Volts, ASCII strength)
+4: - [x] Task 4: Compile & Verify UI functionality in Native simulation
+5: 
+The above content shows the entire, complete file contents of the requested file.
+
+==========================================================
+Step 791 (SEARCH_WEB)
+==========================================================
+Created At: 2026-05-26T13:27:05Z
+Completed At: 2026-05-26T13:27:10Z
+The search for ""FTESC" "keep_live" OR "keep-live" OR "KEEP_LIVE" OR "keep alive" uart protocol" returned the following summary:
+The term **"FTESC"** refers to a specific series of Electronic Speed Controllers (ESCs) produced by **Flipsky**[1][2], which are distinct from the open-source VESC (Vedder ESC) platform[2][3].
+*   **"Keep-Alive" Functionality:** In many UART-based ESC protocols (including those derived from or similar to VESC standards), a "keep-alive" signal is often required to ensure safety.
+This mechanism ensures that if the controller stops receiving data packets from the remote/transmitter within a certain timeframe, it enters a "failsafe" mode (e.g., stopping the motor or reducing speed) to prevent a runaway vehicle[5][6].
+*   **Implementation:** If you are developing custom firmware or an interface for an FTESC:
+    *   **Data Packets:** The protocol typically relies on continuous streams of data packets for commands (e.g., speed, duty cycle)[6].
+
+==========================================================
+Step 793 (VIEW_FILE)
+==========================================================
+If it is set to VESC, it will not be able to parse the data packets sent by the FTESC firmware.\n*   **Wiring:** Always double-check that the TX and RX lines are not swapped, as this is the most common cause of communication failure in UART-based systems."}
+48: {"step_index":48,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-26T13:20:28Z","tool_calls":[{"name":"search_web","args":{"query":"\"\\\"FTESC UART Protocol\\\" OR \\\"FLIPSKY FTESC UART Protocol\\\" site:github.com\"","toolAction":"\"Searching GitHub for Flipsky FTESC UART protocol\"","toolSummary":"\"Search Github for FTESC\""}}]}
+49: {"step_index":49,"source":"MODEL","type":"SEARCH_WEB","status":"DONE","created_at":"2026-05-26T13:20:29Z","content":"Created At: 2026-05-26T13:20:29Z\nCompleted At: 2026-05-26T13:20:33Z\nThe search for \"\"FTESC UART Protocol\" OR \"FLIPSKY FTESC UART Protocol\" site:github.com\" returned the following summary:\nThere is no specific proprietary protocol named \"FTESC UART Protocol.\" Flipsky ESCs (often referred to as FSESC) are generally based on the **VESC (Vedder Electronic Speed Controller) open-source project**[1][2][3].\n\nWhen you see references to UART communication with Flipsky/FSESC hardware, it refers to the standard **VESC UART protocol**[4][5].\n\n### Key Information Regarding FSESC UART Communication:\n*   **VESC Protocol Foundation:** Flipsky ESCs typically use the VESC firmware (or a variant thereof)[1][3][5].
+Communication over UART follows the VESC Tool/VESC firmware communication standards[4][5].\n*   **Protocol Documentation:** Since it is based on the VESC project, you will not find a separate \"FTESC\" protocol.
+You should search GitHub or the web for **\"VESC UART protocol\"** or **\"VESC communication protocol\"** to find the packet structure, command sets, and implementation details.\n*   **Implementa
+<truncated 42082 bytes>
+
+NOTE: The output was truncated because it was too long.
+
+==========================================================
+Step 831 (VIEW_FILE)
+==========================================================
+243: ucCRCHi = aucCRCLo[i];
+244: }
+245: return (uint16_t)((((uint16_t)ucCRCHi) << 8) | ucCRCLo);
+246: }
+247: 2.5 UART COMMAND
+248: typedef enum {
+249: UART_OBTAIN_DATA_ONCE = 0,
+250: UART_CONTROL_AND_OBTAIN_DATA_ONCE = 2,
+251: UART_SET_DUTY = 3,
+252: UART_SET_CURRENT = 4,
+253: UART_SET_CURRENT_GEAR = 5,
+254: UART_SET_BRAKE_CURRENT = 6,
+255: UART_CAN_OVER = 16,
+256: UART_OBTAIN_FIRMWARE_VERSION = 17,
+257: UART_KEEP_LIVE = 25,
+258: UART_SET_AUTO_OBTAIN_REALTIME_DATA = 26,
+259: UART_RESET_AND_REBOOT_FTESC = 29,
+260: UART_OBTAIN_ALL_FTESC_ID = 30,
+261: UART_SET_CURRENT_GEAR_AND_OBTAIN_DATA = 32,
+262: UART_REBOOT_FTESC = 35,
+263: UART_SET_ID_CURRENT = 37,
+264: UART_SET_POSITION = 38,
+265: UART_SET_SPEED = 39,
+266: } UART_COMMAND;
+267: 2.6 MCU ERROR
+268: typedef enum {
+269: ERROR_NONE = 0,
+270: ERROR_FOR_PHASE_A_SOFTWARE_OVER_CURRENT = 1, //Phase A software ABS over current
+271: ERROR_FOR_PHASE_B_SOFTWARE_OVER_CURRENT = 2, //Phase B software ABS over current
+272: ERROR_FOR_PHASE_C_SOFTWARE_OVER_CURRENT = 3, //Phase C software ABS over current
+273: ERROR_FOR_PHASE_A_CURRENT_SENSOR = 4, //Phase A current sensor fault
+274: ERROR_FOR_PHASE_B_CURRENT_SENSOR = 5, //Phase B current sensor fault
+275: ERROR_FOR_PHASE_C_CURRENT_SENSOR = 6, //Phase C current sensor fault
+276: ERROR_FOR_PHASE_CURRENTS_SUM_NOT_ZERO = 7, //The sum of the three-phase current is not zero
+277: ERROR_FOR_BUS_UNDER_VOLTAGE = 8, //Bus under voltage
+278: ERROR_FOR_BUS_OVER_VOLTAGE = 9, //Bus over voltage
+279: ERROR_FOR_MOSFET_OVER_HEAT = 10, //MOSFET overheating
+28
+<truncated 20821 bytes>
+
+998: dataNum[(*numInd)++] = value >> 16;
+999: dataNum[(*numInd)++] = value >> 8;
+1000: dataNum[(*numInd)++] = value;
+1001: }
+1002: // Split the unsigned long integer data (uint32_t) into four bytes for transmission, with the high
+1003: //-order digit first and the low-order digit second
+1004: void valueDecompose_U32(uint8_t* dataNum, uint32_t value, int 16 _t *numInd) {
+1005: dataNum[(*numInd)++] = value >> 24;
+1006: dataNum[(*numInd)++] = value >> 16;
+1007: dataNum[(*numInd)++] = value >> 8;
+1008: dataNum[(*numInd)++] = value;
+1009: }
+1010: // Combine two bytes into a signed short integer data (int16_t), with the high-order digit first
+1011: //and the low-order digit second
+1012: int16_t valueCompose_I16(const uint8_t *dataNum, int 16 _t *numInd) {
+1013: int16_t retval = ((uint16_t) dataNum[*numInd]) << 8 |
+1014: ((uint16_t) dataNum[*numInd + 1]);
+1015: *numInd += 2;
+1016: return retval;
+1017: }
+1018: // Combine two bytes into unsigned short integer data (uint16_t), with the high-order digit first
+1019: //and the low-order digit second
+1020: uint16_t valueCompose_U16(const uint8_t *dataNum, int 16 _t *numInd) {
+1021: FLIPSKY
+1022: FLIPSKY
+1023: FLIPSKY
+1024: FLIPSKY
+1025: FLIPSKY
+1026: FLIPSKY
+1027: FLIPSKY
+1028: FLIPSKY
+1029: FLIPSKY
+1030: --- PAGE 24 ---
+1031: FLIPSKY FTESC UART Communication Protocol V1.6
+1032: 21
+1033: uint16_t retval = ((uint16_t) dataNum[*numInd]) << 8 |
+1034: ((uint16_t) dataNum[*numInd + 1]);
+1035: *numInd += 2;
+1036: return retval;
+1037: }
+1038: // Combine four bytes into a signed long integer data (int32_t), with the high-order digit first
+1039: and the low-order digit second
+1040: int32_t valueCompose_I32(const uint8_t *dataNum, int 16 _t *numInd) {
+1041: int32_t retval = ((uint32_t) dataNum[*numInd]) << 24 |
+1042: ((uint32_t) dataNum[*numInd + 1]) << 16 |
+The above content does NOT show the entire file contents.
+
+==========================================================
+Step 862 (VIEW_FILE)
+==========================================================
+<truncated 24235 bytes>
+A
+731: D0 Master MCU ID
+732: D1~Dn Slave MCU ID in turn
+733: 3.1.13 UART_SET_CURRENT_GEAR_AND_OBTAIN_DATA (20H)
+734: 1 ) Function
+735: Motor current control command with speed limit gear.
+(int32_t)
+748: D4 GEAR Speed limit gear
+749: FLIPSKY
+750: FLIPSKY
+751: FLIPSKY
+752: FLIPSKY
+753: FLIPSKY
+754: FLIPSKY
+755: FLIPSKY
+756: FLIPSKY
+757: FLIPSKY
+758: --- PAGE 18 ---
+759: FLIPSKY FTESC UART Communication Protocol V1.6
+760: 15
+761: 00H: No gear
+762: 01H: Low speed
+763: 02H: Medium speed
+764: 03H: High speed
+765: 04H: Reverse
+766: 3) Response
+767: Item Value Explanation
+768: DLEN 1CH
+769: CMD 20H
+770: DATA
+771: D0 ERROR CODE
+772: D1 D2 Battery Voltage
+773: Note: Enlarge 100 times (int16_t)
+774: D3 D4 D5 D6 Battery Current
+775: Note: Enlarge 1000000 times (int32_t)
+776: D7 D8 D9 D10 Motor Current
+777: Note: Enlarge 1000000 times (int32_t)
+778: D11 D12 D13 D14 Motor Erpm
+779: Note: (int32_t)
+780: D15 D16 Duty
+781: Note: Enlarge 10000 times (int16_t)
+782: D17 D18 MOSFET Temp
+783: Note: Enlarge 100 times (int16_t)
+784: D19 D20 Motor Temp
+785: Note: Enlarge 100 times (int16_t)
+786: D21 D22 CPU Utilization
+787: Note: Enlarge 10000 times (int16_t)
+788: D23 D24 D25 D26 Encoder Angle ( unit : Â° )
+789: Note: Enlarge 1000000 times (int32_t)
+790: FLIPSKY
+791: FLIPSKY
+792: FLIPSKY
+793: FLIPSKY
+794: FLIPSKY
+795: FLIPSKY
+796: FLIPSKY
+797: FLIPSKY
+798: FLIPSKY
+799: --- PAGE 19 ---
+800: FLIPSKY FTESC UART Communication Protocol V1.6
+The above content does NOT show the entire file contents.
+
+==========================================================
+Step 866 (VIEW_FILE)
+==========================================================
+812: 3.1.15 UART_SET_ID_CURRENT (25H)
+813: 1 ) Function
+814: Motor D-axis current control command.This command can lock the motor at zero phase.
+It can
+831: only be used in Encoder Mode.
+852: 3.1.17 UART_SET_ SPEED (27H)
+853: 1 ) Function
+854: Motor electronic speed control comman
+<truncated 10195 bytes>
+m
+1124: uint16 data_crc16_calc = crc16(data, data_len);
+1125: uint16 data_crc16_rece = (uint16)data[data_len] << 8 | (uint16)data[data_len + 1];
+1126: // Determine whether the CRC16 check is correct
+1127: if (data_crc16_calc != data_crc16_rece) {
+1128: return -2; // Data packet CRC16 check failed
+1129: }
+1130: // Check if the frame end is correct
+1131: if (data[data_len + 2] != 0XDD) { //Must end with 0XDD
+1132: return -3;
+1133: FLIPSKY
+1134: FLIPSKY
+1135: FLIPSKY
+1136: FLIPSKY
+1137: FLIPSKY
+1138: FLIPSKY
+1139: FLIPSKY
+1140: FLIPSKY
+1141: FLIPSKY
+1142: --- PAGE 26 ---
+1143: FLIPSKY FTESC UART Communication Protocol V1.6
+1144: 23
+1145: }
+1146: UART_COMMAND uart_cmd = (UART_COMMAND)data[0]; // Obtain command
+1147: uint16_t index = 0;
+1148: data++; // offset to DATA area
+1149: switch (uart_cmd)
+1150: {
+1151: case UART_OBTAIN_DATA_ONCE:{
+1152: esc_data.controller_id = data[index++];
+1153: esc_data.fault = data[index++];
+1154: esc_data.inpVoltage = valueCompose_F16( data, 100.0f, &index );
+1155: esc_data.inputCurrent = valueCompose_F32( data, 1000000.0f, &index );
+1156: esc_data.motorCurrent = valueCompose_F32( data, 1000000.0f, &index );
+1157: esc_data.rpm = valueCompose_F32( data, 1.0f, &index );
+1158: esc_data.dutyCycleNow = valueCompose_F16( data, 10000.0f, &index );
+1159: esc_data.temp_fet = valueCompose_F16( data, 100.0f, &index );
+1160: esc_data.temp_motor = valueCompose_F16( data, 100.0f, &index );
+1161: esc_data.cpu_load = valueCompose_F16( data, 10 000 .0f, &index );
+1162: esc_data.encoder_angle = valueCompose_F32( data, 1000000.0f, &index );
+1163: }
+1164: break;
+1165: default:
+1166: break;
+1167: }
+1168: return 0; //Frame parsing completed
+1169: }
+1170: FLIPSKY
+1171: FLIPSKY
+1172: FLIPSKY
+1173: FLIPSKY
+1174: FLIPSKY
+1175: FLIPSKY
+1176: FLIPSKY
+1177: FLIPSKY
+1178: FLIPSKY
+The above content does NOT show the entire file contents.
+
+==========================================================
+Step 878 (VIEW_FILE)
+==========================================================
+1: #include "receiver_app.h"
+2: #ifdef ARDUINO
+3: #include <Arduino.h>
+4: #endif
+5: #include "../espnow_packets.h"
+6: #include <cstring>
+7: #include <cstdio>
+8: #include <lvgl.h>
+9: 
+10: #ifdef ARDUINO
+11: #include <ESP8266WiFi.h>
+12: #include <espnow.h>
+13: #else
+14: // Mock ESP-NOW & Serial
+15: extern "C" uint32_t millis();
+16: extern "C" void esp_now_send(const uint8_t *peer_addr, const uint8_t *data, size_t len);
+17: #endif
+18: 
+19: // â”€â”€ Safety Configuration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+20: #define MAX_DRIVE_CURRENT_A   50.0f   // Max forward drive current (Amps)
+21: #define MAX_BRAKE_CURRENT_A   20.0f   // Max regen brake current (Amps) â€” gentler than drive
+22: #define THROTTLE_DEADZONE     3.0f    // Â±3% deadzone at center
+23: #define RAMP_RATE_PER_SEC     75.0f   // Max throttle change %/sec (0â†’100% in ~1.3s)
+24: #define FAILSAFE_COAST_RATE   60.0f   // Throttle decay %/sec on signal loss (100â†’0% in ~1.7s)
+25: #define FAILSAFE_TIMEOUT_MS   500     // ms before connection is considered lost
+26: #define UART_UPDATE_MS        50      // UART command send interval (20Hz)
+27: 
+28: // Flipsky FTESC UART Protocol V1.6 Constants
+29: #define FTESC_STX                     0xAA
+30: #define FTESC_ETX                     0xDD
+31: #define FTESC_CMD_SET_CURRENT         4
+32: #define FTESC_CMD_SET_BRAKE_CURRENT   6
+33: #define FTESC_CMD_KEEP_LIVE           0x19
+34: 
+35: // MAC Addresses
+36: static uint8_t remote_mac[] = {0xD0, 0xCF, 0x13, 0x32, 0x
+<truncated 10194 bytes>
+rim();
+275:         if (line.startsWith("telemetry speed ")) {
+276:             float speed = line.substring(16).toFloat();
+277:             TelemetryPacket mock_pkt = {0};
+278:             mock_pkt.speed_kmh = speed;
+279:             mock_pkt.battery_voltage_v = 42.0f;
+280:             mock_pkt.power_w = 150.0f;
+281:             
+282:             esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
+283:             Serial.printf("Sent mock telemetry: Speed %.1f\n", speed);
+284:         }
+285:     }
+286: #elif !defined(ARDUINO)
+287:     if (lbl_receiver_throttle) {
+288:         char buf[64];
+289:         if (output > 0.0f) {
+290:             int32_t mA = (int32_t)(output / 100.0f * MAX_DRIVE_CURRENT_A * 1000.0f);
+291:             snprintf(buf, sizeof(buf), "RX: %.1f%% -> %ld mA DRIVE", ramped_throttle, (long)mA);
+292:         } else if (output < 0.0f) {
+293:             int32_t mA = (int32_t)((-output) / 100.0f * MAX_BRAKE_CURRENT_A * 1000.0f);
+294:             snprintf(buf, sizeof(buf), "RX: %.1f%% -> %ld mA BRAKE", ramped_throttle, (long)mA);
+295:         } else {
+296:             snprintf(buf, sizeof(buf), "RX: %.1f%% -> COAST%s",
+297:                      ramped_throttle, signal_lost ?
+" [NO SIGNAL]" : "");
+298:         }
+299:         lv_label_set_text(lbl_receiver_throttle, buf);
+300:     }
+301:     
+302:     static uint32_t last_telemetry = 0;
+303:     if (millis() - last_telemetry > 100) {
+304:         last_telemetry = millis();
+305:         TelemetryPacket mock_pkt = {0};
+306:         if (slider_speed) mock_pkt.speed_kmh = lv_slider_get_value(slider_speed);
+307:         if (slider_battery) mock_pkt.battery_voltage_v = lv_slider_get_value(slider_battery);
+308:         if (slider_power) mock_pkt.power_w = lv_slider_get_value(slider_power);
+309:         mock_pkt.can_alive = true;
+310:         
+311:         esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
+312:     }
+313: #endif
+314: }
+315: 
+The above content shows the entire, complete file contents of the requested file.
+
+==========================================================
+Step 1004 (VIEW_FILE)
+==========================================================
+1: #include "receiver_app.h"
+2: #ifdef ARDUINO
+3: #include <Arduino.h>
+4: #endif
+5: #include "../espnow_packets.h"
+6: #include "espnow_receiver.h"
+7: #include "esc_uart_driver.h"
+8: #include <cstring>
+9: #include <cstdio>
+10: #include <cmath>
+11: #include <lvgl.h>
+12: 
+13: #ifndef ARDUINO
+14: extern "C" uint32_t millis();
+15: #endif
+16: 
+17: // â”€â”€ Safety Configuration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+18: #define MAX_DRIVE_CURRENT_A   50.0f   // Max forward drive current (Amps)
+19: #define MAX_BRAKE_CURRENT_A   50.0f   // Max regen brake current (Amps) â€” same as drive
+20: #define THROTTLE_DEADZONE     10.0f    // Â±10% deadzone at center
+21: #define RAMP_RATE_PER_SEC     75.0f   // Max throttle change %/sec (0â†’100% in ~1.3s)
+22: #define RAMP_DOWN_RATE_PER_SEC 500.0f // Fast decay %/sec when decelerating or braking
+23: #define FAILSAFE_COAST_RATE   200.0f  // Throttle decay %/sec on signal loss (100â†’0% in ~0.5s)
+24: #define FAILSAFE_TIMEOUT_MS   250     // ms before connection is considered lost
+25: #define UART_UPDATE_MS        50      // UART command send interval (20Hz)
+26: 
+27: // Throttle state
+28: static float ramped_throttle  = 0.0f;   // Smoothed output after ramp limiter
+29: 
+30: #ifndef ARDUINO
+31: #include "../simulation/esc_model.h"
+32: #include "mechanical_config.h"
+33: 
+34: extern bool sim_comm_loss;
+35: extern uint8_t sim_remote_btn_state;
+36: 
+37: static SimCore::SimState sim_state;
+38: static bool sim_rapid_drain = false;
+39: 
+40
+<truncated 13294 bytes>
+                  "Voltage: %.2f V (Sag: %.2fV)\n"
+347:                  "Power: %.1f W  Cap: %.2f Ah",
+348:                  sim_state.lvc_active ?
+"[NO SIGNAL]" : "OK",
+350:                  current_throttle, sim_state.ramped_throttle,
+351:                  calculate_speed_kmh(sim_state.erpm), sim_state.erpm,
+352:                  sim_state.motor_current, sim_state.battery_current,
+353:                  sim_state.battery_voltage, sim_state.voltage_sag,
+354:                  sim_state.power_w, sim_state.capacity_ah);
+355:         lv_label_set_text(lbl_receiver_throttle, status_str);
+356:     }
+357: 
+358:     // Push values to the chart series
+359:     if (chart_esc) {
+360:         // Scale values to fit in the 0-800 chart range
+361:         // Motor Current: scaled by 10 (0 to 500)
+362:         // ERPM: divided by 100 (0 to 800)
+363:         // Duty cycle %: scaled by 8 (0 to 800)
+364:         lv_chart_set_next_value(chart_esc, ser_motor_current, (int)(sim_state.motor_current * 10.0f));
+365:         lv_chart_set_next_value(chart_esc, ser_erpm, (int)(sim_state.erpm / 100.0f));
+366:         lv_chart_set_next_value(chart_esc, ser_duty, (int)(std::abs(sim_state.ramped_throttle) * 8.0f));
+367:         lv_chart_refresh(chart_esc);
+368:     }
+369: 
+370:     // Send Status Packet to Dash
+371:     static uint32_t last_status_send = 0;
+372:     if (now - last_status_send > 100) {
+373:         last_status_send = now;
+374:         EspnowReceiver::send_status_to_dash(signal_lost);
+375:     }
+376: 
+377:     // Send Telemetry Packet to Dash
+378:     static uint32_t last_telemetry = 0;
+379:     if (now - last_telemetry > 100) {
+380:         last_telemetry = now;
+381:         float speed = calculate_speed_kmh(sim_state.erpm);
+382:         EspnowReceiver::send_mock_telemetry(speed, sim_state.battery_voltage, sim_state.power_w, sim_state.battery_current);
+383:     }
+384: #endif
+385: }
+386: 
+387: 
+The above content shows the entire, complete file contents of the requested file.
+
+==========================================================
+Step 1011 (PLANNER_RESPONSE)
+==========================================================
+Here's what's in it:
+
+| Panel | What it does |
+|---|---|
+| **Remote** | Throttle arc (shows ramped %, not raw), signal badge, live button state |
+| **Dashboard** | Speed (km/h), Power (W), Voltage (V), Motor Current (A), battery bar |
+| **Control Panel** | Throttle slider (auto-snaps to 0 on release), Comm Loss / Rapid Drain toggles, Recharge, D-Pad, scrolling telemetry chart |
+
+**Physics is a direct JS port of `esc_model.cpp`** â€” ramped throttle, ERPM lag, voltage sag, capacity drain, and LVC at 32V all behave identically to the native sim.
+
+==========================================================
+Step 998 (VIEW_FILE)
+==========================================================
+"[NO SIGNAL]" : "OK",
+350:                  current_throttle, sim_state.ramped_throttle,
+351:                  calculate_speed_kmh(sim_state.erpm), sim_state.erpm,
+352:                  sim_state.motor_current, sim_state.battery_current,
+353:                  sim_state.battery_voltage, sim_state.voltage_sag,
+354:                  sim_state.power_w, sim_state.capacity_ah);
+355:         lv_label_set_text(lbl_receiver_throttle, status_str);
+356:     }
+357: 
+358:     // Push values to the chart series
+359:     if (chart_esc) {
+360:         // Scale values to fit in the 0-800 chart range
+361:         // Motor Current: scaled by 10 (0 to 500)
+362:         // ERPM: divided by 100 (0 to 800)
+363:         // Duty cycle %: scaled by 8 (0 to 800)
+364:         lv_chart_set_next_value(chart_esc, ser_motor_current, (int)(sim_state.motor_current * 10.0f));
+365:         lv_chart_set_next_value(chart_esc, ser_erpm, (int)(sim_state.erpm / 100.0f));
+366:         lv_chart_set_next_value(chart_esc, ser_duty, (int)(std::abs(sim_state.ramped_throttle) * 8.0f));
+367:         lv_chart_refresh(chart_esc);
+368:     }
+369: 
+370:     // Send Status Packet to Dash
+371:     static uint32_t last_status_send = 0;
+372:     if (now - last_status_send > 100) {
+373:         last_status_send = now;
+374:         EspnowReceiver::send_status_to_dash(signal_lost);
+375:     }
+376: 
+377:     // Send Telemetry Packet to Dash
+378:     static uint32_t last_telemetry = 0;
+379:     if (now - last_telemetry > 100) {
+380:         last_telemetry = now;
+381:         float speed = calculate_speed_kmh(sim_state.erpm);
+382:         EspnowReceiver::send_mock_telemetry(speed, sim_state.battery_voltage, sim_state.power_w, sim_state.battery_current);
+383:     }
+384: #endif
+385: }
+386: 
+387: 
+The above content does NOT show the entire file contents.
+
+==========================================================
+Step 1015 (VIEW_FILE)
+==========================================================
+1: #include "espnow_receiver.h"
+2: #include "../espnow_packets.h"
+3: #include <cstring>
+4: #include <cstdio>
+5: 
+6: #ifdef ARDUINO
+7: #include <Arduino.h>
+8: #include <ESP8266WiFi.h>
+9: #include <espnow.h>
+10: #include <user_interface.h>
+11: #else
+12: // Mock ESP-NOW & Serial
+13: extern "C" uint32_t millis();
+14: extern "C" void esp_now_send(const uint8_t *peer_addr, const uint8_t *data, size_t len);
+15: #endif
+16: 
+17: // MAC Addresses
+18: static uint8_t remote_mac[] = {0xD0, 0xCF, 0x13, 0x32, 0x42, 0x3C};
+19: static uint8_t dash_mac[]   = {0x3C, 0x0F, 0x02, 0xC2, 0xD4, 0xCC};
+20: 
+21: namespace EspnowReceiver {
+22: 
+23:     static volatile float current_throttle = 0.0f;
+24:     static volatile uint8_t current_button_state = 0;
+25:     static volatile uint32_t last_remote_rx_ms = 0;
+26: 
+27:     static volatile bool current_settings_active = false;
+28:     static volatile uint8_t current_gear = 1;
+29:     static volatile uint8_t current_direction = 0;
+30:     static volatile bool current_headlight_active = false;
+31: 
+32:     extern "C" void onDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
+33:         if (memcmp(mac, remote_mac, 6) == 0) {
+34:             if (len == sizeof(ControlPacket)) {
+35:                 ControlPacket pkt;
+36:                 memcpy(&pkt, incomingData, sizeof(ControlPacket));
+37:                 
+38:                 // Clamp to valid range (protects against corrupted/spoofed packets)
+39:                 float t = pkt.throttle_percent;
+40:                 if (t > 100.0f) t = 100.0f;
+41:                 if (t < -100.0f)
+<truncated 1136 bytes>
+2:         }
+73:         esp_now_set_self_role(ESP_NOW_ROLE_COMBO);
+74:         esp_now_register_recv_cb(onDataRecv);
+75: 
+76:         // Add Dashboard as a peer so we can send telemetry back
+77:         esp_now_add_peer(dash_mac, ESP_NOW_ROLE_COMBO, 1, NULL, 0);
+78: #if defined(DEBUG_ESPNOW) && defined(RECEIVER_DEBUG_MODE)
+79:         Serial.println("ESP-NOW initialized in COMBO mode.");
+80: #endif
+81: #endif
+82:     }
+83: 
+84:     float get_latest_throttle() {
+85:         return current_throttle;
+86:     }
+87: 
+88:     uint8_t get_latest_button_state() {
+89:         return current_button_state;
+90:     }
+91: 
+92:     bool is_settings_active() { return current_settings_active; }
+93:     uint8_t get_gear() { return current_gear; }
+94:     uint8_t get_direction() { return current_direction; }
+95:     bool is_headlight_active() { return current_headlight_active; }
+96: 
+97:     uint32_t get_last_rx_ms() {
+98:         return last_remote_rx_ms;
+99:     }
+100: 
+101:     void send_status_to_dash(bool signal_lost) {
+102: #ifdef ARDUINO
+103:         ReceiverStatusPacket status_pkt;
+104:         status_pkt.remote_disconnected = signal_lost;
+105:         esp_now_send(dash_mac, (uint8_t*)&status_pkt, sizeof(ReceiverStatusPacket));
+106: #else
+107:         ReceiverStatusPacket status_pkt;
+108:         status_pkt.remote_disconnected = signal_lost;
+109:         esp_now_send(dash_mac, (uint8_t*)&status_pkt, sizeof(ReceiverStatusPacket));
+110: #endif
+111:     }
+112: 
+113:     void send_mock_telemetry(float speed, float battery_v, float power_w, float current_a) {
+114:         TelemetryPacket mock_pkt = {0};
+115:         mock_pkt.speed_kmh = speed;
+116:         mock_pkt.battery_voltage_v = battery_v;
+117:         mock_pkt.battery_current_a = current_a;
+118:         mock_pkt.power_w = power_w;
+119:         mock_pkt.can_alive = true;
+120:         
+121:         esp_now_send(dash_mac, (uint8_t*)&mock_pkt, sizeof(TelemetryPacket));
+122:     }
+123: }
+124: 
+The above content shows the entire, complete file contents of the requested file.
+

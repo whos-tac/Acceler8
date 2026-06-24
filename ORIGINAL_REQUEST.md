@@ -87,3 +87,56 @@ The Remote panel shows the current throttle arc and button state. The Dashboard 
 ### Code Quality
 - [ ] Single `index.html` file (or minimal files — no build step required).
 - [ ] The ESC physics model is implemented as a self-contained JS function/module matching the behavior of `esc_model.cpp`.
+
+## Follow-up — 2026-06-23T09:27:27Z
+
+# Teamwork Project Prompt — Draft
+
+> Status: Launched.
+> Goal: Teamwork subagent executing task.
+
+Debug and fix the dashboard issue where CAN telemetry accurately displays voltage but fails to display speed.
+
+Working directory: c:\Users\thatw\Documents\Apollo-8\DashBoard
+Integrity mode: development
+
+## Requirements
+
+### R1. Analyze Prior Conversations
+Read ALL prior conversation transcripts (e.g., `C:\Users\thatw\.gemini\antigravity\brain\5cf1497a-ae31-4b1b-9fcd-ac294acc2dd0\.system_generated\logs\transcript.jsonl` and any others found in the logs directory) to identify the "familiar CAN issue" where speed was not displaying.
+
+### R2. Fix the CAN Speed Bug
+Investigate the codebase (e.g., `can_driver.cpp`, `ui_controller.cpp`, telemetry packets) to find the root cause of the speed value not displaying while voltage works fine. 
+**Note from user**: "FYI we are connected to the Slave ESC CAN output (as intended)." Implement the fix considering this hardware setup.
+
+## Acceptance Criteria
+
+### Manual Verification
+- [ ] A summary of the root cause found in the previous conversation logs is provided.
+- [ ] Code modifications have been made to properly calculate, parse, or route the speed data.
+- [ ] The dashboard environment compiles successfully without errors (`pio run -e waveshare_dash`).
+
+## Follow-up — 2026-06-24T08:24:58Z
+
+Investigate and fix an intermittent boot issue where the dashboard backlight turns on, but the GUI doesn't render (blank screen) immediately and requires reset impulses or power cycling to start properly.
+
+Working directory: c:\Users\thatw\Documents\Apollo-8\DashBoard
+Integrity mode: development
+
+### Requirements
+
+#### R1. Analyze Initialization Sequence
+Investigate the boot and UI initialization sequence (e.g., display driver initialization, LVGL setup, FreeRTOS tasks, I2C/SPI bus setup) to identify race conditions or hardware readiness issues that cause the GUI to fail to render from a cold boot.
+
+#### R2. Implement Boot Reliability Fix
+Implement code modifications to ensure the GUI consistently renders on startup. This may involve adding necessary boot delays before display initialization, adjusting task priorities, or fixing bus conflicts.
+
+### Acceptance Criteria
+
+#### Automated Verification
+- [ ] The root cause of the intermittent rendering failure is identified and documented in a summary.
+- [ ] Code modifications are applied to fix the initialization sequence.
+- [ ] The codebase compiles successfully without errors (`pio run -e waveshare_dash`).
+
+#### Manual Verification
+- [ ] The user confirms that the dashboard GUI boots consistently from a cold start and reset without remaining blank.

@@ -1,0 +1,49 @@
+diff --git a/src/display_driver.cpp b/src/display_driver.cpp
+index 28555e5..cf232c9 100644
+--- a/src/display_driver.cpp
++++ b/src/display_driver.cpp
+@@ -69,8 +69,32 @@ namespace DisplayDriver {
+     void init() {
++        // Wait for power supply to stabilize on cold start
++        delay(100);
++
+         Wire.begin(15, 7);
++        delay(10); // Let I2C bus settle
++
++        // Set polarity inversion register (Register 0x02)
+         Wire.beginTransmission(0x24); Wire.write(0x02); Wire.write(0xff); Wire.endTransmission();
+-        Wire.beginTransmission(0x24); Wire.write(0x03); Wire.write(0x3a); Wire.endTransmission();
++
++        // Configure TCA9554 IO Expander Direction Register (Register 0x03)
++        // P0 (LCD_RST): Output (0)
++        // P1 (TP_INT): Input (1)
++        // P2 (LCD_BL): Output (0)
++        // P3 (TP_RST): Output (0)
++        // P4-P5: Input (1)
++        // P6-P7: Output (0)
++        // Binary: 0011 0010 = 0x32 (instead of original 0x3a which kept TP_RST as input)
++        Wire.beginTransmission(0x24); Wire.write(0x03); Wire.write(0x32); Wire.endTransmission();
++
++        // Pull LCD_RST (P0) LOW, TP_RST (P3) LOW, and keep LCD_BL (P2) LOW
++        // Output Port Register (0x01) value: 1100 0000 = 0xC0
++        Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0xC0); Wire.endTransmission();
++        delay(20); // Keep reset active for 20ms
++
++        // Release Reset: Drive LCD_RST (P0) and TP_RST (P3) HIGH, keep LCD_BL (P2) LOW
++        // Output Port Register (0x01) value: 1100 1001 = 0xC9
++        Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0xC9); Wire.endTransmission();
++        
++        // Wait 120ms for display controller internal stabilization before commands
++        delay(120);
+ 
+         gfx->begin();
+         lv_init();
+@@ -88,4 +112,8 @@ namespace DisplayDriver {
+         tp.begin();
+         tp.setRotation(ROTATION_NORMAL);
+ 
++        // Turn on the LCD Backlight (LCD_BL = P2 HIGH)
++        // Output Port Register (0x01) value: 1111 1101 = 0xFD or 0xFF
++        Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0xFF); Wire.endTransmission();
++
+         static lv_indev_drv_t indev_drv;

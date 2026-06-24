@@ -94,6 +94,11 @@ namespace EspNowDash {
         WiFi.disconnect(true);
         // Set WiFi to station mode
         WiFi.mode(WIFI_STA);
+        
+        // Spoof the MAC address to match the old dashboard
+        uint8_t dash_mac[] = {0x3C, 0x0F, 0x02, 0xC2, 0xD4, 0xCC};
+        esp_wifi_set_mac(WIFI_IF_STA, dash_mac);
+
         esp_wifi_set_promiscuous(true);
         esp_wifi_set_channel(1, WIFI_SECOND_CHAN_NONE);
         esp_wifi_set_promiscuous(false);

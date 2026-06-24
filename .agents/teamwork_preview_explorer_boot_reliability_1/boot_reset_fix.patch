@@ -1,0 +1,27 @@
+diff --git a/src/display_driver.cpp b/src/display_driver.cpp
+index 1234567..89abcde 100644
+--- a/src/display_driver.cpp
++++ b/src/display_driver.cpp
+@@ -67,8 +67,23 @@ namespace DisplayDriver {
+     void init() {
+         Wire.begin(15, 7);
++
++        // ponytail: Cold starts are flaky because the TCA9554 IO expander and screen controllers
++        // need time to power up. We add safety delays and drive an explicit hardware reset pin toggle
++        // sequence on the TCA9554 to ensure clean chip resets, then wait for screen POR.
++        delay(50); // Let power rail stabilize
++
+         Wire.beginTransmission(0x24); Wire.write(0x02); Wire.write(0xff); Wire.endTransmission();
+         Wire.beginTransmission(0x24); Wire.write(0x03); Wire.write(0x3a); Wire.endTransmission();
+ 
++        // Perform hardware reset:
++        // Drive P0 (GT911 RST) and P2 (ST7701 RST) low, while keeping other outputs high (0xFA = 0b11111010)
++        Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0xFA); Wire.endTransmission();
++        delay(20); // Hold reset low for 20ms
++
++        // Release reset: Drive P0 and P2 high (0xFF = 0b11111111)
++        Wire.beginTransmission(0x24); Wire.write(0x01); Wire.write(0xFF); Wire.endTransmission();
++        delay(120); // Wait 120ms for display controller internal POR/calibration and GT911 boot
++
+         gfx->begin();
+         lv_init();

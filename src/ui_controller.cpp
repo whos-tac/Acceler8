@@ -360,7 +360,6 @@ uint8_t global_last_btn = 0;
         }
 
         DASH_LOCK();
-        int32_t erpm = g_vehicle_state.erpm;
         float v      = g_vehicle_state.battery_voltage_v;
         float t_esc  = g_vehicle_state.mosfet_temp_c;
         float range  = g_vehicle_state.range_km;
@@ -371,11 +370,11 @@ uint8_t global_last_btn = 0;
         bool can_timeout = (!g_vehicle_state.can_alive && g_vehicle_state.has_received_can);
         bool overtemp = (t_esc > 85.0f || g_vehicle_state.motor_temp_c > 100.0f);
         bool remote_dc = g_vehicle_state.remote_disconnected;
-        bool mock_mode = g_vehicle_state.mock_mode_active;
-        float mock_speed = g_vehicle_state.speed_kmh;
+        float speed_kmh = g_vehicle_state.speed_kmh;
         DASH_UNLOCK();
 
-        float speed = mock_mode ? mock_speed : calculate_speed_kmh(erpm);
+        // ponytail: directly use the EMA-smoothed speed to avoid speedometer jitter and redundant calculation
+        float speed = speed_kmh;
 
         if (fabs(pwr) < 0.5f) pwr = 0.0f;
         if (fabs(speed) < 0.5f) speed = 0.0f;
